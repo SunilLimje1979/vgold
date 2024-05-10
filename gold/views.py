@@ -125,8 +125,7 @@ def Gbooking_history(request):
 def Gold_booking(request):
     return render(request, 'gold/gold_booking.html')
 
-def Booking_details(request):
-    
+def Booking_details(request): 
     return render(request, 'gold/booking_details.html')
 
 def Gdeposit_history(request):
