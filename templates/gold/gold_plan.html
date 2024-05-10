@@ -1,0 +1,167 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold Plan</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome CSS -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Custom CSS -->
+  <style>
+    /* Navbar style */
+    .navbar {
+      background-color: rgb(41, 39, 122);
+      height: 55px;
+      color: white;
+    }
+    .navbar-toggler-icon {
+      color: white;
+    }
+    .navbar-brand {
+      font-size: 20px;
+      margin-left: 20px;
+      color: white;
+    }
+
+    /* Form styling */
+    .form-label {
+      display: block;
+      margin-bottom: 0px;
+      color: rgb(41, 39, 122) !important;
+      font-weight: bold;
+      padding-left: 10px;
+    }
+
+    .form-control {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      box-shadow: none;
+      padding-left: 10px;
+      height: 30px;
+    }
+
+    .form-control:hover,
+    .form-control:focus {
+      box-shadow: none !important;
+    }
+
+    .form-control[readonly] {
+      cursor: default;
+    }
+
+    /* Container and text style */
+    .custom-container {
+      margin-top: 70px !important;
+    }
+
+    /* Button style */
+    #updateProfileBtn {
+      background-color: rgb(41, 39, 122);
+      color: white;
+      border: none;
+      padding: 12px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 80%;
+      margin: 20px auto;
+      display: block;
+    }
+    #updateProfileBtn:hover {
+      background-color: #29277a;
+    }
+
+    /* Card style */
+    .custom-card {
+      background-color: #f8f9fa;
+      border: 1px solid #ced4da;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: 15px;
+      text-align: center; /* Center text */
+      color: #29277A; /* Text color */
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar with back button -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+          <a href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
+          </a>
+        </button>
+        <a class="navbar-brand">Gold Plan</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container mt-5 custom-container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <form>
+          <!-- Loan amount input -->
+          <div class="mb-1">
+            <label for="goldWeight" class="form-label">How much are you applying for?</label>
+            <input type="text" class="form-control" id="goldWeight" placeholder="">
+          </div>
+
+          <!-- Apply button -->
+          <button id="updateProfileBtn" type="button" onclick="showPlan()">View Plan</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Card to display input value -->
+    <div id="planCard" class="custom-card" style="display: none;">
+      <p id="planMessage"></p>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script>
+    function showPlan() {
+      // Get the input value
+      var inputValue = document.getElementById("goldWeight").value;
+
+      // Display the card with the input value
+      var planCard = document.getElementById("planCard");
+      var planMessage = document.getElementById("planMessage");
+      planMessage.innerHTML = `
+        <strong>2024-05-03</strong> <br>
+        <strong>For ${parseFloat(inputValue)} gm</strong> <br><br>
+        <strong>Total Amount:</strong> ₹${(parseFloat(inputValue) * 3000).toFixed(4)}<br>
+        <strong>Booking Amount:</strong> ₹${(parseFloat(inputValue) * 0.1).toFixed(4)}<br>
+        <strong>Booking Charge:</strong> ₹100<br>
+        <strong>You Pay:</strong> ₹${((parseFloat(inputValue) * 0.1) + 100).toFixed(4)}<br><br>
+
+        <strong>EMI For</strong> <br>
+        <strong> 12 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 12).toFixed(4)}<br>
+        <strong> 24 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 24).toFixed(4)}<br>
+        <strong> 36 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 36).toFixed(4)}<br>
+        <strong> 48 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 48).toFixed(4)}<br>
+        <strong> 60 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 60).toFixed(4)}<br>
+      `;
+      planCard.style.display = "block";
+    }
+  </script>
+</body>
+</html>

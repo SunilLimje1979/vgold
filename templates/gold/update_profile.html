@@ -1,0 +1,239 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Wallet</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <style>
+        /* Navbar style */
+        .navbar {
+          background-color: rgb(41, 39, 122);
+          height: 55px;
+          color: white;
+        }
+        .navbar-toggler-icon {
+          color: white;
+        }
+        .navbar-brand {
+          font-size: 20px;
+          margin-left: 10px;
+          color: white;
+        }
+      
+        /* Style for the icon */
+        .fa-arrow-left {
+          color: white;
+        }
+      
+        /* Custom card style */
+        .custom-card {
+          background-color: rgb(41, 39, 122);
+          border-radius: 0 0 50px 50px;
+          width: 100%;
+          height: 130px; /* Adjust the height as needed */
+          padding: 20px; /* Adjust the padding as needed */
+          position: relative;
+        }
+   
+        #submitButtonContainer {
+            position: relative; /* Change position to relative */
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px; /* Add margin to push the button below the cards */
+        }
+
+        /* Button style */
+        #submitButton {
+            width: 90%;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 14px;
+            background-color: rgb(41, 39, 122);
+            font-size: 18px;
+        }
+
+        #submitButton:hover {
+            background-color: #29277a;
+        }
+
+        /* Margin for form elements */
+        .form-element {
+            margin-bottom: 10px; /* Decrease the margin between form elements */
+        }
+
+        /* Style for form elements */
+        .form-control {
+            border: none; /* Remove default border */
+            border-bottom: 1px solid #ccc; /* Add bottom border */
+            border-radius: 0; /* Remove border radius */
+            box-shadow: none; /* Remove box shadow */
+            padding-left: 10px;
+            font-size: 14px;
+        }
+        
+
+        /* Remove hover and focus effects */
+        .form-control:hover,
+        .form-control:focus {
+            box-shadow: none !important;
+        }
+
+        /* Disable cursor on input */
+        .form-control[readonly] {
+            cursor: default;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0px; /* Decrease the margin-bottom */
+            color: rgb(41, 39, 122) !important; /* Label color */
+            font-weight: bold;
+            padding-left: 10px;
+            font-size: 14px;
+
+        }
+
+        /* Custom styles for the card layout */
+        .card {
+          margin-bottom: 5px; /* Add some bottom margin between cards */
+        }
+  
+        /* Set the card width to 30% of the container's width for three cards in one row */
+        .card-columns {
+          column-count: 3;
+        }
+
+        .small-font {
+            font-size: 14px; /* Adjust the font size as needed */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <div class="">
+                <button class="navbar-toggler" type="button" id="menuBtn">
+                    <a href="{% url 'dashboard' %}">
+                        <!-- Replace the existing toggle icon with Font Awesome icon -->
+                        <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+                </button>
+                <a class="navbar-brand">Update Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Card -->
+<div class="custom-card mt-5 p-3 text-center">
+    <!-- Profile icon -->
+<i class="fas fa-user-circle fa-6x ms-3 text-white"></i>
+
+    <!-- Plus icon -->
+    <i class="fas fa-plus-circle fa-2x text-white mt-3"></i>
+</div>
+
+    <div class="container" style="margin-top: 10px;">
+        <form>
+            <div class="form-group form-element">
+                <label for="inputEmail" class="form-label">Enter Email</label>
+                <input type="text" class="form-control" id="inputEmail" name="inputEmail" placeholder="Enter Email">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputMobile" class="form-label">Enter Mobile</label>
+                <input type="text" class="form-control" id="inputMobile" name="inputMobile" placeholder="Enter Mobile">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputAddress" class="form-label">Enter Your Address</label>
+                <input type="text" class="form-control" id="inputAddress" name="inputAddress" placeholder="Enter Your Address">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputCity" class="form-label">Enter Your City</label>
+                <input type="text" class="form-control" id="inputCity" name="inputCity" placeholder="Enter Your City">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputState" class="form-label">Enter Your State</label>
+                <input type="text" class="form-control" id="inputState" name="inputState" placeholder="Enter Your State">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputAdhar" class="form-label">Enter Adhar No</label>
+                <input type="text" class="form-control" id="inputAdhar" name="inputAdhar" placeholder="Enter Adhar No">
+            </div>
+            <div class="form-group form-element">
+                <label for="inputPan" class="form-label">Enter Pan No</label>
+                <input type="text" class="form-control" id="inputPan" name="inputPan" placeholder="Enter Pan No">
+            </div>
+        </form>
+    </div>
+    
+<!-- Card layout -->
+<div class="container" style="margin-top: 10px;">
+    <div class="row">
+        <div class="card-columns">
+            <!-- Card 1 -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Input for file upload -->
+                    <label for="fileUpload1">
+                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 1" class="card-img-top clickable-image">
+                    </label>
+                    <input type="file" id="fileUpload1" class="d-none">
+                    <!-- Centered label below card -->
+                    <div class="d-flex justify-content-center mt-0">
+                        <label class="text-center small-font">Adhar Front</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Input for file upload -->
+                    <label for="fileUpload2">
+                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 2" class="card-img-top clickable-image">
+                    </label>
+                    <input type="file" id="fileUpload2" class="d-none">
+                    <!-- Centered label below card -->
+                    <div class="d-flex justify-content-center mt-0">
+                        <label class="text-center small-font">Adhar Back</label>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Input for file upload -->
+                    <label for="fileUpload3">
+                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 3" class="card-img-top clickable-image">
+                    </label>
+                    <input type="file" id="fileUpload3" class="d-none">
+                    <!-- Centered label below card -->
+                    <div class="d-flex justify-content-center mt-0">
+                        <label class="text-center small-font">Pan Card</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Button -->
+    <div id="submitButtonContainer">
+        <a href="{% url 'booking_details' %}">
+            <button id="submitButton">UPDATE PROFILE</button>
+        </a>
+    </div>
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+</body>
+</html>

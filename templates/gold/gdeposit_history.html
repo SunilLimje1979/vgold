@@ -1,0 +1,163 @@
+{% load i18n %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Deposite History</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Navbar style */
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
+
+        /* Style for the icon */
+        .fa-arrow-left {
+            color: white;
+        }
+
+        #submitButtonContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            z-index: 999; /* Ensure button appears above other content */
+        }
+
+        /* Button style */
+        #submitButton {
+            width: 90%;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 14px;
+            background-color: rgb(41, 39, 122);
+            font-size: 18px;
+        }
+
+        #submitButton:hover {
+            background-color: #29277a;
+        }
+
+        /* Custom card style */
+        .custom-card {
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa; /* Example background color */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            padding: 20px;
+        }
+
+        /* Card header style */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+          color: green; /* or any color indicating active status */
+          margin-right: 00px; /* Adjust spacing between status and PDF icon */
+      }
+      
+
+        /* Horizontal line style */
+        .horizontal-line {
+            border-top: 1px solid black;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        /* Custom font size for p tags */
+        .custom-p {
+            font-size: 12px;
+            margin-bottom: 1px; /* Adjust spacing between paragraphs */
+        }
+    </style>
+</head>
+<body>
+  <!-- Navbar with menu drawer icon -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+          <a href="{% url 'dashboard' %}">
+            <!-- Replace the existing toggle icon with Font Awesome icon -->
+            <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+        </button>
+        <a class="navbar-brand">Gold Deposite History</a>
+      </div>
+    </div>
+  </nav>
+
+  {% for data in dummy_data %}
+<div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
+    <div class="card-header">
+        <span>{{ data.number }}</span>
+        <span class="status">{{ data.status }}</span>
+        <a href="#" class="btn btn-primary text-white"><i class="fas fa-file-pdf text-white"></i></a>
+    </div>
+    <hr class="horizontal-line">
+    <div class="row">
+        <div class="col">
+            <p class="custom-p">Gold Deposit Date</p>
+            <p class="custom-p">Gold Deposit Weight</p>
+            <p class="custom-p">Processing Fees</p>
+            <p class="custom-p">Gold Purity</p>
+            <p class="custom-p">Tenure</p>
+            <p class="custom-p">Remark</p>
+            <p class="custom-p">Gold Maturity Date</p>
+            <p class="custom-p">Gold Maturity Weight</p>
+            <p class="custom-p">Today's Deposit Weight</p>
+            <p class="custom-p">Today's Deposit Value (As per Today's Rate)</p>
+        </div>
+        <div class="col">
+            <p class="custom-p">{{ data.booking_date }}</p> <!-- Gold Deposit Date -->
+            <p class="custom-p">{{ data.weight }}</p> <!-- Gold Deposit Weight -->
+            <p class="custom-p">₹{{ data.booking_charge }}</p> <!-- Processing Fees -->
+            <p class="custom-p">₹{{ data.rate }}</p> <!-- Gold Purity -->
+            <p class="custom-p">{{ data.tenure }}</p> <!-- Tenure -->
+            <p class="custom-p">{{ data.remark }}</p> <!-- Remark -->
+            <p class="custom-p">{{ data.closing_date }}</p> <!-- Gold Maturity Date -->
+            <p class="custom-p">{{ data.gold_maturity_weight }}</p> <!-- Gold Maturity Weight -->
+            <p class="custom-p">{{ data.todays_deposit_weight }}</p> <!-- Today's Deposit Weight -->
+            <p class="custom-p">₹{{ data.todays_deposit_value }}</p> <!-- Today's Deposit Value -->
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+  <!-- Button -->
+  <div id="submitButtonContainer">
+    <a href="{% url 'gold_deposit' %}">
+      <button id="submitButton">NEXT</button>
+    </a>
+  </div>
+
+  <!-- Bootstrap JS (optional, for Bootstrap features) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+</body>
+</html>

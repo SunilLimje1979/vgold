@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Wallet</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+        /* Navbar style */
+        .navbar {
+          background-color: rgb(41, 39, 122);
+          height: 55px;
+          color: white;
+        }
+        .navbar-toggler-icon {
+          color: white;
+        }
+        .navbar-brand {
+          font-size: 20px;
+          margin-left: 10px;
+          color: white;
+        }
+      
+        /* Style for the icon */
+        .fa-arrow-left {
+          color: white;
+        }
+      
+        /* Custom card style */
+        .custom-card {
+          background-color: rgb(41, 39, 122);
+          border-radius: 0 0 50px 50px;
+          width: 100%;
+          height: 150px; /* Adjust the height as needed */
+          padding: 20px; /* Adjust the padding as needed */
+          position: relative;
+        }
+        /* Button style */
+        .custom-button {
+          width: calc(50% - 30px); /* Adjusted width for equal spacing with margins */
+          background-color: white;
+          color: rgb(41, 39, 122); /* Text color */
+          border: none;
+          outline: none;
+          cursor: pointer;
+          position: absolute;
+          font-size: 14px;
+          top: 10px;
+          border-radius: 20px; /* Increased border radius */
+          height: 45px; /* Increased button height */
+          margin: 0 15px; /* Added left-right margin */
+        }
+        
+        /* Positioning the buttons */
+        .custom-button:first-child {
+          left: 10px; /* Adjusted left position */
+        }
+        
+        .custom-button:last-child {
+          right: 10px; /* Adjusted right position */
+        }
+       
+        /* Button style for footer */
+        .custom-button-footer {
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 60px; /* Adjust the margin-top value as needed */
+          background-color: rgb(237, 66, 0); /* Change button color */
+          color: white; /* Change text color to white */
+        }
+        /* Additional styling for list items */
+        #listContainer {
+          max-height: 710px; /* Fixed height for the list container */
+          overflow-y: auto; /* Enable vertical scrolling */
+        }
+        #listContainer li {
+          border: 1px solid #f0ad4e; 
+          padding-bottom: 20px; /* Add padding */
+          padding-left:8px;
+          padding-right:10px;
+          padding-top:10px;
+          margin-bottom: 12px; /* Add margin bottom for spacing */
+          background-color: white;
+          border: 1px solid rgba(0, 0, 0, 0.125); /* Normal border */
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Floating shadow */
+          {% comment %} border-radius: 5px; /* Add border radius */ {% endcomment %}
+        }
+        
+      </style>
+      
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <div class="">
+          <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'dashboard' %}">
+            <!-- Replace the existing toggle icon with Font Awesome icon -->
+            <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+          </button>
+          <a class="navbar-brand" >Gold Wallet</a>
+        </div>
+      </div>
+    </nav>
+
+
+<!-- Card -->
+<div class="custom-card mt-5 p-3 ">
+    <!-- Your content goes here -->
+    <div class="button-container">
+      <button class="custom-button">Current Balance <br> 0.123 Gm</button>
+      <button class="custom-button">Value <br>  703.23 </button>
+    </div>
+        <!-- Button below the footer card -->
+        <a href="{% url 'add_gold' %}" class="custom-button custom-button-footer" style="display: inline-block; text-align: center; line-height: 40px; width: 150px; text-decoration: none; font-size: 18px;padding-top: 5px;">Add Money</a>
+
+  </div>
+  
+<!-- New container for the list -->
+<div class="container mt-3 increased-padding">
+    <div class="row">
+      <div class="col">
+        <ul id="listContainer" class="list-unstyled" style="width: 100%; padding-top: 10px;">
+          <!-- List items will be added dynamically here -->
+        </ul>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+
+    <script>
+        // Sample data (you can replace this with your actual data)
+        var data = [
+          { transactionId: "123456", receivedFrom: "Rushika", date: "2024-05-02", success: true, gram: "10 gm" },
+          { transactionId: "789012", receivedFrom: "John", date: "2024-05-01", success: false, gram: "5 gm" },
+          { transactionId: "123456", receivedFrom: "Rushika", date: "2024-05-02", success: true, gram: "10 gm" },
+          { transactionId: "789012", receivedFrom: "John", date: "2024-05-01", success: false, gram: "5 gm" },
+          { transactionId: "123456", receivedFrom: "Rushika", date: "2024-05-02", success: true, gram: "10 gm" }
+        ];
+      
+        // Function to populate the list with data
+        function populateList() {
+          var listContainer = document.getElementById("listContainer");
+      
+          // Clear existing list items
+          listContainer.innerHTML = "";
+      
+          // Loop through the data and create list items
+          data.forEach(function(item) {
+            var listItem = document.createElement("li");
+            var successText = item.success ? "Success" : "Failure";
+            listItem.innerHTML = `
+              <div style="display:flex; justify-content: space-between;">
+                <div>
+                  <strong>Transaction ID:</strong> ${item.transactionId}<br>
+                  <strong>Received From:</strong> ${item.receivedFrom}<br>
+                  <strong>Date:</strong> ${item.date}<br>
+                 
+                </div>
+                <div>
+                  <strong>Gram:</strong> ${item.gram}<br><br>
+                  <strong>Status:</strong> ${successText}
+                </div>
+              </div>
+            `;
+            listContainer.appendChild(listItem);
+          });
+        }
+      
+        // Call the function to populate the list when the page loads
+        populateList();
+      </script>
+      
+  </body>
+</html>

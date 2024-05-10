@@ -1,0 +1,185 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Login Page</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+
+    body {
+      background-color: rgb(255, 251, 255);
+    }
+    /* Custom Styles */
+    .login-container {
+      max-width: 350px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      background-color: rgb(255,251,255); 
+    }
+    .logo {
+      height: 200px; /* Adjust the height as needed */
+      border-radius: 15px;
+    }
+    
+    .custom-btn {
+      width: fit-content; /* This will make the button width fit its content */
+    }
+    .text-muted {
+      font-size: 14px;
+    }
+    .logo-text {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #333; /* Adjust color as needed */
+      margin-bottom: 0;
+    }
+    .icon-container {
+      width: 50px; /* Set a fixed width */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f8f9fa;
+      border: 2px solid #ced4da;
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+    }
+    .container {
+      padding-left: 40px; /* Increase left padding */
+      padding-right: 40px; /* Increase right padding */
+  }
+  
+  .otp-input {
+      height: 40px; /* Adjust height as needed */
+      padding: 0px 5px; /* Adjust padding as needed */
+      margin: 0px; /* Adjust margin as needed */
+      font-size: 18px; /* Adjust font size as needed */
+      text-align: center; /* Center align text within the input */
+      border: 2px solid rgb(41, 39, 122); /* Add border with specified color */
+      outline: none; /* Remove focus outline */
+      width: 40px; /* Adjust width as needed */
+  }
+  
+        .otp-input:focus {
+            border-color: rgb(41,39,122); /* Change border color on focus if needed */
+        }
+    
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="login-container">
+       
+        <div class="text-center mb-4">
+        <img src="{% static 'assets/img/vgold.jpg' %}"  alt="Your Logo" class="logo" style="height: 80px; width: auto;margin-bottom: 24px;">
+
+          <div class="logo-text">DIGITAL GOLD | GOLD LOAN | FOUNDATION</div>
+        </div>
+        <div class="text-center mb-4">
+          <img src="{% static 'assets/img/otp_girl.jpg' %}"  alt="Your Logo" class="logo">
+          <div class="logo-text" style="font-size: 15px; font-weight: bold; margin-top: 0px;">Verification Code</div>
+          <div class="logo-text" style="font-size: 15px; margin-top: 0px;">OTP send To </div>
+          <div class="logo-text" style="font-size: 15px; font-weight: bold;color: rgb(41, 39, 122); margin-top: 0px;">+91 9999767890 </div>
+        </div>
+        
+        <form method="post">
+          {% csrf_token %}
+        
+          <div class="container px-4">
+            <div class="row justify-content-center mt-4 gx-0">
+                <div class="col">
+                    <input type="text" class="form-control otp-input" placeholder="" name="otp[]" maxlength="1" required>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control otp-input" placeholder="" name="otp[]" maxlength="1" required>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control otp-input" placeholder="" name="otp[]" maxlength="1" required>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control otp-input" placeholder="" name="otp[]" maxlength="1" required>
+                </div>
+            </div>
+        </div>
+        
+        
+          <div class="row justify-content-center" style="padding-top: 27px; padding-bottom: 3px;">
+            <button id="verifyButton" type="submit" class="btn btn-success custom-btn" style="width: 100%; font-size: 16px; padding: 12px 18px; border-radius: 17px; background-color: rgb(41,39,122);">Verify OTP</button>
+          </div>
+    
+        <div class="row justify-content-center">
+            <p class="text-muted mt-3 text-center">
+                <span style="color: black;">Not Received ?</span>
+                <a href="#" style="color: rgb(41, 39, 122); text-decoration: none;">Resend</a>.
+            </p>
+        </div>  
+          {% if messages %}
+          <div id="messages-container" class="messages">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('verifyButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        window.location.href = "{% url 'dashboard' %}"; // Redirect to the specified URL
+      });
+    });
+  </script>
+  
+  <script>
+    // Function to close the alert after a specified duration
+    function closeAlert(alert) {
+      alert.classList.add('fade');
+      setTimeout(function() {
+        alert.remove();
+      }, 500); // Adjust the timeout duration as needed
+    }
+  
+    // Close the alert when the close button is clicked
+    document.addEventListener('DOMContentLoaded', function() {
+      var alertCloseButtons = document.querySelectorAll('.btn-close');
+      alertCloseButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+          var alert = this.closest('.alert');
+          closeAlert(alert);
+        });
+      });
+  
+      // Automatically close alerts after 5 seconds
+      var alerts = document.querySelectorAll('.alert');
+      alerts.forEach(function(alert) {
+        setTimeout(function() {
+          closeAlert(alert);
+        }, 5000); // Adjust the duration (in milliseconds) as needed
+      });
+    });
+  </script>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <!-- Font Awesome -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+</body>
+</html>

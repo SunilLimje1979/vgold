@@ -1,0 +1,106 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Complaint</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      /* Navbar style */
+      .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px; /* Set the height to 400px */
+        color: white; /* Set text color to white */
+      }
+      .navbar-toggler-icon {
+        color: white;
+      }
+      .navbar-brand {
+        font-size: 20px;
+        margin-left: 20px;
+        color: white;
+        {% comment %} font-weight: bold; /* Make the text bold */ {% endcomment %}
+      }
+
+      /* Style for the icon */
+      .fa-arrow-left {
+        color: white; /* Make the color white */
+      }
+      
+      /* Custom style for description box */
+      #descriptionBox {
+        width: calc(100% - 2px); /* Adjusted width to accommodate the margins */
+        height: 140px; /* Adjust height as needed */
+        padding: 10px;
+        margin: 0px 0px 10px 0px; /* Top and bottom margin 10px, centered horizontally */
+        resize: vertical; /* Allow vertical resizing */
+        border: 1px solid #ccc; /* Add border */
+        border-radius: 14px; /* Add border radius */
+        font-size: 18px; 
+      }
+      
+      
+
+      #submitButtonContainer {
+        display: flex; /* Use flexbox */
+        justify-content: center; /* Center horizontally */
+      }
+      
+      #submitButton {
+        width: 80%;
+        background-color: rgb(41, 39, 122);
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 14px; /* Add border radius */
+        font-size: 18px;
+      }
+      
+      #submitButton:hover {
+        background-color: #29277a; /* Darker color on hover */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <div class="">
+          <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'dashboard' %}">
+            <!-- Replace the existing toggle icon with Font Awesome icon -->
+            <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+          </button>
+          <a class="navbar-brand">Complaint</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Multiline text description box -->
+    <div class="container mt-3">
+      <textarea id="descriptionBox" placeholder="Enter Complaint" rows="4"></textarea>
+      <!-- Submit button -->
+      <div id="submitButtonContainer">
+        <button id="submitButton">Submit</button>
+      </div>
+      
+    </div>
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+  </body>
+</html>

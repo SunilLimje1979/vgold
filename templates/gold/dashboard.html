@@ -1,0 +1,522 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu Drawer Example</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS -->
+    <style>
+            /* Navbar style */
+            .navbar {
+              background-color: rgb(41, 39, 122);
+              height: 55px; /* Set the height to 400px */
+            }
+            .navbar-toggler-icon {
+              color: white;
+              font-size: 13px;
+            }
+            .navbar-brand {
+              color: white;
+              font-size: 20px;
+              margin-left: 20px;
+              {% comment %} font-weight: bold; /* Make the text bold */ {% endcomment %}
+            }
+
+            /* Style for the drawer */
+            .drawer {
+              position: fixed;
+              top: 50px; /* Set the top position below the navbar */
+              left: -100%; /* Initially hidden */
+              width: 70%; /* Take up full width */
+              height: calc(100% - 65px); /* Calculate height based on viewport height minus navbar height */
+              background-color: #f8f9fa;
+              transition: left 0.3s ease;
+              padding: 0px;
+              box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+              z-index: 1000; /* Ensure it's on top of other elements */
+              overflow-y: auto; /* Enable vertical scrolling */
+            }
+
+            /* Drawer item style */
+            .drawer ul {
+              padding-left: 17px;
+              padding-right: 17px;
+              padding-bottom: 5px;
+              padding-top: 5px;
+              font-size: 15px;
+            }
+
+            .drawer ul li {
+              list-style: none;
+              margin-bottom: 8px;
+            }
+            .drawer ul li a {
+              text-decoration: none;
+              color: #333;
+              font-size: 17px; /* Increased font size */
+              padding-left: 0px; /* Add padding to the left of the link */
+            }
+            /* Drawer item style */
+            .drawer ul li a i {
+              margin-right: 25px; /* Add margin between the icon and the text */
+              font-size: 24px; /* Increase the font size of the icons */
+            }
+
+            .white-button {
+              color: white; /* Set text color to white */
+              background-color: white; /* Set background color to white */
+              {% comment %} border-color: black; /* Set border color to black */ {% endcomment %}
+            }
+
+            /* Additional content style */
+            .additional-content {
+              position: sticky; /* Fix position */
+              top: 0; /* Stick to the top */
+              background-color: rgb(41, 39, 122); /* Background color */
+              color: white; /* Text color */
+              padding: 1px; /* Padding to create space around content */
+              z-index: 1001; /* Ensure it's above the scrolling list */
+              width: 100%; /* Occupy full width */
+              text-align: center; /* Center align text */
+            }
+
+            .additional-content img.logo {
+              display: block;
+              margin: 0 auto 16px; /* Center align the image */
+            }
+
+            .center-image {
+              display: flex;
+              justify-content: center;
+              margin-left: 0;
+              margin-right: 0;
+              width: 100%;
+            }
+            .card-with-radius {
+              width: 100%;
+              margin-left: 0;
+              margin-right: 0;
+              border-radius: 30px 30px 0 0; /* top-left, top-right, bottom-right, bottom-left */
+              background-color: rgb(255, 255, 255); /* Set background color as needed */
+              height: 540px; /* Set height as needed */
+            }
+
+            .logo-container {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-top: 15px;
+              padding-left: 40px; /* Decrease the gap */
+              padding-right: 40px; /* Decrease the gap */
+            }
+
+            .logo-container div {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              {% comment %} margin-left: 35px; /* Add left padding */
+              margin-right: 35px; /* Add right padding */ {% endcomment %}
+              font-size: 35px; /* Adjust the font size as needed */
+            }
+
+            .logo-container p {
+              font-size: 12px; /* Adjust font size */
+            }
+
+            .logo-container-service {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-top: 15px;
+              padding-left: 10px; /* Decrease the gap */
+              padding-right: 10px; /* Decrease the gap */
+            }
+
+            .logo-container-service > div {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              margin-left: 10px; /* Add left margin */
+              margin-right: 10px; /* Add right margin */
+              font-size: 30px; /* Adjust the font size as needed */
+            }
+
+            .logo-container-service p {
+              font-size: 12px; /* Adjust font size */
+              margin-top: 5px; /* Add margin at the top of each paragraph */
+              text-align: center;
+            }
+
+            /* Add vertical line */
+            .logo-container-service div:not(:last-child) {
+              border-right: 1px solid #ccc; /* Adjust color and thickness as needed */
+              padding-right: 10px; /* Adjust spacing */
+              height: 70px;
+            }
+
+            .center-image {
+              display: flex;
+              justify-content: center;
+            }
+            .container {
+              background-color:rgb(38,33,97);
+            }
+
+            .carousel-item {
+              position: relative;
+              text-align: center;
+            }
+            .carousel-content {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+            }
+            #carousel-heading {
+              color: #333; /* Change color as needed */
+              font-size: 18px; /* Change font size as needed */
+            }
+            #carousel-button {
+              background-color: rgb(41, 39, 122); /* Button background color */
+              color: #fff; /* Button text color */
+              border: none; /* Remove button border */
+              border-radius: 10px; /* Add border radius */
+              padding: 10px 20px; /* Add padding */
+              font-size: 18px; /* Change font size as needed */
+              cursor: pointer; /* Add cursor pointer */
+            }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <div class="">
+          <button
+            class="navbar-toggler white-button"
+            type="button"
+            id="menuBtn"
+          >
+            <span class="navbar-toggler-icon"></span></button
+          ><a class="navbar-brand">Welcome - Shekhar</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menu Drawer -->
+    <div id="drawer" class="drawer">
+      <!-- Additional content -->
+      <div class="additional-content">
+        <img
+          src="{% static 'assets/img/vgold.jpg' %}"
+          alt="Your Logo"
+          class="logo"
+          style="height: 60px; width: auto; margin-bottom: 10px"
+        />
+        <p style="font-size: 13px">Digital loan | Gold loan | Foundation</p>
+      </div>
+      <ul>
+        <li>
+          <a href="{% url 'dashboard' %}"
+            ><i class="bi bi-house-door"></i> Home</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a>
+        </li>
+        <li>
+          <a href="{% url 'certificate' %}"
+            ><i class="bi bi-card-checklist"></i> Certificates</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'gbooking_history' %}"
+            ><i class="bi bi-currency-dollar"></i> Gold Booking History</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'gdeposit_history' %}"
+            ><i class="bi bi-wallet2"></i> Gold Deposit History</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'membership' %}"
+            ><i class="bi bi-people"></i> Membership</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'gold_wallet' %}"
+            ><i class="bi bi-wallet"></i> eGoldWallet</a>
+        </li>
+        <li>
+          <a href="{% url 'money_wallet' %}" > <i class="bi bi-credit-card"></i> Money Wallet</a>
+        </li>
+        <li>
+          <a href="{% url 'pay_installment' %}"
+            ><i class="bi bi-calendar-check"></i> Pay Installment</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'add_bank' %}"><i class="bi bi-bank"></i> Add Bank</a>
+        </li>
+        <li>
+          <a href="{% url 'channel_partner' %}"
+            ><i class="bi bi-building"></i> Channel Partner</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'review' %}"><i class="bi bi-star"></i> Review</a>
+        </li>
+        <li>
+          <a href="{% url 'complaint' %}"
+            ><i class="bi bi-exclamation-diamond"></i> Complaint</a
+          >
+        </li>
+        <li>
+          <a href="{% url 'feedback' %}"
+            ><i class="bi bi-chat-left-dots"></i> Feedback</a
+          >
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-share"></i> Share</a>
+        </li>
+        <li>
+          <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
+        </li>
+        <li>
+          <a href="{% url 'login' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      </li>
+
+      </ul>
+    </div>
+    <div id="carouselExampleIndicators" class="carousel slide" style="margin-top: 55px;">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="{% static 'assets/img/ribbon.png' %}" class="d-block w-100" alt="Slide 1"/>
+          <div class="carousel-content">
+            <h4 id="carousel-heading">Total Gain</h4>
+            <button id="carousel-button" onclick="navigate()">₹ 4789653/-</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="center-image">
+        <a href="{% url 'gold_booking' %}">
+          <img
+            src="{% static 'assets/img/bank_details.jpg' %}"
+            alt="Your Logo"
+            class="logo"
+            style="height: 270px; width: 100%; margin-bottom: 0px"
+          />
+        </a>
+      </div>
+
+      <div class="button" style="text-align: center; padding-top: 15px; padding-bottom: 15px;">
+        <div class="row">
+          <div class="col" style="text-align: right;">
+            <a href="{% url 'gold_booking' %}" style="text-decoration: none;">
+              <button class="btn btn-primary" style="background-color: rgb(255, 180, 32); color: white; padding: 5px 0; width: 170px;">
+                <i class="fas fa-book" style="color: black; font-weight: bold; font-size: 20px;"></i> <span style="color: black; font-weight: bold; font-size: 20px;"> Book now</span>
+              </button>
+            </a>
+          </div>
+          
+          <div class="col" style="text-align: left;">
+            <button class="btn btn-secondary" style="background-color: rgb(255, 180, 32); color: white; padding: 5px 0; width: 170px;">
+              <i class="fas fa-share" style="color: black; font-weight: bold; font-size: 20px;"></i> <span style="color: black; font-weight: bold; font-size: 20px;"> Share</span>
+            </button>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="card-with-radius">
+
+        <div class="logo-container">
+          <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
+            <div>
+              <i class="fas fa-wallet logo"></i>
+              <p>eGold Wallet</p>
+            </div>
+        </a>
+
+          <a href="{% url 'add_gold' %}" style="color: black; text-decoration: none;">
+            <div>
+                <i class="fas fa-coins logo"></i>
+                <p>Add Gold</p>
+            </div>
+        </a>
+
+        <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
+          <div>
+            <i class="fas fa-shopping-cart logo"></i>
+            <p>Sell</p>
+          </div>
+      </a>
+      
+        </div>
+        <hr style="margin-top: 0px; margin-bottom: 0px" />
+        <!-- Adjust margin top and bottom -->
+
+        <div class="logo-container">
+          <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;">
+            <div>
+              <i class="fas fa-wallet logo"></i>
+              <p>Money Wallet</p>
+            </div>
+        </a>
+
+        <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;">
+          <div>
+            <i class="fas fa-plus-circle logo"></i>
+            <p>Add Money</p>
+          </div>
+      </a>
+
+      <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;">
+        <div>
+          <i class="fas fa-money-bill-alt logo"></i>
+          <p>Withdrawal</p>
+        </div>
+    </a>
+    </div>
+        <hr style="margin-top: 0px; margin-bottom: 0px" />
+        <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
+
+        <div class="logo-container-service">
+
+
+          <div>
+            <a href="{% url 'booking_details' %}" style="color: black; text-decoration: none;">
+           <center> <i class="fas fa-clipboard-list logo"></i></center>
+            <p>My Booking</p></a>
+          </div>
+
+          
+
+          <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
+            <center>   <i class="fas fa-credit-card logo"></i></center>
+            <p>Pay Installment</p></a>
+          </div>
+
+
+          <div><a href="{% url 'gold_deposit' %}" style="color: black; text-decoration: none;">
+            <center> <i class="fas fa-coins logo"></i></center>
+            <p>Deposit Gold</p></a>
+          </div>
+
+
+          <div><a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;">
+            <center>   <i class="fas fa-tasks logo"></i></a></center>
+            <p>Plan</p>
+          </div>
+
+
+          <div><a href="{% url 'loan' %}" style="color: black; text-decoration: none;">
+            <center>  <i class="fas fa-hand-holding-usd logo"></i></center>
+            <p>Loan</p></a>
+          </div>
+
+          
+        </div>
+        <div class="center-image"><a href="{% url 'our_vendors' %}">
+          <img
+            src="{% static 'assets/img/dashboard_logo.jpg' %}"
+            alt="Your Logo"
+            class="logo"
+            style="height: 180px; width: 190px; margin-top: 30px"
+          /></a>
+        </div>
+        <p
+          style="
+            text-align: center;
+            margin-bottom: 30px;
+            color: rgb(41, 39, 122);
+          "
+        >
+          Associate
+        </p>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      // Function to open the drawer
+      document.getElementById("menuBtn").addEventListener("click", function () {
+        document.getElementById("drawer").style.left = "0";
+      });
+
+      // Function to close the drawer
+      function closeDrawer() {
+        document.getElementById("drawer").style.left = "-100%";
+      }
+
+      // Event listener to close the drawer when clicking outside of it
+      window.addEventListener("click", function (event) {
+        if (
+          !event.target.closest(".drawer") &&
+          !event.target.closest("#menuBtn")
+        ) {
+          closeDrawer();
+        }
+      });
+    </script>
+
+    <script>
+      const headings = ["Total Gain", "Connect with us ", "You can apply for loan up to", "75th Independence Celebration"];
+      const buttons = ["₹ 4789653/-", "Be a Partner", "₹ 42552/-", "Appreciation Certificate"];
+      let currentIndex = 0;
+    
+      function changeContent() {
+        document.getElementById('carousel-heading').textContent = headings[currentIndex];
+        document.getElementById('carousel-button').textContent = buttons[currentIndex];
+        currentIndex = (currentIndex + 1) % headings.length;
+      }
+    
+      function navigate() {
+        // Check the current index to determine which URL to navigate to
+        switch (currentIndex) {
+          case 0:
+            window.location.href = "{% url 'dashboard' %}";
+            break;
+          case 1:
+            window.location.href = "{% url 'dashboard' %}";
+            break;
+          case 2:
+            window.location.href = "{% url 'loan' %}";
+            break;
+          case 3:
+            window.location.href = "{% url 'certificate' %}";
+            break;
+          default:
+            break;
+        }
+      }
+      // Set interval to change content every 3 seconds
+      setInterval(changeContent, 3000);
+    </script>
+
+  </body>
+</html>

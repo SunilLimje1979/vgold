@@ -1,0 +1,149 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loan</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome CSS -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Custom CSS -->
+  <style>
+    /* Navbar style */
+    .navbar {
+      background-color: rgb(41, 39, 122);
+      height: 55px;
+      color: white;
+    }
+    .navbar-toggler-icon {
+      color: white;
+    }
+    .navbar-brand {
+      font-size: 20px;
+      margin-left: 20px;
+      color: white;
+    }
+
+    /* Form styling */
+    .form-label {
+      display: block;
+      margin-bottom: 0px;
+      color: rgb(41, 39, 122) !important;
+      font-weight: bold;
+      padding-left: 10px;
+    }
+
+    .form-control {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      box-shadow: none;
+      padding-left: 10px;
+      height: 30px;
+    }
+
+    .form-control:hover,
+    .form-control:focus {
+      box-shadow: none !important;
+    }
+
+    .form-control[readonly] {
+      cursor: default;
+    }
+
+    /* Container and text style */
+    .custom-container {
+      margin-top: 60px !important;
+    }
+    #vgoldID {
+      text-align: center;
+      margin-top: 0px;
+      font-size: 18px;
+      font-weight: bold; 
+      color: rgb(15, 15, 15);
+    }
+
+    /* Button style */
+    #updateProfileBtn {
+      background-color: rgb(41, 39, 122);
+      color: white;
+      border: none;
+      padding: 12px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 80%;
+      margin: 20px auto;
+      display: block;
+    }
+    .no-border-bottom {
+        border-bottom: none;
+    }
+    
+    #updateProfileBtn:hover {
+      background-color: #29277a;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar with back button -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+          <a href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
+          </a>
+        </button>
+        <a class="navbar-brand">Loan</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <div class="container mt-5 custom-container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <form>
+          <!-- Loan information -->
+          <p id="vgoldID">Congratulations Shekhar! You can apply for a loan of up to &#8377;38,923.4 /-</p>
+
+          <!-- Loan amount input -->
+          <div class="mb-1">
+            <label for="goldWeight" class="form-label">How much are you applying for?</label>
+            <input type="text" class="form-control" id="goldWeight" placeholder="">
+          </div>
+
+          <!-- Reason selection -->
+          <div class="form-group form-element">
+            <label for="depositor" class="form-label">Reason for taking Loan?</label>
+            <select class="form-control no-border-bottom" id="depositor" name="depositor">
+              <option value="home">Home</option>
+              <option value="medical">Medical</option>
+              <option value="emergency">Emergency</option>
+              <option value="educational">Educational</option>
+              <option value="vehicle">Vehicle</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <!-- Apply button -->
+          <button id="updateProfileBtn" type="button">Apply</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

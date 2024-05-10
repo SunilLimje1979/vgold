@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+        /* Navbar style */
+        .navbar {
+          background-color: rgb(41, 39, 122);
+          height: 55px; /* Set the height to 400px */
+          color: white; /* Set text color to white */
+        }
+        .navbar-toggler-icon {
+          color: white;
+        }
+        .navbar-brand {
+          font-size: 20px;
+          margin-left: 20px;
+          color: white;
+          {% comment %} font-weight: bold; /* Make the text bold */ {% endcomment %}
+        }
+      
+        /* Style for the icon */
+        .fa-arrow-left {
+          color: white; /* Make the color white */
+        }
+        
+        /* Custom style for description box */
+        #descriptionBox {
+          width: calc(100% - 2px); /* Adjusted width to accommodate the margins */
+          height: 140px; /* Adjust height as needed */
+          padding: 10px;
+          margin: 0px 0px 10px 0px; /* Top and bottom margin 10px, centered horizontally */
+          resize: vertical; /* Allow vertical resizing */
+          border: 1px solid #ccc; /* Add border */
+          border-radius: 14px; /* Add border radius */
+          font-size: 18px; 
+        }
+        
+        #submitButtonContainer {
+          display: flex; /* Use flexbox */
+          justify-content: center; /* Center horizontally */
+        }
+        
+        #submitButton {
+          width: 80%;
+          background-color: rgb(41, 39, 122);
+          color: white;
+          border: none;
+          padding: 10px;
+          cursor: pointer;
+          border-radius: 14px; /* Add border radius */
+          font-size: 18px;
+        }
+        
+        #submitButton:hover {
+          background-color: #29277a; /* Darker color on hover */
+        }
+        
+        /* Style for the star icons */
+        .rating {
+          display: flex;
+          justify-content: center;
+          font-size: 30px;
+        }
+      
+        .rating > span {
+          margin: 0 5px;
+          cursor: pointer;
+          color: #ccc; /* Default color for stars */
+        }
+      
+        .rating > span:hover:before,
+        .rating > span:hover ~ span:before {
+          content: "\2605";
+          position: absolute;
+        }
+      
+        .rating > span.blank {
+          color: white; /* Color for blank stars */
+          border: 1px solid black;
+        }
+      </style>
+      
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <div class="">
+          <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+          </button>
+          <a class="navbar-brand">Feedback</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Rating stars -->
+    <div class="container mt-3">
+      <div class="rating">
+        <span><i class="fas fa-star"></i></span>
+        <span><i class="fas fa-star"></i></span>
+        <span><i class="fas fa-star"></i></span>
+        <span><i class="fas fa-star"></i></span>
+        <span><i class="fas fa-star"></i></span>
+      </div>
+    </div>
+
+    <!-- Multiline text description box -->
+    <div class="container mt-3">
+      <textarea id="descriptionBox" placeholder="Comment" rows="5"></textarea>
+      <!-- Submit button -->
+      <div id="submitButtonContainer">
+        <button id="submitButton">Submit</button>
+      </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const stars = document.querySelectorAll(".rating > span");
+      
+          stars.forEach((star, index) => {
+            star.addEventListener("click", function() {
+              // Change color of clicked star and previous stars
+              for (let i = 0; i <= index; i++) {
+                stars[i].style.color = "rgb(41, 39, 122)";
+              }
+              for (let i = index + 1; i < stars.length; i++) {
+                stars[i].style.color = "#ccc";
+              }
+            });
+          });
+        });
+      </script>
+
+{% comment %} 
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          const stars = document.querySelectorAll(".rating > span");
+          const submitButton = document.getElementById("submitButton");
+          const descriptionBox = document.getElementById("descriptionBox");
+      
+          stars.forEach((star, index) => {
+            star.addEventListener("click", function() {
+              // Change color of clicked star and previous stars
+              for (let i = 0; i <= index; i++) {
+                stars[i].style.color = "rgb(41, 39, 122)";
+              }
+              for (let i = index + 1; i < stars.length; i++) {
+                stars[i].style.color = "#ccc";
+              }
+            });
+          });
+      
+          submitButton.addEventListener("click", function() {
+            const selectedRating = document.querySelectorAll(".rating > span[style='color: rgb(41, 39, 122);']").length;
+            const descriptionText = descriptionBox.value;
+            
+            console.log("Selected Rating:", selectedRating);
+            console.log("Description:", descriptionText);
+          });
+        });
+      </script> {% endcomment %}
+      
+      
+      
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

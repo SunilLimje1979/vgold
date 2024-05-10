@@ -1,0 +1,204 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu Drawer Example</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      /* Navbar style */
+      .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 65px; /* Set the height to 400px */
+      }
+      .navbar-toggler-icon {
+        color: white;
+      }
+      .navbar-brand {
+        color: white;
+        font-size: 22px;
+        margin-left: 20px;
+        font-weight: bold; /* Make the text bold */
+      }
+      
+      /* Style for the drawer */
+      /* Style for the drawer */
+      .drawer {
+        position: fixed;
+        top: 65px; /* Set the top position below the navbar */
+        left: -100%; /* Initially hidden */
+        width: 70%; /* Take up full width */
+        height: calc(100% - 65px); /* Calculate height based on viewport height minus navbar height */
+        background-color: #f8f9fa;
+        transition: left 0.3s ease;
+        padding: 0px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* Ensure it's on top of other elements */
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
+      
+
+      /* Drawer item style */
+      .drawer ul {
+        padding: 15px;
+        font-size: 30px;
+      }
+      .drawer ul li {
+        list-style: none;
+        margin-bottom: 10px;
+      }
+      .drawer ul li a {
+        text-decoration: none;
+        color: #333;
+        font-size: 20px; /* Increased font size */
+        padding-left: 0px; /* Add padding to the left of the link */
+      }
+      /* Drawer item style */
+      .drawer ul li a i {
+        margin-right: 10px; /* Add margin between the icon and the text */
+        font-size: 24px; /* Increase the font size of the icons */
+      }
+
+      .white-button {
+        color: white; /* Set text color to white */
+        background-color: white; /* Set background color to white */
+        {% comment %} border-color: black; /* Set border color to black */ {% endcomment %}
+      }
+      
+      
+
+      /* Additional content style */
+      .additional-content {
+        position: sticky; /* Fix position */
+        top: 0; /* Stick to the top */
+        background-color: rgb(41, 39, 122); /* Background color */
+        color: white; /* Text color */
+        padding: 20px; /* Padding to create space around content */
+        z-index: 1001; /* Ensure it's above the scrolling list */
+        width: 100%; /* Occupy full width */
+        text-align: center; /* Center align text */
+      }
+
+      .additional-content img.logo {
+        display: block;
+        margin: 0 auto 16px; /* Center align the image */
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <div class="">
+            <button class="navbar-toggler white-button" type="button" id="menuBtn">
+            <span class="navbar-toggler-icon"></span></button
+          ><a class="navbar-brand">Welcome-Shekhar</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menu Drawer -->
+    <div id="drawer" class="drawer">
+      <!-- Additional content -->
+      <div class="additional-content">
+        <img
+          src="{% static 'assets/img/vgold.jpg' %}"
+          alt="Your Logo"
+          class="logo"
+          style="height: 100px; width: auto; margin-bottom: 16px"
+        />
+        <p>Digital loan | Gold loan | Foundation</p>
+      </div>
+      <ul>
+        <li>
+          <a href="#"><i class="bi bi-house-door"></i> Home</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-person"></i> Profile</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-card-checklist"></i> Certificates</a>
+        </li>
+        <li>
+          <a href="#"
+            ><i class="bi bi-currency-dollar"></i> Gold Booking History</a
+          >
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-wallet2"></i> Gold Booking Deposit</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-people"></i> Membership</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-wallet"></i> eGoldWallet</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-credit-card"></i> Money Wallet</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-calendar-check"></i> Pay Installment</a>
+        </li>
+        <!-- Additional items -->
+        <li>
+          <a href="#"><i class="bi bi-bank"></i> Add Bank</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-building"></i> Channel Partner</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-star"></i> Review</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-exclamation-diamond"></i> Complaint</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-chat-left-dots"></i> Feedback</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-share"></i> Share</a>
+        </li>
+        <li>
+          <a href="#"><i class="bi bi-share"></i> Refer</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      // Function to open the drawer
+      document.getElementById("menuBtn").addEventListener("click", function () {
+        document.getElementById("drawer").style.left = "0";
+      });
+
+      // Function to close the drawer
+      function closeDrawer() {
+        document.getElementById("drawer").style.left = "-100%";
+      }
+
+      // Event listener to close the drawer when clicking outside of it
+      window.addEventListener("click", function (event) {
+        if (
+          !event.target.closest(".drawer") &&
+          !event.target.closest("#menuBtn")
+        ) {
+          closeDrawer();
+        }
+      });
+    </script>
+  </body>
+</html>

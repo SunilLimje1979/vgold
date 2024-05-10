@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Channel Partner</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Navbar style */
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+        }
+        
+        .navbar-toggler-icon {
+            color: white;
+        }
+        
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 20px;
+            color: white;
+        }
+
+        .fa-arrow-left {
+            color: white;
+        }
+
+        /* Search box style */
+        #searchContainer {
+          height: 120px;
+            background-color: rgb(41, 39, 122); /* Same color as navbar */
+            padding: 10px; /* Add padding */
+        }
+
+        #searchBox {
+            width: 100%;
+            padding: 10px;
+            border-radius: 15px;
+            border: 1px solid white; /* Set border to white */
+            background-color: rgb(41, 39, 122); /* Semi-transparent white */
+            color: white; /* Text color */
+        }
+        
+        #searchBox::placeholder {
+            color: white; /* Placeholder text color */
+        }
+
+        /* Custom card style */
+        .custom-card {
+          background-color: white; /* Light gray background */
+          padding: 5px; 
+          {% comment %} border: 1px solid black; {% endcomment %}
+          border-radius: 10px;
+          margin-top: 15px;
+          height: 80px; /* Example height */
+          width: 100%; /* Example width */
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Shadow style */ 
+      }
+      .increased-padding {
+        padding-top: 20px; /* Adjust the top padding as needed */
+    
+      }
+
+      .custom-card h4 {
+        font-size: 16px; /* Adjust the font size as needed */
+      }
+      /* Additional styling for list items */
+      #listContainer li {
+        border: 1px solid #f0ad4e; /* Yellow border */
+        background-color: rgb(255,186,42); /* Yellow background */
+        padding-bottom: 20px; /* Add padding */
+        padding-left:3px;
+        margin-bottom: 12px; /* Add margin bottom for spacing */
+        {% comment %} border-radius: 5px; /* Add border radius */ {% endcomment %}
+      }
+    </style>
+</head>
+<body>
+  <!-- Navbar with menu drawer icon -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+          <a href="{% url 'dashboard' %}">
+            <!-- Replace the existing toggle icon with Font Awesome icon -->
+            <i class="fa fa-arrow-left" aria-hidden="true"></i>
+          </a>
+        </button>
+        <a class="navbar-brand">Channel Partner</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Search box -->
+  <div id="searchContainer">
+    <input type="text" id="searchBox" placeholder="Search by Name, CRN No, Mobile No, Email" />
+ 
+ <!-- Rectangular card with 100% width -->
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <div class="custom-card">
+        <div class="row  mt-3"  >
+          <div class="col text-center border-end border-2">
+            <h4 style="font-size: 15px;"><span>100</span> <br> User Count </h4>
+          </div>
+          <div class="col text-center border-end border-2">
+            <h4 style="font-size: 15px;"><span>5000</span> <br> Commission </h4>
+          </div>
+          <div class="col text-center">
+            <h4 style="font-size: 15px;"><span>50</span> <br> Gold Booking</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- New container for the list -->
+<div class="container mt-3 increased-padding">
+  <div class="row">
+    <div class="col">
+   
+      <ul id="listContainer" class="list-unstyled" style="width: 100%; padding-top: 10px;">
+        <!-- List items will be added dynamically here -->
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS (optional, for Bootstrap features) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JS -->
+<script>
+  // Sample data (you can replace this with your actual data)
+  var data = [
+    { description: "Amol Deshmukh 50 gm" },
+    { description: "Sachin Bhurgat 10 gm" },
+    { description: "Sarang Aloni 0 gm" },
+    { description: "Amol Deshmukh 50 gm" },
+    { description: "Sachin Bhurgat 10 gm" },
+    { description: "Sarang Aloni 0 gm" }
+    // Add more data objects as needed
+  ];
+
+  // Function to populate the list with data
+  function populateList() {
+    var listContainer = document.getElementById("listContainer");
+
+    // Clear existing list items
+    listContainer.innerHTML = "";
+
+    // Loop through the data and create list items
+    data.forEach(function(item) {
+      var listItem = document.createElement("li");
+      listItem.innerHTML = item.description;
+      listContainer.appendChild(listItem);
+    });
+  }
+
+  // Call the function to populate the list when the page loads
+  populateList();
+</script>
+
+  <!-- Bootstrap JS (optional, for Bootstrap features) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+</body>
+</html>

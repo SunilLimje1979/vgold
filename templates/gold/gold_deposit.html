@@ -1,0 +1,192 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold Deposit</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome CSS -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Custom CSS -->
+  <style>
+    /* Navbar style */
+    .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px; /* Set the height to 400px */
+        color: white; /* Set text color to white */
+    }
+    .navbar-toggler-icon {
+        color: white;
+    }
+    .navbar-brand {
+        font-size: 20px;
+        margin-left: 20px;
+        color: white;
+        /* font-weight: bold; /* Make the text bold */
+    }
+
+    /* Custom styling for form */
+    .form-label {
+        display: block;
+        margin-bottom: 0px; /* Decrease the margin-bottom */
+        color: rgb(41, 39, 122) !important; /* Label color */
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    .form-control {
+      border: none;
+      border-bottom: 1px solid #ccc;
+      border-radius: 0;
+      box-shadow: none;
+      padding-left: 10px;
+      height: 30px; /* Set the height of the input boxes */
+  }
+
+    /* Remove hover and focus effects */
+    .form-control:hover,
+    .form-control:focus {
+        /* border-color: transparent !important; */
+        box-shadow: none !important;
+    }
+
+    /* Disable cursor on input */
+    .form-control[readonly] {
+        cursor: default;
+    }
+    #vgoldID {
+        text-align: center;
+        margin-top: 80px; /* Add some top margin for spacing */
+        /* font-size: 16px; /* Adjust font size as needed */
+        /* font-weight: bold; /* Make the text bold */
+        color: rgb(41, 39, 122); /* Set text color */
+    }
+    /* Update profile button */
+    #updateProfileBtn {
+        background-color: rgb(41, 39, 122);
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 80%; /* Set width to 80% */
+        margin: 20px auto; /* Center the button horizontally */
+        display: block; /* Ensure the button takes full width */
+    }
+
+    #updateProfileBtn:hover {
+        background-color: #29277a; /* Darker color on hover */
+    }
+    .center-image {
+        display: flex;
+        justify-content: center;
+      }
+
+      .custom-container {
+        margin-top: 60px !important; /* Override the margin-top */
+      }
+      .no-border-bottom {
+        border-bottom: none;
+    }
+    
+    {% comment %} .custom-container {
+        margin: 0 auto; /* Center the container horizontally */
+        padding-left: 40px; /* Add left padding */
+        padding-right: 40px; /* Add right padding */
+    } {% endcomment %}
+</style>
+
+</head>
+<body>
+  <!-- Navbar with menu drawer icon -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'gdeposit_history' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
+
+          </button>
+        <a class="navbar-brand">Gold Deposit</a>
+      </div>
+    </div>
+</nav>
+
+<div class="container mt-5 custom-container">
+  <div class="row">
+      <div class="col-md-6 offset-md-3">
+          <form>
+              <div class="mb-1">
+                  <label for="goldWeight" class="form-label">Gold Weight (gm)</label>
+                  <input type="text" class="form-control" id="goldWeight" placeholder="">
+              </div>
+              <div class="mb-1">
+                  <label for="depositCharges" class="form-label">Deposit Charges</label>
+                  <input type="text" class="form-control " id="depositCharges" placeholder="" readonly>
+              </div>
+
+              <div class="form-group form-element">
+                  <label for="tenure" class="form-label">Tenure</label>
+                  <select class="form-control no-border-bottom" id="tenure" name="tenure">
+                      <option value="12">12 Months</option>
+                      <option value="24">24 Months</option>
+                      <option value="36">36 Months</option>
+                      <option value="40">40 Months</option>
+                  </select>
+              </div>
+
+              <div class="mb-1">
+                  <label for="maturityWeight" class="form-label">Maturity Weight</label>
+                  <input type="text" class="form-control " id="maturityWeight" placeholder="" readonly>
+              </div>
+
+              <div class="form-group form-element">
+                  <label for="depositor" class="form-label">Willing to Deposit</label>
+                  <select class="form-control no-border-bottom" id="depositor" name="depositor">
+                      <option value="vighnaharta">Vighnaharta Gold Ltd</option>
+                      <option value="png">PNG Jewellers</option>
+                      <option value="ranka">Ranka Jewellers</option>
+                      <option value="hp">HP Jewellers</option>
+                  </select>
+              </div>
+
+              <div class="mb-1">
+                  <label for="purity" class="form-label">Purity</label>
+                  <input type="text" class="form-control" id="purity" placeholder="">
+              </div>
+
+              <div class="mb-1">
+                  <label for="remark" class="form-label">Remark</label>
+                  <input type="text" class="form-control" id="remark" placeholder="">
+              </div>
+
+              <button id="updateProfileBtn" type="button">Send Request</button>
+              <div class="center-image">
+                  <img
+                      src="{% static 'assets/img/bank_details.jpg' %}"
+                      alt="Your Logo"
+                      class="logo"
+                      style="height: 230px; width: 260px; margin-bottom: 10px"
+                  />
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+
+  <!-- Bootstrap JS (optional, for Bootstrap features) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+</body>
+</html>

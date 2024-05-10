@@ -1,0 +1,208 @@
+{% load i18n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay Installment</title>
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Font Awesome CSS -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    rel="stylesheet"
+  />
+  <!-- Custom CSS -->
+  <style>
+    /* Navbar style */
+    .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px; /* Set the height to 400px */
+        color: white; /* Set text color to white */
+    }
+    .navbar-toggler-icon {
+        color: white;
+    }
+    .navbar-brand {
+        font-size: 20px;
+        margin-left: 20px;
+        color: white;
+        /* font-weight: bold; /* Make the text bold */
+    }
+
+    /* Custom styling for form */
+    .form-label {
+        display: block;
+        margin-bottom: 0px; /* Decrease the margin-bottom */
+        color: rgb(41, 39, 122) !important; /* Label color */
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    .form-control {
+        border: none; /* Remove default border */
+        border-bottom: 1px solid #ccc; /* Add bottom border */
+        border-radius: 0; /* Remove border radius */
+        box-shadow: none; /* Remove box shadow */
+        padding-left: 10px;
+    }
+
+    /* Remove hover and focus effects */
+    .form-control:hover,
+    .form-control:focus {
+        /* border-color: transparent !important; */
+        box-shadow: none !important;
+    }
+
+    /* Disable cursor on input */
+    .form-control[readonly] {
+        cursor: default;
+    }
+    #vgoldID {
+        text-align: center;
+        margin-top: 80px; /* Add some top margin for spacing */
+        /* font-size: 16px; /* Adjust font size as needed */
+        /* font-weight: bold; /* Make the text bold */
+        color: rgb(41, 39, 122); /* Set text color */
+    }
+    /* Update profile button */
+    #updateProfileBtn {
+        background-color: rgb(41, 39, 122);
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 80%; /* Set width to 80% */
+        margin: 20px auto; /* Center the button horizontally */
+        display: block; /* Ensure the button takes full width */
+    }
+
+    #updateProfileBtn:hover {
+        background-color: #29277a; /* Darker color on hover */
+    }
+    .center-image {
+        display: flex;
+        justify-content: center;
+      }
+      .bold-text {
+        font-weight: bold;
+        color: rgb(41, 39, 122) !important; /* Label color */
+      }
+      .no-border-bottom {
+        border-bottom: none;
+    }
+
+    .form-check {
+      margin-left: 20px; /* Adjust the left margin as needed */
+  }
+  
+    {% comment %} .custom-container {
+        margin: 0 auto; /* Center the container horizontally */
+        padding-left: 40px; /* Add left padding */
+        padding-right: 40px; /* Add right padding */
+    } {% endcomment %}
+</style>
+
+</head>
+<body>
+  <!-- Navbar with menu drawer icon -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
+
+          </button>
+        <a class="navbar-brand">Pay Installment</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-3 custom-container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+       
+        <form>
+
+          <div class="form-group form-element">
+            <label for="tenure" class="form-label" >Gold Booking Id</label>
+            <select class="form-control no-border-bottom" id="tenure" name="tenure">
+                <!-- Add options for tenure dropdown here -->
+                <option value="12">Select Booking Id</option>
+                <option value="12">VG0012345</option>
+                <option value="12">VG0017375</option>
+                <option value="12">VG0018545</option>
+                <option value="12">VG0015245</option>
+            </select>
+          </div>
+
+        
+        <div class="form-group form-element">
+            <label for="paymentAmount" class="form-label">How much do you want to pay?</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentOptions" id="minimumAmount" value="minimumAmount">
+                <label class="form-check-label" for="minimumAmount">
+                    Minimum Amount
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentOptions" id="otherAmount" value="otherAmount">
+                <label class="form-check-label" for="otherAmount">
+                    Other Amount
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentOptions" id="moneyWallet" value="moneyWallet">
+                <label class="form-check-label" for="moneyWallet">
+                    Money Wallet
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="paymentOptions" id="goldWallet" value="goldWallet">
+                <label class="form-check-label" for="goldWallet">
+                    Gold Wallet
+                </label>
+            </div>
+        </div>
+        
+
+          <div class="form-group form-element">
+            {% comment %} <label for="depositor" class="form-label" >Please select Payement Option</label> {% endcomment %}
+            <select class="form-control  bold-text no-border-bottom" id="depositor" name="depositor">
+                <!-- Add options for depositors dropdown here -->
+                <option value="vighnaharta">-- Please select Payment Option --</option>
+                <option value="png">Cheque</option>
+                <option value="ranka">NEFT/RTGS</option>
+                <option value="hp">UPI Payment</option>
+            </select>
+          </div>
+
+        
+          <button id="updateProfileBtn" type="button">Pay Installment</button>
+          <div class="center-image">
+            <img
+              src="{% static 'assets/img/bank_details.jpg' %}"
+              alt="Your Logo"
+              class="logo"
+              style="height: 240px; width: 270px; margin-bottom: 10px"
+            />
+          </div>
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Bootstrap JS (optional, for Bootstrap features) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+</body>
+</html>
