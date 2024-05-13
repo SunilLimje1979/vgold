@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-s4=ldq)4^9(1l4p2ve(qyfto36h2ogt$ekevmpzzuvz4_(#45e
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','192.168.1.9','192.168.40.44']
+ALLOWED_HOSTS = ['*','192.168.1.9','192.168.186.44']
 
 
 # Application definition
@@ -73,7 +73,7 @@ WSGI_APPLICATION = 'vgold.wsgi.application'
 
 STATIC_URL = "/vgold/static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "static"
+    BASE_DIR / "vgold/static"
     # BASE_DIR / "vgold/static"
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
