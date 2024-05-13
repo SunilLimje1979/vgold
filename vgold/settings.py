@@ -73,7 +73,8 @@ WSGI_APPLICATION = 'vgold.wsgi.application'
 
 STATIC_URL = "/vgold/static/"
 STATICFILES_DIRS = [
-    BASE_DIR / "vgold/static"
+    # BASE_DIR / "vgold/static"
+    BASE_DIR / "static"
     # BASE_DIR / "vgold/static"
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
