@@ -1,0 +1,78 @@
+{% load i18n %} {% load static %}
+{% load pwa %} 
+{% progressive_web_app_meta %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progress Bar with Image</title>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .progress-bar-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        margin-top: 20px;
+    }
+    .progress-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        background-color: gold;
+    }
+    .logo-container {
+        margin-top:10px;
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+    }
+    .logo-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 90%;
+        background-color: rgba(255, 202, 89, 0.3);
+        border-radius: 75px 0px 0px 75px;
+        padding-bottom: 20px;
+    }
+    .logo {
+        height: 140px;
+        width: auto;
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="logo-container">
+        <div style="position: relative;">
+            <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" id="logoImage">
+            <div class="logo-overlay" id="logoOverlay"></div>
+        </div>
+    </div>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+</div>
+<script>
+  const progressPercentage = 95;
+  const progressBar = document.getElementById('progressBar');
+  progressBar.style.width = progressPercentage + '%';
+  
+  const logoOverlay = document.getElementById('logoOverlay');
+  const logoImage = document.getElementById('logoImage');
+  const overlayWidth = (logoImage.offsetWidth * progressPercentage) / 100;
+  logoOverlay.style.width = overlayWidth + 'px';
+
+
+  const borderRadius = progressPercentage > 85 ? 'border-radius: 75px 75px;' : 'border-radius: 75px 0px 0px 75px;';
+  logoOverlay.setAttribute('style', `width: ${overlayWidth}px; ${borderRadius}`);
+</script>
+</body>
+</html>

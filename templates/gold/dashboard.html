@@ -1,5 +1,6 @@
 {% load i18n %} {% load static %}
-
+{% load pwa %} 
+{% progressive_web_app_meta %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -122,7 +123,7 @@
               display: flex;
               justify-content: space-between;
               align-items: center;
-              padding-top: 15px;
+              padding-top: 10px;
               padding-left: 40px; /* Decrease the gap */
               padding-right: 40px; /* Decrease the gap */
             }
@@ -176,7 +177,7 @@
               justify-content: center;
             }
             .container {
-              background-color:rgb(38,33,97);
+              background-color:rgb(11,20,58);
             }
 
             .carousel-item {
@@ -216,7 +217,9 @@
             id="menuBtn"
           >
             <span class="navbar-toggler-icon"></span></button
-          ><a class="navbar-brand">Welcome - Shekhar</a>
+          >
+          {% comment %} <a class="navbar-brand">Welcome - Shekhar</a> {% endcomment %}
+          <a class="navbar-brand">Welcome - {{ first_name }}</a>
         </div>
       </div>
     </nav>
@@ -226,7 +229,8 @@
       <!-- Additional content -->
       <div class="additional-content">
         <img
-          src="{% static 'assets/img/vgold.jpg' %}"
+          {% comment %} src="{% static 'assets/img/vgold.jpg' %}" {% endcomment %}
+          src="https://vgold.co.in/wp-content/uploads/2024/03/Vgold-Logo.png"
           alt="Your Logo"
           class="logo"
           style="height: 60px; width: auto; margin-bottom: 10px"
@@ -296,8 +300,9 @@
           >
         </li>
         <li>
-          <a href="#"><i class="bi bi-share"></i> Share</a>
-        </li>
+          <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share</a>
+      </li>
+      
         <li>
           <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
         </li>
@@ -313,7 +318,7 @@
           <img src="{% static 'assets/img/ribbon.png' %}" class="d-block w-100" alt="Slide 1"/>
           <div class="carousel-content">
             <h4 id="carousel-heading">Total Gain</h4>
-            <button id="carousel-button" onclick="navigate()">₹ 4789653/-</button>
+            <button id="carousel-button" onclick="navigate()">₹ {{ total_gain }}  /-</button>
           </div>
         </div>
       </div>
@@ -323,57 +328,49 @@
       <div class="center-image">
         <a href="{% url 'gold_booking' %}">
           <img
-            src="{% static 'assets/img/bank_details.jpg' %}"
+            src="https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png"
             alt="Your Logo"
             class="logo"
-            style="height: 270px; width: 100%; margin-bottom: 0px"
+            style=" width: 100%; margin-bottom: 0px"
           />
         </a>
       </div>
 
       <div class="button" style="text-align: center; padding-top: 15px; padding-bottom: 15px;">
         <div class="row">
-          <div class="col" style="text-align: right;">
-            <a href="{% url 'gold_booking' %}" style="text-decoration: none;">
-              <button class="btn btn-primary" style="background-color: rgb(255, 180, 32); color: white; padding: 5px 0; width: 170px;">
-                <i class="fas fa-book" style="color: black; font-weight: bold; font-size: 20px;"></i> <span style="color: black; font-weight: bold; font-size: 20px;"> Book now</span>
-              </button>
-            </a>
-          </div>
-          
-          <div class="col" style="text-align: left;">
-            <button class="btn btn-secondary" style="background-color: rgb(255, 180, 32); color: white; padding: 5px 0; width: 170px;">
-              <i class="fas fa-share" style="color: black; font-weight: bold; font-size: 20px;"></i> <span style="color: black; font-weight: bold; font-size: 20px;"> Share</span>
-            </button>
-          </div>
-          
+            <div class="col" style="text-align: right;">
+                <a href="{% url 'gold_booking' %}" style="text-decoration: none;">
+                    <img src="{% static 'assets/img/booknow.png' %}" alt="Book Now" style="width: 170px; height: auto;">
+                </a>
+            </div>
+    
+            <div class="col" style="text-align: left;">
+                <img src="{% static 'assets/img/sharerate.png' %}" alt="Share" style="width: 170px; height: auto;" onclick="shareFunction()">
+            </div>
         </div>
-      </div>
+    </div>
 
-      <div class="card-with-radius">
-
+    <div class="card-with-radius">
         <div class="logo-container">
-          <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
-            <div>
-              <i class="fas fa-wallet logo"></i>
-              <p>eGold Wallet</p>
-            </div>
-        </a>
-
-          <a href="{% url 'add_gold' %}" style="color: black; text-decoration: none;">
-            <div>
-                <i class="fas fa-coins logo"></i>
-                <p>Add Gold</p>
-            </div>
-        </a>
-
-        <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
-          <div>
-            <i class="fas fa-shopping-cart logo"></i>
-            <p>Sell</p>
-          </div>
-      </a>
-      
+              <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
+                <div>
+                  <img src="{% static 'assets/img/goldwallet.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
+                  <p>eGold Wallet</p>
+                </div>
+            </a>
+              <a href="{% url 'add_gold' %}" style="color: black; text-decoration: none;">
+                <div>
+                  <img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+                    <p>Add Gold</p>
+                </div>
+            </a>
+            <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
+              <div >
+                  <img src="{% static 'assets/img/goldsell.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+                  <p>Sell</p>
+              </div>
+          </a>
+          
         </div>
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <!-- Adjust margin top and bottom -->
@@ -381,63 +378,54 @@
         <div class="logo-container">
           <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;">
             <div>
-              <i class="fas fa-wallet logo"></i>
+              <img src="{% static 'assets/img/moneywallet.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
               <p>Money Wallet</p>
             </div>
+          </a>
+
+            <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;">
+              <div>
+                <img src="{% static 'assets/img/addmoney.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
+                <p>Add Money</p>
+              </div>
+          </a>
+
+          <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;">
+            <div>
+              <img src="{% static 'assets/img/withdrawmoney.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+              <p>Withdrawal</p>
+            </div>
         </a>
-
-        <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;">
-          <div>
-            <i class="fas fa-plus-circle logo"></i>
-            <p>Add Money</p>
-          </div>
-      </a>
-
-      <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;">
-        <div>
-          <i class="fas fa-money-bill-alt logo"></i>
-          <p>Withdrawal</p>
-        </div>
-    </a>
     </div>
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
 
         <div class="logo-container-service">
-
-
           <div>
             <a href="{% url 'booking_details' %}" style="color: black; text-decoration: none;">
-           <center> <i class="fas fa-clipboard-list logo"></i></center>
+           <center><img src="{% static 'assets/img/goldbooking.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
             <p>My Booking</p></a>
           </div>
 
-          
-
           <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
-            <center>   <i class="fas fa-credit-card logo"></i></center>
+            <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
             <p>Pay Installment</p></a>
           </div>
 
-
           <div><a href="{% url 'gold_deposit' %}" style="color: black; text-decoration: none;">
-            <center> <i class="fas fa-coins logo"></i></center>
+            <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
             <p>Deposit Gold</p></a>
           </div>
 
-
           <div><a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;">
-            <center>   <i class="fas fa-tasks logo"></i></a></center>
+            <center><img src="{% static 'assets/img/plan1.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
             <p>Plan</p>
           </div>
 
-
           <div><a href="{% url 'loan' %}" style="color: black; text-decoration: none;">
-            <center>  <i class="fas fa-hand-holding-usd logo"></i></center>
+            <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 36px; height: 36px;margin-top: 8px;"></i></center>
             <p>Loan</p></a>
           </div>
-
-          
         </div>
         <div class="center-image"><a href="{% url 'our_vendors' %}">
           <img
@@ -485,8 +473,8 @@
     </script>
 
     <script>
-      const headings = ["Total Gain", "Connect with us ", "You can apply for loan up to", "75th Independence Celebration"];
-      const buttons = ["₹ 4789653/-", "Be a Partner", "₹ 42552/-", "Appreciation Certificate"];
+      const headings = [ "Connect with us ", "You can apply for loan up to", "75th Independence Celebration"];
+      const buttons = ["Be a Partner","₹ {{ loan_amount }} /- ", "Appreciation Certificate"];
       let currentIndex = 0;
     
       function changeContent() {
@@ -517,6 +505,23 @@
       // Set interval to change content every 3 seconds
       setInterval(changeContent, 3000);
     </script>
+    <script>
+      function shareFunction() {
+          if (navigator.share) {
+              navigator.share({
+                  title: 'Check out V Gold!',
+                  text: 'I found this amazing service. Check it out!',
+                  url: window.location.href
+              }).then(() => {
+                  console.log('Thanks for sharing!');
+              }).catch(err => {
+                  console.error('Error sharing:', err);
+              });
+          } else {
+              alert('Web Share API is not supported in your browser.');
+          }
+      }
+      </script>
 
   </body>
 </html>

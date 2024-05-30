@@ -1,4 +1,7 @@
 {% load i18n %} {% load static %}
+{% load pwa %} 
+{% progressive_web_app_meta %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -125,26 +128,27 @@
     <div class="row">
       <div class="col-md-6 offset-md-3">
        
-        <form>
+        <form method="post">
+          {% csrf_token %}
           <div class="mb-1">
-            <label for="name" class="form-label">Booking Value</label>
-            <input type="text" class="form-control" id="name" placeholder="Shekhar Pawar" readonly>
+            <label for="booking_value" class="form-label">Booking Value</label>
+            <input type="text" class="form-control" id="booking_value" value="{{ api_response.Booking_value }}" readonly>
           </div>
           <div class="mb-1">
-            <label for="crn" class="form-label">Gold Rate/gm</label>
-            <input type="text" class="form-control" id="crn" placeholder="41" readonly>
+            <label for="gold_rate" class="form-label">Gold Rate/gm</label>
+            <input type="text" class="form-control" id="gold_rate" value="{{ api_response.Gold_rate }}" readonly>
           </div>
           <div class="mb-1">
-            <label for="pan" class="form-label">Down payment</label>
-            <input type="text" class="form-control" id="pan" placeholder="XXXXXX567" readonly>
+            <label for="down_payment" class="form-label">Down payment</label>
+            <input type="text" class="form-control" id="down_payment" value="{{ api_response.Down_payment }}" readonly>
           </div>
           <div class="mb-1">
-            <label for="email" class="form-label">Discounted Booking charges</label>
-            <input type="email" class="form-control" id="email" placeholder="Spawar@gmail.com" readonly>
+            <label for="booking_charges_discount" class="form-label">Discounted Booking charges</label>
+            <input type="text" class="form-control" id="booking_charges_discount" value="{{ api_response.Booking_charges_discount }}" readonly>
           </div>
           <div class="mb-1">
-            <label for="phone" class="form-label">Monthly Installment</label>
-            <input type="tel" class="form-control" id="phone" placeholder="9876543212" readonly>
+            <label for="monthly_installment" class="form-label">Monthly Installment</label>
+            <input type="text" class="form-control" id="monthly_installment" value="{{ api_response.Monthly }}" readonly>
           </div>
           <div class="form-group form-element">
             {% comment %} <label for="dropdown2" class="form-label" >Please Select Payment Option</label> {% endcomment %}
@@ -152,15 +156,25 @@
                 <!-- Add options for dropdown 2 here -->
                 <option value="">--  Please Select Payment Option  --</option>
                 <option value="cheque">Cheque</option>
-                <option value="nfts">NFTS</option>
-                <option value="gold_wallet">Gold Wallet</option>
+                <option value="neft">NEFT</option>
+                {% comment %} <option value="gold_wallet">Gold Wallet</option>
                 <option value="money_wallet">Money Wallet</option>
-                <option value="upi_payment">UPI Payment</option>
+                <option value="upi_payment">UPI Payment</option> {% endcomment %}
             </select>
             
           </div>
 
-          <button id="updateProfileBtn" type="button">Pay</button>
+          <div id="bankDetails" style="display: none;">
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="bankDetailsInput" name="bankDetails" placeholder="Enter bank details">
+                </div>
+                <div class="mb-3" id="additionalField">
+                    <!-- Additional field for Cheque No or Transaction ID will be appended here -->
+                </div>
+          </div>
+
+          <button id="updateProfileBtn" type="submit">Pay</button>
+          
           <div class="center-image">
             <img
               src="{% static 'assets/img/bank_details.jpg' %}"
@@ -179,5 +193,23 @@
   <!-- Bootstrap JS (optional, for Bootstrap features) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
+  <script>
+    document.getElementById("dropdown2").addEventListener("change", function() {
+      var paymentMethod = this.value;
+      var bankDetailsDiv = document.getElementById("bankDetails");
+      var additionalFieldDiv = document.getElementById("additionalField");
+
+      if (paymentMethod === "cheque") {
+        bankDetailsDiv.style.display = "block";
+        additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="chequeNoInput" name="chequeNo" placeholder="Enter cheque no">';
+      } else if (paymentMethod === "neft") {
+        bankDetailsDiv.style.display = "block";
+        additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="transactionIdInput" name="transactionId" placeholder="Enter transaction ID">';
+      } else {
+        bankDetailsDiv.style.display = "none";
+        additionalFieldDiv.innerHTML = '';
+      }
+    });
+  </script>
 </body>
 </html>

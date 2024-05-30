@@ -1,4 +1,7 @@
 {% load i18n %} {% load static %}
+{% load pwa %} 
+{% progressive_web_app_meta %}
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -158,7 +161,7 @@
           <button id="updateProfileBtn" type="button">Add Money</button>
           <div class="center-image">
             <img
-              src="{% static 'assets/img/bank_details.jpg' %}"
+              src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
               alt="Your Logo"
               class="logo"
               style="height: 240px; width: 270px; margin-bottom: 10px"

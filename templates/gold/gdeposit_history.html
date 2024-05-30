@@ -1,4 +1,6 @@
 {% load i18n %} {% load static %}
+{% load pwa %} 
+{% progressive_web_app_meta %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,7 +118,9 @@
     <div class="card-header">
         <span>{{ data.number }}</span>
         <span class="status">{{ data.status }}</span>
-        <a href="#" class="btn btn-primary text-white"><i class="fas fa-file-pdf text-white"></i></a>
+        <a href="#" class="btn">
+            <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
+        </a>
     </div>
     <hr class="horizontal-line">
     <div class="row">

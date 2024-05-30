@@ -59,6 +59,9 @@ urlpatterns = [
     path('feedback/', views.Feedback, name='feedback'),
     
     path('refer/', views.Refer, name='refer'),
+    
+    
+    path('booking_receipt/', views.BookingReceipt, name='booking_receipt'),
 
     
 ]
