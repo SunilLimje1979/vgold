@@ -75,8 +75,8 @@ WSGI_APPLICATION = 'vgold.wsgi.application'
 STATIC_URL = "/vgold/static/"
 STATICFILES_DIRS = [
     # BASE_DIR / "vgold/static"
-    BASE_DIR / "static"
-    # BASE_DIR / "vgold/static"
+     #  BASE_DIR / "static"
+    BASE_DIR / "vgold/static"
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -161,6 +161,6 @@ PWA_APP_SPLASH_SCREEN = [
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
-# PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'vgold/static/assets/js', 'serviceworker.js')
-PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/assets/js', 'serviceworker.js')
+PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'vgold/static/assets/js', 'serviceworker.js')
+#PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/assets/js', 'serviceworker.js')
 
