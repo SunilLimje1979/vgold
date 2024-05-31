@@ -296,7 +296,7 @@ def Gbooking_history(request):
         booking['account_status'] = booking.get('account_status', "0")  # Default to "0" for closed
         booking['today_gain'] = booking.get('todays_gain', "0")
         booking['paid_amount'] = booking.get('total_paid_amount1', "0")
-        booking['emi_date'] = booking.get('emi_date', "N/A")  # Update with appropriate key if exists in API response
+        booking['monthly_installment'] = booking.get('monthly_installment', "N/A")  # Update with appropriate key if exists in API response
         booking['booking_date'] = booking.get('added_date', "N/A")
         booking['weight'] = booking.get('gold', "0 gm")
         booking['rate'] = booking.get('rate', "0")
