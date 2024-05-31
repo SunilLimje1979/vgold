@@ -1,8 +1,6 @@
 {% load i18n %} {% load static %}
 {% load pwa %} 
 {% progressive_web_app_meta %}
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +13,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <style>
-        /* Navbar style */
         .navbar {
             background-color: rgb(41, 39, 122);
             height: 55px;
@@ -32,7 +29,6 @@
             color: white;
         }
 
-        /* Style for the icon */
         .fa-arrow-left {
             color: white;
         }
@@ -44,10 +40,9 @@
             width: 100%;
             padding: 15px;
             text-align: center;
-            z-index: 999; /* Ensure button appears above other content */
+            z-index: 999;
         }
 
-        /* Button style */
         #submitButton {
             width: 90%;
             color: white;
@@ -63,141 +58,136 @@
             background-color: #29277a;
         }
 
-        /* Custom card style */
         .custom-card {
             width: 100%;
             height: 300px;
-            background-color: #f8f9fa; /* Example background color */
+            background-color: #f8f9fa;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             margin-top: 20px;
-            padding: 20px;
+            padding: 15px;
         }
 
-        /* Card header style */
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .status {
-          color: green; /* or any color indicating active status */
-          margin-right: 00px; /* Adjust spacing between status and PDF icon */
-      }
-      
 
-        /* Horizontal line style */
+        .status {
+            margin-right: 0;
+        }
+
+        .status-active {
+            color: green;
+        }
+
+        .status-closed {
+            color: red;
+        }
+
         .horizontal-line {
             border-top: 1px solid black;
             margin-top: 5px;
             margin-bottom: 5px;
         }
 
-        /* Custom font size for p tags */
         .custom-p {
-            font-size: 12px;
-            margin-bottom: 1px; /* Adjust spacing between paragraphs */
+            font-size: 11px;
+            margin-bottom: 1px;
         }
     </style>
 </head>
 <body>
-  <!-- Navbar with menu drawer icon -->
-  <nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container-fluid">
-      <div class="">
-        <button class="navbar-toggler" type="button" id="menuBtn">
-          <a href="{% url 'dashboard' %}">
-            <!-- Replace the existing toggle icon with Font Awesome icon -->
-            <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
-        </button>
-        <a class="navbar-brand">Gold Booking History</a>
-      </div>
-    </div>
-  </nav>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <div class="">
+                <button class="navbar-toggler" type="button" id="menuBtn">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+                </button>
+                <a class="navbar-brand">Gold Booking History</a>
+            </div>
+        </div>
+    </nav>
 
-  {% for data in bookings %}
-<div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
-    <div class="card-header">
-        <span>{{ data.number }}</span>
-        <span class="status">{{ data.status }}</span>
-        <a href="#" class="btn pdf-btn" data-number="{{ data.number }}">
-            <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
+    {% for data in bookings %}
+    <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
+        <div class="card-header">
+            <span>{{ data.number }}</span>
+            <span class="status {% if data.account_status == '1' %}status-active{% else %}status-closed{% endif %}">
+                {% if data.account_status == '1' %}
+                    Active
+                {% else %}
+                    Closed
+                {% endif %}
+            </span>
+            <a href="#" class="btn pdf-btn" data-number="{{ data.number }}">
+                <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
+            </a>
+        </div>
+        <hr class="horizontal-line">
+        <div class="row">
+            <div class="col">
+                <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" style="height: 140px; width: auto; margin-bottom: 10px" /><br>
+                <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
+                <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
+                <p class="custom-p">EMI Date: {{ data.emi_date }}</p>
+            </div>
+            <div class="col">
+                <p class="custom-p">Booking Date: {{ data.booking_date }}</p>
+                <p class="custom-p">Weight: {{ data.weight }} gm</p>
+                <p class="custom-p">Rate: ₹{{ data.rate }}</p>
+                <p class="custom-p">Value: ₹{{ data.value }}</p>
+                <p class="custom-p">Tenure: {{ data.tenure }}</p><br>
+                <p class="custom-p">Booking Amount: ₹{{ data.booking_amount }}</p>
+                <p class="custom-p">Booking Charge: ₹{{ data.booking_charge }}</p>
+                <p class="custom-p">Balance Amt: ₹{{ data.balance_amount }}</p>
+                <p class="custom-p">Closing Date: {{ data.closing_date }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div id="submitButtonContainer">
+        <a href="{% url 'gold_booking' %}">
+            <button id="submitButton">BOOK GOLD</button>
         </a>
     </div>
-    <hr class="horizontal-line">
-    <div class="row">
-        <div class="col">
-            <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" style="height: 140px; width: auto; margin-bottom: 10px" /><br>
-            <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
-            <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
-            <p class="custom-p">EMI Date: {{ data.emi_date }}</p>
-        </div>
-        <div class="col">
-            <p class="custom-p">Booking Date: {{ data.booking_date }}</p>
-            <p class="custom-p">Weight: {{ data.weight }} gm</p>
-            <p class="custom-p">Rate: ₹{{ data.rate }}</p>
-            <p class="custom-p">Value: ₹{{ data.value }}</p>
-            <p class="custom-p">Tenure: {{ data.tenure }}</p><br><br>
-            <p class="custom-p">Booking Amount: ₹{{ data.booking_amount }}</p>
-            <p class="custom-p">Booking Charge: ₹{{ data.booking_charge }}</p>
-            <p class="custom-p">Balance Amt: ₹{{ data.balance_amount }}</p>
-            <p class="custom-p">Closing Date: {{ data.closing_date }}</p>
-        </div>
-    </div>
-</div>
-{% endfor %}
 
-  <!-- Button -->
-  <div id="submitButtonContainer">
-    <a href="{% url 'gold_booking' %}">
-      <button id="submitButton">BOOK GOLD</button>
-    </a>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-  <!-- Bootstrap JS (optional, for Bootstrap features) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const pdfButtons = document.querySelectorAll('.pdf-btn');
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+            pdfButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const number = this.getAttribute('data-number');
 
-<!-- Custom JS -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Select all elements with the class 'pdf-btn'
-        const pdfButtons = document.querySelectorAll('.pdf-btn');
-
-        // Add click event listener to each button
-        pdfButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();  // Prevent the default anchor click behavior
-                const number = this.getAttribute('data-number');
-
-                // Send the number to the Django view using AJAX
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "booking_receipt" %}',
-                    data: {
-                        'number': number,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Add the CSRF token
-                    },
-                    success: function(response) {
-                        if (response && response.link) {
-                            // Create a temporary anchor element
-                            console.log(response.link);
-                            window.open(response.link);
-                        } else {
-                            console.error('Error: Link not found in response');
+                    $.ajax({
+                        type: 'POST',
+                        url: '{% url "booking_receipt" %}',
+                        data: {
+                            'number': number,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            if (response && response.link) {
+                                window.open(response.link);
+                            } else {
+                                console.error('Error: Link not found in response');
+                            }
+                        },
+                        error: function(response) {
+                            console.log('Error:', response);
                         }
-                    },
-                    error: function(response) {
-                        console.log('Error:', response);
-                    }
+                    });
                 });
             });
         });
-    });
-</script>
-
-
-
+    </script>
 </body>
 </html>

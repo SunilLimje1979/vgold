@@ -272,7 +272,7 @@ def Gbooking_history(request):
     if not user_id:
         return HttpResponse("User ID not found in session data.")
     
-    payload = {'user_id': user_id}  # Hardcoded user_id
+    payload = {'user_id': user_id}
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
@@ -290,44 +290,25 @@ def Gbooking_history(request):
         print(f"Failed to connect to the API: {str(e)}")
         bookings = []
 
-    # Dummy data for missing fields
-    dummy_data = {
-        "number": "VG124356",
-        "status": "Active",
-        "logo_url": "{% static 'assets/img/vgold.jpg' %}",
-        "today_gain": "125",
-        "paid_amount": "13000",
-        "emi_date": "25-02-2024",
-        "booking_date": "25-02-2024",
-        "weight": "20.00 gm",
-        "rate": "123654",
-        "value": "13000",
-        "tenure": "60 Month",
-        "booking_amount": "2000.00",
-        "booking_charge": "125",
-        "balance_amount": "13000",
-        "closing_date": "25-02-2024"
-    }
-
-    # Ensure all fields are populated
+    # Ensure all fields are populated with a default value if missing
     for booking in bookings:
-        booking['number'] = booking.get('gold_booking_id', dummy_data['number'])
-        booking['status'] = "Active"  # Hardcoded as it wasn't in the API response
-        booking['logo_url'] = dummy_data['logo_url']
-        booking['today_gain'] = booking.get('todays_gain', dummy_data['today_gain'])
-        booking['paid_amount'] = booking.get('total_paid_amount1', dummy_data['paid_amount'])
-        booking['emi_date'] = dummy_data['emi_date']  # Hardcoded as it wasn't in the API response
-        booking['booking_date'] = booking.get('added_date', dummy_data['booking_date'])
-        booking['weight'] = booking.get('gold', dummy_data['weight'])
-        booking['rate'] = booking.get('rate', dummy_data['rate'])
-        booking['value'] = booking.get('booking_amount', dummy_data['value'])
-        booking['tenure'] = f"{booking.get('tennure', '60')} Month"
-        booking['booking_amount'] = booking.get('down_payment', dummy_data['booking_amount'])
-        booking['booking_charge'] = booking.get('booking_charge', dummy_data['booking_charge'])
-        booking['balance_amount'] = booking.get('total_balance_amount', dummy_data['balance_amount'])
-        booking['closing_date'] = booking.get('closing_date', dummy_data['closing_date'])
+        booking['number'] = booking.get('gold_booking_id', "N/A")
+        booking['account_status'] = booking.get('account_status', "0")  # Default to "0" for closed
+        booking['today_gain'] = booking.get('todays_gain', "0")
+        booking['paid_amount'] = booking.get('total_paid_amount1', "0")
+        booking['emi_date'] = booking.get('emi_date', "N/A")  # Update with appropriate key if exists in API response
+        booking['booking_date'] = booking.get('added_date', "N/A")
+        booking['weight'] = booking.get('gold', "0 gm")
+        booking['rate'] = booking.get('rate', "0")
+        booking['value'] = booking.get('booking_amount', "0")
+        booking['tenure'] = f"{booking.get('tennure', '0')} Month"
+        booking['booking_amount'] = booking.get('down_payment', "0")
+        booking['booking_charge'] = booking.get('booking_charge', "0")
+        booking['balance_amount'] = booking.get('total_balance_amount', "0")
+        booking['closing_date'] = booking.get('closing_date', "N/A")
 
     return render(request, 'gold/gbooking_history.html', {'bookings': bookings})
+
 
 
 def BookingReceipt(request):
