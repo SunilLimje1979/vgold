@@ -101,6 +101,8 @@
                             Request OTP
                         </button>
                     </div>
+
+                   
                     {% if messages %}
                     <div class="row justify-content-center mt-3">
                         {% for message in messages %}
@@ -122,6 +124,40 @@
         </div>
     </div>
     <script>
+        // Assuming 'appversion' is provided by a templating engine and correctly injected into the script
+        const serverAppVersion = '{{serverappversion}}';
+    
+        // Log the appversion to the console
+        console.log('Server App Version:', serverAppVersion);
+    
+        // Retrieve the stored app version from local storage
+        const storedAppVersion = localStorage.getItem('serverAppVersion');
+    
+        // Assuming 'clientAppVersion' is provided directly within the script
+        const clientAppVersion = '{{clientappversion}}';
+    
+        // Compare the stored version (client) and server app versions
+        if (!storedAppVersion || storedAppVersion < serverAppVersion) {
+            // Clear caches if necessary
+            if (caches && caches.keys) {
+                caches.keys().then(function(names) {
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+            // Update the stored app version to the new server app version
+            localStorage.setItem('serverAppVersion', serverAppVersion);
+            // Hard refresh the page to load the new version
+            window.location.reload();
+        } else {
+            // Log if no update is necessary
+            console.log('Client app version is up to date.');
+        }
+    </script>
+    
+    <script>
+
         function closeAlert(alert) {
             alert.classList.add("fade");
             setTimeout(function () {
