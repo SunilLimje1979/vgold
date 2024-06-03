@@ -75,7 +75,7 @@ WSGI_APPLICATION = 'vgold.wsgi.application'
 STATIC_URL = "/vgold/static/"
 STATICFILES_DIRS = [
     # BASE_DIR / "vgold/static"
-     #  BASE_DIR / "static"
+    # BASE_DIR / "static"
     BASE_DIR / "vgold/static"
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -133,34 +133,34 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-PWA_APP_NAME = "vgold"
-PWA_APP_DESCRIPTION = "vgold Web App"
-# PWA_APP_THEME_COLOR = "#ffaa00"
-PWA_APP_THEME_COLOR = "#29277A"
-# PWA_APP_BACKGROUND_COLOR = "#000000"
-PWA_APP_BACKGROUND_COLOR = "#FFFFFF"
-PWA_APP_DISPLAY = 'standalone'
-PWA_APP_SCOPE = '/'
-PWA_APP_ORIENTATION = 'portrait'
-PWA_APP_START_URL = '/vgold/login/'
-PWA_APP_ICONS = [
-    {
-        'src': '/vgold/static/assets/img/vgoldlogo.png',
-        'sizes': '512x512'
-    }
-]
-PWA_APP_ICONS_APPLE = [
-    {
-        'src': '/vgold/static/assets/img/vgoldlogo.png',
-        'sizes': '512x512'
-    }
-]
-PWA_APP_SPLASH_SCREEN = [
-    {
-        'src': 'vgold/static/assets/img/vgoldlogo.png',
-        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
-    }
-]
+# PWA_APP_NAME = "vgold"
+# PWA_APP_DESCRIPTION = "vgold Web App"
+# # PWA_APP_THEME_COLOR = "#ffaa00"
+# PWA_APP_THEME_COLOR = "#29277A"
+# # PWA_APP_BACKGROUND_COLOR = "#000000"
+# PWA_APP_BACKGROUND_COLOR = "#FFFFFF"
+# PWA_APP_DISPLAY = 'standalone'
+# PWA_APP_SCOPE = '/'
+# PWA_APP_ORIENTATION = 'portrait'
+# PWA_APP_START_URL = '/vgold/login/'
+# PWA_APP_ICONS = [
+#     {
+#         'src': '/vgold/static/assets/img/vgoldlogo.png',
+#         'sizes': '512x512'
+#     }
+# ]
+# PWA_APP_ICONS_APPLE = [
+#     {
+#         'src': '/vgold/static/assets/img/vgoldlogo.png',
+#         'sizes': '512x512'
+#     }
+# ]
+# PWA_APP_SPLASH_SCREEN = [
+#     {
+#         'src': 'vgold/static/assets/img/vgoldlogo.png',
+#         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+#     }
+# ]
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'vgold/static/assets/js', 'serviceworker.js')
 #PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/assets/js', 'serviceworker.js')
 

@@ -1,5 +1,6 @@
 {% load pwa %} 
-{% progressive_web_app_meta %}
+{% load i18n %} {% load static %}
+{% comment %} {% progressive_web_app_meta %} {% endcomment %}
 
 
 <!DOCTYPE html>
@@ -7,6 +8,7 @@
 <head>
     <!-- Meta tags -->
     <meta charset="UTF-8">
+    <link rel="manifest" href="{% static "assets/manifest.json" %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Money Wallet</title>
     <!-- Bootstrap CSS -->
