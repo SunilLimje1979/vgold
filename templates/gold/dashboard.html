@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="{% static "assets/manifest.json" %}">
-    <title>Menu Drawer Example</title>
+    <title>V-Gold</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
@@ -292,16 +292,16 @@
         </li>
         <li>
           <a href="{% url 'complaint' %}"
-            ><i class="bi bi-exclamation-diamond"></i> Complaint</a
+            ><i class="bi bi-exclamation-diamond"></i> Complaint / Feedback</a
           >
         </li>
-        <li>
+        {% comment %} <li>
           <a href="{% url 'feedback' %}"
             ><i class="bi bi-chat-left-dots"></i> Feedback</a
           >
-        </li>
+        </li> {% endcomment %}
         <li>
-          <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share</a>
+          <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share V-Gold App</a>
       </li>
       
         <li>
@@ -346,7 +346,7 @@
             </div>
     
             <div class="col" style="text-align: left;">
-                <img src="{% static 'assets/img/sharerate.png' %}" alt="Share" style="width: 135px; height: auto;" onclick="shareFunction()">
+                <img src="{% static 'assets/img/sharerate.png' %}" alt="Share" style="width: 135px; height: auto;" onclick="RateshareFunction()">
             </div>
         </div>
     </div>
@@ -403,7 +403,7 @@
 
         <div class="logo-container-service">
           <div>
-            <a href="{% url 'booking_details' %}" style="color: black; text-decoration: none;">
+            <a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">
            <center><img src="{% static 'assets/img/goldbooking.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
             <p>My Booking</p></a>
           </div>
@@ -433,7 +433,7 @@
             src="{% static 'assets/img/dashboard_logo.jpg' %}"
             alt="Your Logo"
             class="logo"
-            style="height: 180px; width: 190px; margin-top: 30px"
+            style="height: 140px; width: 190px; margin-top: 30px"
           /></a>
         </div>
         <p
@@ -510,9 +510,9 @@
       function shareFunction() {
           if (navigator.share) {
               navigator.share({
-                  title: 'Check out V Gold!',
-                  text: 'I found this amazing service. Check it out!',
-                  url: window.location.href
+                  title: 'Check out V-Gold!',
+                  text: 'Click the following link and Download V-Gold application. Check it out!',
+                  url: 'https://www.vgold.app/vgold/login/'
               }).then(() => {
                   console.log('Thanks for sharing!');
               }).catch(err => {
@@ -522,7 +522,24 @@
               alert('Web Share API is not supported in your browser.');
           }
       }
-      </script>
+  </script>
+  <script>
+    function RateshareFunction() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out V-Gold!',
+                text: 'This is Rate of Today Gold. Check it out!',
+                url: 'https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png'
+            }).then(() => {
+                console.log('Thanks for sharing!');
+            }).catch(err => {
+                console.error('Error sharing:', err);
+            });
+        } else {
+            alert('Web Share API is not supported in your browser.');
+        }
+    }
+</script>
 
   </body>
 </html>

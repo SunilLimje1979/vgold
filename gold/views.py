@@ -88,6 +88,7 @@ def OTP(request):
             response = requests.post(login_api_url, data=payload, headers=headers)
             response.raise_for_status()
             data = response.json()
+            # print (response.text)
 
             if data.get("status") == 200:
                 # Store user data in session
@@ -104,8 +105,8 @@ def OTP(request):
                 request.session['purchase_rate_data'] = purchase_rate_data
 
                 # Print session data for debugging
-                print(request.session['user_data'])
-                print(request.session['purchase_rate_data'])
+                # print(request.session['user_data'])
+                # print(request.session['purchase_rate_data'])
                 
                 # Redirect to the dashboard
                 return redirect('dashboard')
@@ -574,5 +575,58 @@ def Feedback(request):
     return render(request, 'gold/feedback.html')
 
 def Refer(request):
+    # Retrieve user data from session
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    if request.method == 'POST':
+        # Retrieve form data
+        enterName = request.POST.get('enterName', '')
+        enter_email = request.POST.get('enter_email', '')
+        enter_mobileno = request.POST.get('enter_mobileno', '')
+
+        # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        # Make the POST request to the external API
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/send_refer_link.php'
+        payload = {
+            'user_id': user_id,
+            'name': enterName,
+            'email': enter_email,
+            'mobile_no': enter_mobileno
+        }
+        
+        try:
+            response = requests.post(api_url, data=payload, headers=headers)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "Refer link sent successfully.")
+    
+                      
+                    else:
+                        messages.error(request, "Failed to send refer link.")
+                    
+                    return redirect(Refer)
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
+        
+        return HttpResponse(message)
+
     return render(request, 'gold/refer.html')
+
 

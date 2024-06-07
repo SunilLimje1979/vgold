@@ -6,7 +6,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    <link rel="manifest" href="{% static "assets/manifest.json" %}">
     <title>Add Gold</title>
     <!-- Bootstrap CSS -->
     <link
@@ -93,6 +93,7 @@
       .center-image {
         display: flex;
         justify-content: center;
+        position: relative; /* Make the container position relative for absolute positioning of the share icon */
       }
 
       .custom-container {
@@ -107,6 +108,23 @@
         font-size: 20px;
         font-weight: bold;
         color: rgb(15, 15, 15);
+      }
+
+      /* Style for the share icon */
+      .share-icon {
+        position: absolute;
+        top: 10px;
+        right: 10%;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 40%;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 24px;
+      }
+
+      .share-icon:hover {
+        background-color: rgba(0, 0, 0, 0.7);
       }
     </style>
   </head>
@@ -234,8 +252,9 @@
                 src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
                 alt="Your Logo"
                 class="logo"
-                style="height: 260px; width: 280px; margin-bottom: 10px"
+                style="height: 90%; width: 90%; margin-bottom: 10px"
               />
+              <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
             </div>
           </form>
         </div>
@@ -271,6 +290,29 @@
               bankDetailsDiv.style.display = "none";
           }
       });
+
+      function shareImage() {
+        const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+        if (navigator.share) {
+          navigator.share({
+            title: 'Share Bank Details Image',
+            url: imageUrl
+          }).then(() => {
+            console.log('Thanks for sharing!');
+          }).catch(err => {
+            console.error('Error while sharing', err);
+          });
+        } else {
+          // Fallback for browsers that do not support the Web Share API
+          const dummy = document.createElement('input');
+          document.body.appendChild(dummy);
+          dummy.value = imageUrl;
+          dummy.select();
+          document.execCommand('copy');
+          document.body.removeChild(dummy);
+          alert('Image URL copied to clipboard');
+        }
+      }
     </script>
     <script>
       // Function to remove the message container after a specified time interval
