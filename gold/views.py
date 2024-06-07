@@ -121,7 +121,7 @@ def Registration(request):
 ###################################### Dashboard #############################################
 def Dashboard(request):
     user_data = request.session.get('user_data')
-    print(user_data)
+    # print(user_data)
     
     if user_data and 'data' in user_data and len(user_data['data']) > 0:
         user_info = user_data['data'][0]
@@ -321,7 +321,7 @@ def Certificate(request):
     if not user_id:
         return HttpResponse("User ID not found in session data.")
     
-    print(user_id)
+    # print(user_id)
 
     # Set the API URL
     api_url = "https://www.vgold.co.in/dashboard/vgold_accnt_certificate/get_certificate.php"
@@ -333,7 +333,7 @@ def Certificate(request):
 
     # Call the API
     response = requests.post(api_url, data={'userid': user_id}, headers=headers)
-    print(response.text)
+    # print(response.text)
 
     if response.status_code == 200:
         api_response = response.json()
@@ -495,7 +495,7 @@ def Gold_booking(request):
                 
                 request.session['api_response'] = response_data
                 
-                # print("API Response:", request.session['api_response'])
+                print("API Response:", request.session['api_response'])
                 # Redirect to the booking details page
                 return redirect('booking_details')
             else:
@@ -511,7 +511,7 @@ def Gold_booking(request):
     return render(request, 'gold/gold_booking.html')
 
 ######################################Booking Details #############################################
-
+   
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -522,43 +522,79 @@ def Booking_details(request):
         print(api_response)
 
         if api_response:
-            # Retrieve data from API response
-            booking_value = api_response.get('Booking_value')
-            gold_rate = api_response.get('Gold_rate')
-            down_payment = api_response.get('Down_payment')
-            booking_charges_discount = api_response.get('Booking_charges_discount')
-            monthly_installment = api_response.get('Monthly')
+            # Render the template with API response data
+            return render(request, 'gold/booking_details.html', {'api_response': api_response})
+        else:
+            return HttpResponse("No API response found in session.", status=404)
 
-            # Process or use the data as needed
-            # For now, just printing the data
-            print("Booking Value:", booking_value)
-            print("Gold Rate:", gold_rate)
-            print("Down Payment:", down_payment)
-            print("Booking Charges Discount:", booking_charges_discount)
-            print("Monthly Installment:", monthly_installment)
-
-        # Render the template with API response data
-        return render(request, 'gold/booking_details.html', {'api_response': api_response})
-        
-    else:
+    elif request.method == 'POST':
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
         # Retrieve form data
         payment_option = request.POST.get('dropdown2')
         bank_details = request.POST.get('bankDetails')
+        tr_id = request.POST.get('transactionId')
+        cheque_no = request.POST.get('chequeNo')
         
-        # Dynamically set the label for additional information based on payment option
-        additional_info_label = "Cheque No" if payment_option == 'cheque' else "Transaction ID"
-        additional_info = request.POST.get('chequeNo') if payment_option == 'cheque' else request.POST.get('transactionId')
+        # # Dynamically set the label for additional information based on payment option
+        # additional_info_label = "Cheque No" if payment_option == 'cheque' else "Transaction ID"
+        # additional_info = request.POST.get('chequeNo') if payment_option == 'cheque' else request.POST.get('transactionId')
+        
+        # Retrieve the API response from POST data and parse it
+        api_response = request.POST.get('api_response')
+        if api_response:
+            api_response = eval(api_response)  # Convert string representation of dict to dict
 
-        # Process the data as needed
-        # For now, just printing the data
-        print("Payment Option:", payment_option)
-        print("Bank Details:", bank_details)
-        print(f"{additional_info_label}:", additional_info)
+        # Retrieve additional form data
 
-        # You can perform further actions here like saving to database, sending emails, etc.
-
-        # Return a response
-        return HttpResponse("Payment successful. Data received successfully.")
+        # Ensure the API response has the necessary fields
+        booking_value = api_response.get('Booking_value')
+        gold_rate = api_response.get('Gold_rate')
+        down_payment = api_response.get('Down_payment')
+        booking_charges_discount = api_response.get('Booking_charges_discount')
+        monthly = api_response.get('Monthly')
+        pc = api_response.get('pc')
+        Initial_Booking_charges = api_response.get('Initial_Booking_charges')
+        Booking_charges = api_response.get('Booking_charges')
+        
+        
+        payload={
+            "user_id":user_id,
+            "booking_value":booking_value,
+            "down_payment" :down_payment,
+            "monthly":monthly,
+            "rate":gold_rate,
+            "pc":pc,
+            # "gold_weight":gold_weight, 
+            # "tennure":tennure,
+            "payment_option":payment_option,
+            "bank_details":bank_details,
+            "cheque_no" :cheque_no,
+            "tr_id":tr_id,
+            "initial_booking_charges":Initial_Booking_charges,
+            "booking_charges_discount":booking_charges_discount,
+            "booking_charges":Booking_charges,
+            "confirmed":0                  
+        }
+        
+        
+         # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        res=requests.post("https://www.vgold.co.in/dashboard/webservices/gold_booking.php", data= payload ,headers=headers)
+        print(res.text)
+        
+        if res.json().get('status') == '200':
+            messages.success(request, res.json().get('Message'))             
+        else:
+            messages.error(request, res.json().get('Message'))
+       
+        return redirect(Booking_details)
+       
+    else:
+        return HttpResponse("Invalid request method.", status=405)
 
 
 ###################################### Gold Deposite History #############################################
@@ -672,7 +708,7 @@ def Refer(request):
             if response.content:
                 try:
                     response_data = response.json()
-                    print(response_data)
+                    # print(response_data)
                     
                     if response_data.get('status') == '200':
                         messages.success(request, "Refer link sent successfully.")

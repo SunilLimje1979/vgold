@@ -139,8 +139,20 @@
   <div class="container mt-2 custom-container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
+        {% if messages %}
+        <div class="row justify-content-center mt-3">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         <form method="post">
           {% csrf_token %}
+          <input type="hidden" value="{{api_response}}" name="api_response">
           <div class="mb-1">
             <label for="booking_value" class="form-label">Booking Value</label>
             <input type="text" class="form-control" id="booking_value" value="{{ api_response.Booking_value }}" readonly>
@@ -164,8 +176,8 @@
           <div class="form-group form-element">
             <select class="form-control bold-text" id="dropdown2" name="dropdown2">
                 <option value="">--  Please Select Payment Option  --</option>
-                <option value="cheque">Cheque</option>
-                <option value="neft">NEFT</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Online">Online</option>
             </select>
           </div>
 
@@ -203,10 +215,10 @@
       var bankDetailsDiv = document.getElementById("bankDetails");
       var additionalFieldDiv = document.getElementById("additionalField");
 
-      if (paymentMethod === "cheque") {
+      if (paymentMethod === "Cheque") {
         bankDetailsDiv.style.display = "block";
         additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="chequeNoInput" name="chequeNo" placeholder="Enter cheque no">';
-      } else if (paymentMethod === "neft") {
+      } else if (paymentMethod === "Online") {
         bankDetailsDiv.style.display = "block";
         additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="transactionIdInput" name="transactionId" placeholder="Enter transaction ID">';
       } else {
@@ -238,5 +250,30 @@
       }
     }
   </script>
+
+  <script>
+
+    function closeAlert(alert) {
+        alert.classList.add("fade");
+        setTimeout(function () {
+            alert.remove();
+        }, 500);
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        var alertCloseButtons = document.querySelectorAll(".btn-close");
+        alertCloseButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var alert = this.closest(".alert");
+                closeAlert(alert);
+            });
+        });
+        var alerts = document.querySelectorAll(".alert");
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
+                closeAlert(alert);
+            }, 5000);
+        });
+    });
+</script>
 </body>
 </html>
