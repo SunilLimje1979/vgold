@@ -310,9 +310,48 @@ def Update_profile(request):
     return render(request, 'gold/update_profile.html')
 
 ###################################### Certificate #############################################
+import requests
+from django.http import HttpResponse
+from django.shortcuts import render
 
 def Certificate(request):
-    return render(request, 'gold/certificate.html')
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    print(user_id)
+
+    # Set the API URL
+    api_url = "https://www.vgold.co.in/dashboard/vgold_accnt_certificate/get_certificate.php"
+
+    # Set the headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    # Call the API
+    response = requests.post(api_url, data={'userid': user_id}, headers=headers)
+    print(response.text)
+
+    if response.status_code == 200:
+        api_response = response.json()
+        if api_response.get("status") == "400" and api_response.get("Message") == "sucess":
+            image_path = api_response.get("image_path")
+            download_image_path = api_response.get("download_image_path")
+        else:
+            return HttpResponse("Failed to fetch certificate data from the API.")
+    else:
+        return HttpResponse("Error occurred while calling the API.")
+
+    context = {
+        'image_path': image_path,
+        'download_image_path': download_image_path
+    }
+
+    return render(request, 'gold/certificate.html', context)
+
 
 ###################################### Gold Booking History #############################################
 def Gbooking_history(request):
