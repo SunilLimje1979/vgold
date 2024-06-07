@@ -2,12 +2,11 @@
 {% load pwa %} 
 {% comment %} {% progressive_web_app_meta %} {% endcomment %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="manifest" href="{% static "assets/manifest.json" %}">
+  <link rel="manifest" href="{% static "assets/manifest.json" %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Booking Details</title>
   <!-- Bootstrap CSS -->
@@ -93,22 +92,34 @@
         background-color: #29277a; /* Darker color on hover */
     }
     .center-image {
+        position: relative;
         display: flex;
         justify-content: center;
-      }
+    }
 
-      .bold-text {
+    .bold-text {
         font-weight: bold;
         color: rgb(41, 39, 122) !important; /* Label color */
-      }
+    }
 
-    {% comment %} .custom-container {
-        margin: 0 auto; /* Center the container horizontally */
-        padding-left: 40px; /* Add left padding */
-        padding-right: 40px; /* Add right padding */
-    } {% endcomment %}
-</style>
+    /* Style for the share icon */
+    .share-icon {
+        position: absolute;
+        top: 9%;
+        right: 10%;
+        transform: translateY(-50%);
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 40%;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 30px;
+    }
 
+    .share-icon:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+  </style>
 </head>
 <body>
   <!-- Navbar with menu drawer icon -->
@@ -116,10 +127,10 @@
     <div class="container-fluid">
       <div class="">
         <button class="navbar-toggler" type="button" id="menuBtn">
-            <a href="{% url 'dashboard' %}">
+          <a href="{% url 'dashboard' %}">
             <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
-
-          </button>
+          </a>
+        </button>
         <a class="navbar-brand">Booking Details</a>
       </div>
     </div>
@@ -128,7 +139,6 @@
   <div class="container mt-2 custom-container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-       
         <form method="post">
           {% csrf_token %}
           <div class="mb-1">
@@ -152,40 +162,33 @@
             <input type="text" class="form-control" id="monthly_installment" value="{{ api_response.Monthly }}" readonly>
           </div>
           <div class="form-group form-element">
-            {% comment %} <label for="dropdown2" class="form-label" >Please Select Payment Option</label> {% endcomment %}
             <select class="form-control bold-text" id="dropdown2" name="dropdown2">
-                <!-- Add options for dropdown 2 here -->
                 <option value="">--  Please Select Payment Option  --</option>
                 <option value="cheque">Cheque</option>
                 <option value="neft">NEFT</option>
-                {% comment %} <option value="gold_wallet">Gold Wallet</option>
-                <option value="money_wallet">Money Wallet</option>
-                <option value="upi_payment">UPI Payment</option> {% endcomment %}
             </select>
-            
           </div>
 
           <div id="bankDetails" style="display: none;">
-                <div class="mb-3">
-                    <input type="text" class="form-control" id="bankDetailsInput" name="bankDetails" placeholder="Enter bank details">
-                </div>
-                <div class="mb-3" id="additionalField">
-                    <!-- Additional field for Cheque No or Transaction ID will be appended here -->
-                </div>
+            <div class="mb-3">
+              <input type="text" class="form-control" id="bankDetailsInput" name="bankDetails" placeholder="Enter bank details">
+            </div>
+            <div class="mb-3" id="additionalField">
+              <!-- Additional field for Cheque No or Transaction ID will be appended here -->
+            </div>
           </div>
 
           <button id="updateProfileBtn" type="submit">Pay</button>
-          
+
           <div class="center-image">
             <img
-              src="{% static 'assets/img/bank_details.jpg' %}"
+              src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
               alt="Your Logo"
               class="logo"
-              style="height: 210px; width: 240px; margin-bottom: 10px"
+              style="height: 80%; width: 90%; margin-bottom: 10px"
             />
+            <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
           </div>
-
-
         </form>
       </div>
     </div>
@@ -211,6 +214,29 @@
         additionalFieldDiv.innerHTML = '';
       }
     });
+  </script>
+  <script>
+    function shareImage() {
+      const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+      if (navigator.share) {
+        navigator.share({
+          title: 'Share Bank Details Image',
+          url: imageUrl
+        }).then(() => {
+          console.log('Thanks for sharing!');
+        }).catch(err => {
+          console.error('Error while sharing', err);
+        });
+      } else {
+        const dummy = document.createElement('input');
+        document.body.appendChild(dummy);
+        dummy.value = imageUrl;
+        dummy.select();
+        document.execCommand('copy');
+        document.body.removeChild(dummy);
+        alert('Image URL copied to clipboard');
+      }
+    }
   </script>
 </body>
 </html>

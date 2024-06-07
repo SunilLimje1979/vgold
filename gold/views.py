@@ -4,10 +4,6 @@ from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.contrib import messages
 ###################################### Log in #############################################
-import requests
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
 def Login(request):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -167,6 +163,8 @@ def Dashboard(request):
             # Extract loan amount from API response and add it to the context
             loan_amount = loan_api_response['data']['loan_amount']
             context['loan_amount'] = loan_amount
+            
+            request.session['loan_api_response'] = loan_api_response
         else:
             print("Failed to fetch loan API data")
     
@@ -175,7 +173,34 @@ def Dashboard(request):
 ###################################### Loan #############################################
 
 def Loan(request):
-    return render(request, 'gold/loan.html')
+    # Retrieve user data from session
+    user_data = request.session.get('user_data', {})
+    # print(user_data)
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+    First_Name = user_data.get('data', [{}])[0].get('First_Name')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    # Retrieve loan API response from session
+    loan_api_response = request.session.get('loan_api_response')
+    
+    # Print the loan API response to verify it
+    # print(loan_api_response)
+    
+    # Extract the loan amount from the loan API response
+    loan_amount = None
+    if loan_api_response and 'data' in loan_api_response:
+        loan_amount = loan_api_response['data'].get('loan_amount')
+    
+    # If you need to pass the response to the template, prepare the context
+    context = {
+        'First_Name': First_Name,
+        'loan_amount': loan_amount,
+    }
+    
+    # Render the template with the context
+    return render(request, 'gold/loan.html', context)
 
 ###################################### Withdraw #############################################
 
