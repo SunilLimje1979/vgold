@@ -530,7 +530,7 @@
           }
       }
   </script>
-  {% comment %} <script>
+  <script>
     function RateshareFunction() {
         if (navigator.share) {
             navigator.share({
@@ -546,8 +546,9 @@
             alert('Web Share API is not supported in your browser.');
         }
     }
-</script> {% endcomment %}
-<script>
+</script>
+
+{% comment %} <script>
   async function RateshareFunction() {
       if (navigator.canShare && navigator.canShare({ files: [] })) {
           try {
@@ -571,7 +572,8 @@
           alert('Web Share API is not supported in your browser.');
       }
   }
-</script>
+</script> {% endcomment %}
+
 
   </body>
 </html>
