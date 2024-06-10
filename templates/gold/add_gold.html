@@ -290,8 +290,38 @@
               bankDetailsDiv.style.display = "none";
           }
       });
+    </script>
 
-      function shareImage() {
+<script>
+  async function shareImage() {
+    const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], "bank_details.png", { type: "image/png" });
+      
+      if (navigator.share) {
+        navigator.share({
+          files: [file],
+          title: 'Share Bank Details Image'
+        }).then(() => {
+          console.log('Thanks for sharing!');
+        }).catch(err => {
+          console.error('Error while sharing', err);
+        });
+      } else {
+        alert('Your browser does not support sharing files directly.');
+      }
+    } catch (error) {
+      console.error('Error fetching image', error);
+    }
+  }
+</script>
+
+
+      {% comment %}  
+       <script>
+       function shareImage() {
         const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
         if (navigator.share) {
           navigator.share({
@@ -312,8 +342,9 @@
           document.body.removeChild(dummy);
           alert('Image URL copied to clipboard');
         }
-      }
-    </script>
+      } </script>
+     {% endcomment %}
+
     <script>
       // Function to remove the message container after a specified time interval
       function removeMessageContainer() {
