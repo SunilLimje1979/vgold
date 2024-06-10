@@ -429,7 +429,7 @@
             <p>Plan</p>
           </div>
 
-          <div><a href=" " style="color: black; text-decoration: none;">
+          <div><a href="" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'loan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 36px; height: 36px;margin-top: 8px;"></i></center>
             <p>Loan</p></a>
@@ -530,7 +530,7 @@
           }
       }
   </script>
-  <script>
+  {% comment %} <script>
     function RateshareFunction() {
         if (navigator.share) {
             navigator.share({
@@ -546,6 +546,31 @@
             alert('Web Share API is not supported in your browser.');
         }
     }
+</script> {% endcomment %}
+<script>
+  async function RateshareFunction() {
+      if (navigator.canShare && navigator.canShare({ files: [] })) {
+          try {
+              // Fetch the image and convert it to a blob
+              const response = await fetch('https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png');
+              const blob = await response.blob();
+              const file = new File([blob], 'vgold_rate_show_mobile.png', { type: blob.type });
+
+              // Share the file
+              await navigator.share({
+                  title: 'Check out V-Gold!',
+                  text: 'This is Rate of Today Gold. Check it out!',
+                  files: [file]
+              });
+
+              console.log('Thanks for sharing!');
+          } catch (err) {
+              console.error('Error sharing:', err);
+          }
+      } else {
+          alert('Web Share API is not supported in your browser.');
+      }
+  }
 </script>
 
   </body>

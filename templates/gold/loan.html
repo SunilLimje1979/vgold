@@ -115,7 +115,8 @@
   <div class="container mt-5 custom-container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-        <form>
+        <form method="post">
+          {% csrf_token %}
           <!-- Loan information -->
           <p id="vgoldID">Congratulations {{First_Name}} ! You can apply for a loan of up to &#8377; {{loan_amount}} /-</p>
 

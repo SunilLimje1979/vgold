@@ -103,16 +103,16 @@
           <div class="container px-4">
             <div class="row justify-content-center mt-4 gx-0">
                 <div class="col">
-                    <input type="number" class="form-control otp-input" placeholder="" name="otp0" maxlength="1" required>
+                    <input type="number" class="form-control otp-input" placeholder="" name="otp0" maxlength="1" required oninput="validateInput(this)">
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control otp-input" placeholder="" name="otp1" maxlength="1" required>
+                    <input type="number" class="form-control otp-input" placeholder="" name="otp1" maxlength="1" required oninput="validateInput(this)">
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control otp-input" placeholder="" name="otp2" maxlength="1" required>
+                    <input type="number" class="form-control otp-input" placeholder="" name="otp2" maxlength="1" required oninput="validateInput(this)">
                 </div>
                 <div class="col">
-                    <input type="number" class="form-control otp-input" placeholder="" name="otp3" maxlength="1" required>
+                    <input type="number" class="form-control otp-input"  placeholder="" name="otp3" maxlength="1" required oninput="validateInput(this)">
                 </div>
             </div>
         </div>
@@ -247,7 +247,11 @@
       });
     });
   </script>
-  
+  <script>
+    function validateInput(input) {
+        input.value = input.value.replace(/[^0-9]/g, '').slice(0, 1);
+    }
+</script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <!-- Font Awesome -->

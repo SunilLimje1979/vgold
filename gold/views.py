@@ -136,18 +136,22 @@ def Dashboard(request):
         # API call to get total gold booking gain
         gold_gain_url = 'https://www.vgold.co.in/dashboard/webservices/total_gold_booking_gain.php'
         gold_post_data = {'user_id': user_id}
+        
         gold_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
         gold_response = requests.post(gold_gain_url, data=gold_post_data, headers=gold_headers)
+        # print(gold_response.text)
         
         # Check if gold API call is successful
-        if gold_response.status_code == 200:
+        if gold_response.json().get('status') == "200":
             gold_api_response = gold_response.json()
             total_gain = gold_api_response['Data']['gain']
             context['total_gain'] = total_gain  # Add total gain to context
         else:
+            context['total_gain'] = 0
             print("Failed to fetch gold API data")
+            
         
         # API call to get user loan eligibility
         loan_eligibility_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
@@ -156,9 +160,9 @@ def Dashboard(request):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
         loan_response = requests.post(loan_eligibility_url, data=loan_post_data, headers=loan_headers)
-        
+        # print(loan_response.text)
         # Check if loan API call is successful
-        if loan_response.status_code == 200:
+        if loan_response.json().get('status')== "200":
             loan_api_response = loan_response.json()
             # Extract loan amount from API response and add it to the context
             loan_amount = loan_api_response['data']['loan_amount']
@@ -166,6 +170,7 @@ def Dashboard(request):
             
             request.session['loan_api_response'] = loan_api_response
         else:
+            context['loan_amount'] = 0
             print("Failed to fetch loan API data")
     
     return render(request, 'gold/dashboard.html', context)
@@ -584,7 +589,7 @@ def Booking_details(request):
         }
         
         res=requests.post("https://www.vgold.co.in/dashboard/webservices/gold_booking.php", data= payload ,headers=headers)
-        print(res.text)
+        # print(res.text)
         
         if res.json().get('status') == '200':
             messages.success(request, res.json().get('Message'))             
