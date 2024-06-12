@@ -2,79 +2,69 @@
 {% load pwa %} 
 {% comment %} {% progressive_web_app_meta %} {% endcomment %}
 
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <link rel="manifest" href="{% static "assets/manifest.json" %}">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Add Money</title>
-  <!-- Bootstrap CSS -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <!-- Font Awesome CSS -->
-  <link
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    rel="stylesheet"
-  />
-  <!-- Custom CSS -->
-  <style>
-    /* Navbar style */
-    .navbar {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    <title>Add Money</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+      .navbar {
         background-color: rgb(41, 39, 122);
-        height: 55px; /* Set the height to 400px */
-        color: white; /* Set text color to white */
-    }
-    .navbar-toggler-icon {
+        height: 55px;
         color: white;
-    }
-    .navbar-brand {
+      }
+      .navbar-toggler-icon {
+        color: white;
+      }
+      .navbar-brand {
         font-size: 20px;
         margin-left: 20px;
         color: white;
-        /* font-weight: bold; /* Make the text bold */
-    }
-
-    /* Custom styling for form */
-    .form-label {
+      }
+      .form-label {
         display: block;
-        margin-bottom: 0px; /* Decrease the margin-bottom */
-        color: rgb(41, 39, 122) !important; /* Label color */
+        margin-bottom: 0px;
+        color: rgb(41, 39, 122) !important;
         font-weight: bold;
         padding-left: 10px;
-    }
-
-    .form-control {
-        border: none; /* Remove default border */
-        border-bottom: 1px solid #ccc; /* Add bottom border */
-        border-radius: 0; /* Remove border radius */
-        box-shadow: none; /* Remove box shadow */
+      }
+      .form-control {
+        width: 100%;
+        border: none;
+        border-bottom: 1px solid #ccc;
+        border-radius: 0;
+        box-shadow: none;
         padding-left: 10px;
-    }
-
-    /* Remove hover and focus effects */
-    .form-control:hover,
-    .form-control:focus {
-        /* border-color: transparent !important; */
+        height: 30px;
+      }
+      .form-control:hover,
+      .form-control:focus {
         box-shadow: none !important;
-    }
-
-    /* Disable cursor on input */
-    .form-control[readonly] {
+      }
+      .form-control[readonly] {
         cursor: default;
-    }
-    #vgoldID {
+      }
+      #vgoldID {
         text-align: center;
-        margin-top: 80px; /* Add some top margin for spacing */
-        /* font-size: 16px; /* Adjust font size as needed */
-        /* font-weight: bold; /* Make the text bold */
-        color: rgb(41, 39, 122); /* Set text color */
-    }
-    /* Update profile button */
-    #updateProfileBtn {
+        margin-top: 80px;
+        font-size: 20px;
+        font-weight: bold;
+        color: rgb(15, 15, 15);
+      }
+      #updateProfileBtn {
         background-color: rgb(41, 39, 122);
         color: white;
         border: none;
@@ -82,100 +72,232 @@
         border-radius: 15px;
         cursor: pointer;
         font-size: 16px;
-        width: 80%; /* Set width to 80% */
-        margin: 20px auto; /* Center the button horizontally */
-        display: block; /* Ensure the button takes full width */
-    }
-
-    #updateProfileBtn:hover {
-        background-color: #29277a; /* Darker color on hover */
-    }
-    .center-image {
+        width: 80%;
+        margin: 20px auto;
+        display: block;
+      }
+      #updateProfileBtn:hover {
+        background-color: #29277a;
+      }
+      .center-image {
         display: flex;
         justify-content: center;
+        position: relative;
       }
-      .bold-text {
-        font-weight: bold;
-        color: rgb(41, 39, 122) !important; /* Label color */
+      .custom-container {
+        margin-top: 60px !important;
       }
       .no-border-bottom {
         border-bottom: none;
-    }
-
-    .form-check {
-      margin-left: 20px; /* Adjust the left margin as needed */
-  }
-  
-    {% comment %} .custom-container {
-        margin: 0 auto; /* Center the container horizontally */
-        padding-left: 40px; /* Add left padding */
-        padding-right: 40px; /* Add right padding */
-    } {% endcomment %}
-</style>
-
-</head>
-<body>
-  <!-- Navbar with menu drawer icon -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <div class="">
-        <button class="navbar-toggler" type="button" id="menuBtn">
+      }
+      .share-icon {
+        position: absolute;
+        top: 10px;
+        right: 10%;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 40%;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 24px;
+      }
+      .share-icon:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <div class="">
+          <button class="navbar-toggler" type="button" id="menuBtn">
             <a href="{% url 'dashboard' %}">
-            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
-
+              <i
+                class="fa fa-arrow-left"
+                aria-hidden="true"
+                style="color: white; font-size: 24px"
+              ></i>
+            </a>
           </button>
-        <a class="navbar-brand">Add Money</a>
+          <a class="navbar-brand">Add Money</a>
+        </div>
       </div>
-    </div>
-  </nav>
-  <div class="container mt-3 custom-container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-       
-        <form>
+    </nav>
 
-            <div class="form-group form-element">
-                {% comment %} <label for="branch" class="form-label">Enter Branch</label> {% endcomment %}
+    <div class="container mt-5 custom-container">
+      <div class="row">
+        <div class="col-md-6 offset-md-3">
+          {% if messages %}
+          <div class="row justify-content-center mt-3">
+              {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" aria-label="Close"></button>
+              </div>
+              {% endfor %}
+          </div>
+          {% endif %}
+
+          <form method="post" action="{% url 'add_money' %}">
+            {% csrf_token %}
+            
+      
+            <div class="form-group form-element mt-2 mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="amount"
+                name="amount"
+                placeholder="Enter Amount"
+              />
+            </div>
+
+            <div class="form-group form-element mb-2">
+              <label for="depositor" class="form-label">Payment Method</label>
+              <select
+                class="form-control no-border-bottom"
+                id="depositor"
+                name="depositor"
+              >
+                <option value="">Select The Payment Method</option>
+                <option value="Cheque">Cheque</option>
+                <option value="Online">NEFT/Rtgs</option>
+                {% comment %}
+                <option value="upi">UPI Payment</option>
+                {% endcomment %}
+              </select>
+            </div>
+
+            <div id="bankDetails" style="display: none">
+              <div class="mb-3">
                 <input
                   type="text"
                   class="form-control"
-                  id="branch"
-                  name="branch"
-                  placeholder="Enter Amount"
+                  id="bankDetailsInput"
+                  name="bankDetails"
+                  placeholder="Enter bank details"
                 />
               </div>
-      <br>
-        
+              <div class="mb-3" id="transactionIdDiv" style="display: none">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="transactionIdInput"
+                  name="transactionId"
+                  placeholder="Enter transaction ID"
+                />
+              </div>
+              <div class="mb-3" id="chequeNumberDiv" style="display: none">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="chequeNumberInput"
+                  name="chequeNumber"
+                  placeholder="Enter cheque number"
+                />
+              </div>
+            </div>
 
-          <div class="form-group form-element">
-            {% comment %} <label for="depositor" class="form-label" >Please select Payement Option</label> {% endcomment %}
-            <select class="form-control  bold-text no-border-bottom" id="depositor" name="depositor">
-                <!-- Add options for depositors dropdown here -->
-                <option value="vighnaharta">-- Please select Payement Option --</option>
-                <option value="png">Cheque</option>
-                <option value="ranka">NEFT/RTGS</option>
-                <option value="hp">UPI Payment</option>
-            </select>
-          </div>
-
-        
-          <button id="updateProfileBtn" type="button">Add Money</button>
-          <div class="center-image">
-            <img
-              src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
-              alt="Your Logo"
-              class="logo"
-              style="height: 240px; width: 270px; margin-bottom: 10px"
-            />
-          </div>
-        </form>
+            <button id="updateProfileBtn" type="submit">
+              Add Money
+            </button>
+            <div class="center-image">
+              <img
+                src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
+                alt="Your Logo"
+                class="logo"
+                style="height: 90%; width: 90%; margin-bottom: 10px"
+              />
+              <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      document.getElementById("depositor").addEventListener("change", function() {
+        var depositMethod = this.value;
+        var bankDetailsDiv = document.getElementById("bankDetails");
+        var transactionIdDiv = document.getElementById("transactionIdDiv");
+        var chequeNumberDiv = document.getElementById("chequeNumberDiv");
 
-  <!-- Bootstrap JS (optional, for Bootstrap features) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Custom JS -->
-</body>
+        if (depositMethod === "Cheque") {
+          bankDetailsDiv.style.display = "block";
+          transactionIdDiv.style.display = "none";
+          chequeNumberDiv.style.display = "block";
+        } else if (depositMethod === "Online") {
+          bankDetailsDiv.style.display = "block";
+          transactionIdDiv.style.display = "block";
+          chequeNumberDiv.style.display = "none";
+        } else {
+          bankDetailsDiv.style.display = "none";
+        }
+      });
+
+      async function shareImage() {
+        const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+
+        try {
+          const response = await fetch(proxyUrl + imageUrl);
+          if (!response.ok) throw new Error('Network response was not ok.');
+          const blob = await response.blob();
+          const file = new File([blob], 'bank_details.png', { type: blob.type });
+
+          if (navigator.share) {
+            navigator.share({
+              title: 'Share Bank Details Image',
+              files: [file]
+            }).then(() => {
+              console.log('Thanks for sharing!');
+            }).catch(err => {
+              console.error('Error while sharing', err);
+            });
+          } else {
+            const url = URL.createObjectURL(file);
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = url;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert('Image URL copied to clipboard');
+            URL.revokeObjectURL(url);
+          }
+        } catch (err) {
+          console.error('Error fetching the image', err);
+        }
+      }
+    </script>
+
+    <script>
+
+      function closeAlert(alert) {
+          alert.classList.add("fade");
+          setTimeout(function () {
+              alert.remove();
+          }, 500);
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+          var alertCloseButtons = document.querySelectorAll(".btn-close");
+          alertCloseButtons.forEach(function (button) {
+              button.addEventListener("click", function () {
+                  var alert = this.closest(".alert");
+                  closeAlert(alert);
+              });
+          });
+          var alerts = document.querySelectorAll(".alert");
+          alerts.forEach(function (alert) {
+              setTimeout(function () {
+                  closeAlert(alert);
+              }, 5000);
+          });
+      });
+  </script>
+  </body>
 </html>

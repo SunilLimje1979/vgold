@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="manifest" href="{% static "assets/manifest.json" %}">
+  <link rel="manifest" href="{% static "assets/manifest.json" %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gold Plan</title>
   <!-- Bootstrap CSS -->
@@ -72,11 +72,11 @@
       background-color: rgb(41, 39, 122);
       color: white;
       border: none;
-      padding: 12px 15px;
+      padding: 10px 13px;
       border-radius: 15px;
       cursor: pointer;
-      font-size: 16px;
-      width: 80%;
+      font-size: 14px;
+      width: 90%;
       margin: 20px auto;
       display: block;
     }
@@ -92,9 +92,34 @@
       padding: 15px;
       font-size: 14px;
       margin-top: 15px;
+      position: relative;
+  
       text-align: center; /* Center text */
       color: #29277A; /* Text color */
     }
+
+    .share-icon {
+      position: absolute;
+      bottom: 5%; /* adjust as needed */
+      right: 7%; /* adjust as needed */
+      border-radius: 50%; /* Rounded border */
+      background-color: #fff; /* Background color */
+      border: 1px solid #ccc; /* Border color */
+      padding: 8px; /* Adjust padding as needed */ 
+  }
+  
+  /* Style for the icon */
+  .share-icon i {
+      font-size: 20px;
+      color: #333; /* Adjust color as needed */
+      cursor: pointer;
+  }
+  
+  /* Style on hover if needed */
+  .share-icon i:hover {
+      color: #007bff; /* Change color on hover */
+  }
+  
   </style>
 </head>
 <body>
@@ -116,54 +141,115 @@
   <div class="container mt-5 custom-container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-        <form>
+        <form method="POST">
+          {% csrf_token %}
           <!-- Loan amount input -->
           <div class="mb-1">
             <label for="goldWeight" class="form-label">How much are you applying for?</label>
-            <input type="text" class="form-control" id="goldWeight" placeholder="">
+            <input type="text" class="form-control" name="quantity" id="goldWeight" placeholder="">
           </div>
 
           <!-- Apply button -->
-          <button id="updateProfileBtn" type="button" onclick="showPlan()">View Plan</button>
+          <button id="updateProfileBtn">View Plan</button>
         </form>
       </div>
     </div>
 
+    {% if data %}
     <!-- Card to display input value -->
-    <div id="planCard" class="custom-card" style="display: none;">
-      <p id="planMessage"></p>
-    </div>
+    <div id="planCard" class="custom-card">
+      <p id="planMessage">
+          <strong>Date:</strong> {{ data.rate_date }} <br>
+          <strong>For {{ data.quantity }} gm</strong> <br><br>
+          <strong>Total Amount:</strong> ₹ {{ data.total_amount }}<br>
+          <strong>Booking Amount:</strong> ₹ {{ data.booking_amount }}<br>
+          <strong>Booking Charge:</strong> ₹ {{ data.booking_charge }}<br>
+          <strong>You Have to Pay:</strong> ₹ {{ data.have_to_pay }}<br>
+          <strong>Remaining Amount:</strong> ₹ {{ data.remaing_amount  }}</span><br><br>
+  
+          <!-- Share icon -->
+          <div class="share-icon">
+              <i class="fas fa-share-alt" onclick="RateshareFunction()" ></i> <!-- Assuming you're using Font Awesome for icons -->
+          </div>
+  
+          <!-- EMI Calculation -->
+          <strong>EMI For</strong> <br>
+          <strong>12 months:</strong> ₹ <span id="result12"></span><br>
+          <strong>24 months:</strong> ₹ <span id="result24"></span><br>
+          <strong>36 months:</strong> ₹ <span id="result36"></span><br>
+          <strong>48 months:</strong> ₹ <span id="result48"></span><br>
+          <strong>60 months:</strong> ₹ <span id="result60"></span><br>
+      </p>
+  </div>
+  
+    {% endif %}
+    
+    {% if error %}
+    <p style="color: red;">Error: {{ error }}</p>
+    {% endif %}
   </div>
 
+
+  <script>
+    async function RateshareFunction() {
+        const pdfUrl = "{{ data.pdf_url }}";
+
+        try {
+            const response = await fetch( pdfUrl);
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+
+            const blob = await response.blob();
+            const file = new File([blob], 'gold_plan.pdf', { type: blob.type });
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'This is Today\'s Gold Rate. Check it out!',
+                    files: [file]
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(err => {
+                    console.error('Error while sharing', err);
+                });
+            } else {
+                const url = URL.createObjectURL(file);
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = url;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('PDF URL copied to clipboard');
+                URL.revokeObjectURL(url);
+            }
+        } catch (err) {
+            console.error('Error fetching the PDF:', err.message);
+        }
+    }
+</script>
+
+
+  <script>
+    // Assuming data.remaing_amount holds the value
+    var remainingAmount = {{ data.remaing_amount  }}; // Sample value for demonstration
+    
+    // Calculate divided amounts
+    var dividedAmount12 = remainingAmount / 12;
+    var dividedAmount24 = remainingAmount / 24;
+    var dividedAmount36 = remainingAmount / 36;
+    var dividedAmount48 = remainingAmount / 48;
+    var dividedAmount60 = remainingAmount / 60;
+    
+    // Update HTML with calculated values
+    document.getElementById("result12").textContent = dividedAmount12.toFixed(2);
+    document.getElementById("result24").textContent = dividedAmount24.toFixed(2);
+    document.getElementById("result36").textContent = dividedAmount36.toFixed(2);
+    document.getElementById("result48").textContent = dividedAmount48.toFixed(2);
+    document.getElementById("result60").textContent = dividedAmount60.toFixed(2);
+    </script>
+    
   <!-- Bootstrap JS (optional) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Custom JavaScript -->
-  <script>
-    function showPlan() {
-      // Get the input value
-      var inputValue = document.getElementById("goldWeight").value;
-
-      // Display the card with the input value
-      var planCard = document.getElementById("planCard");
-      var planMessage = document.getElementById("planMessage");
-      planMessage.innerHTML = `
-        <strong>2024-05-03</strong> <br>
-        <strong>For ${parseFloat(inputValue)} gm</strong> <br><br>
-        <strong>Total Amount:</strong> ₹${(parseFloat(inputValue) * 3000).toFixed(4)}<br>
-        <strong>Booking Amount:</strong> ₹${(parseFloat(inputValue) * 0.1).toFixed(4)}<br>
-        <strong>Booking Charge:</strong> ₹100<br>
-        <strong>You Pay:</strong> ₹${((parseFloat(inputValue) * 0.1) + 100).toFixed(4)}<br><br>
-
-        <strong>EMI For</strong> <br>
-        <strong> 12 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 12).toFixed(4)}<br>
-        <strong> 24 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 24).toFixed(4)}<br>
-        <strong> 36 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 36).toFixed(4)}<br>
-        <strong> 48 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 48).toFixed(4)}<br>
-        <strong> 60 months:</strong> ₹${((parseFloat(inputValue) * 0.9) / 60).toFixed(4)}<br>
-      `;
-      planCard.style.display = "block";
-    }
-  </script>
 </body>
 </html>

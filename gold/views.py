@@ -178,34 +178,131 @@ def Dashboard(request):
 ###################################### Loan #############################################
 
 def Loan(request):
-    # Retrieve user data from session
-    user_data = request.session.get('user_data', {})
-    # print(user_data)
-    user_id = user_data.get('data', [{}])[0].get('User_ID')
-    First_Name = user_data.get('data', [{}])[0].get('First_Name')
+    if request.method=='GET':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        # print(user_data)
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+        First_Name = user_data.get('data', [{}])[0].get('First_Name')
 
-    if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+        
+        # Retrieve loan API response from session
+        loan_api_response = request.session.get('loan_api_response')
+        
+        # Print the loan API response to verify it
+        # print(loan_api_response)
+        
+        # Extract the loan amount from the loan API response
+        loan_amount = None
+        if loan_api_response and 'data' in loan_api_response:
+            loan_amount = loan_api_response['data'].get('loan_amount')
+        
+        # If you need to pass the response to the template, prepare the context
+        context = {
+            'First_Name': First_Name,
+            'loan_amount': loan_amount,
+        }
+        
+        # Render the template with the context
+        return render(request, 'gold/loan.html', context)
     
-    # Retrieve loan API response from session
-    loan_api_response = request.session.get('loan_api_response')
+    else:
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+        
+        
+        amount = request.POST.get('goldWeight')
+        comment = request.POST.get('depositor')
+        
+        payload = {
+            "user_id": user_id,
+            "amount": amount,
+            "comment": comment  
+        }
+
+        print("Payload:", payload)
+
+        # return HttpResponse("Data")
+        return redirect(Loan)
     
-    # Print the loan API response to verify it
-    # print(loan_api_response)
+# def Loan(request):
+#     if request.method == 'GET':
+#         # Retrieve user data from session
+#         user_data = request.session.get('user_data', {})
+#         user_id = user_data.get('data', [{}])[0].get('User_ID')
+#         First_Name = user_data.get('data', [{}])[0].get('First_Name')
+
+#         if not user_id:
+#             return HttpResponse("User ID not found in session data.")
+        
+#         # Retrieve loan API response from session
+#         loan_api_response = request.session.get('loan_api_response')
+        
+#         # Extract the loan amount from the loan API response
+#         loan_amount = None
+#         if loan_api_response and 'data' in loan_api_response:
+#             loan_amount = loan_api_response['data'].get('loan_amount')
+        
+#         # Prepare the context for the template
+#         context = {
+#             'First_Name': First_Name,
+#             'loan_amount': loan_amount,
+#         }
+        
+#         # Render the template with the context
+#         return render(request, 'gold/loan.html', context)
     
-    # Extract the loan amount from the loan API response
-    loan_amount = None
-    if loan_api_response and 'data' in loan_api_response:
-        loan_amount = loan_api_response['data'].get('loan_amount')
-    
-    # If you need to pass the response to the template, prepare the context
-    context = {
-        'First_Name': First_Name,
-        'loan_amount': loan_amount,
-    }
-    
-    # Render the template with the context
-    return render(request, 'gold/loan.html', context)
+#     elif request.method == 'POST':
+#         # Retrieve user data from session
+#         user_data = request.session.get('user_data', {})
+#         user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+#         if not user_id:
+#             return HttpResponse("User ID not found in session data.")
+        
+#         # Get the amount and comment from the POST request
+#         amount = request.POST.get('goldWeight')
+#         comment = request.POST.get('depositor')
+        
+#         # Prepare the payload for the API request
+#         payload = {
+#             "user_id": user_id,
+#             "amount": amount,
+#             "comment": comment  
+#         }
+        
+#         print(payload)
+#         # API endpoint URL
+#         api_url = 'https://www.vgold.co.in/dashboard/webservices/save_loan_request.php'
+        
+#         # Headers for the request
+#         headers = {
+#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+#         }
+        
+#         # Make the POST request to the API
+#         response = requests.post(api_url, data=payload, headers=headers)
+#         print(response.text)
+        
+#         # Check the response from the API
+#         if response.status_code == 200:
+#             api_response = response.json()
+#             if api_response.get('status') == '200':
+#                 # Successful response, save it to the session if needed
+#                 request.session['loan_api_response'] = api_response
+#                 return JsonResponse({"message": api_response.get("Message")})
+#             else:
+#                 return JsonResponse({"message": "Failed to submit loan request."}, status=400)
+#         else:
+#             return JsonResponse({"message": "Error communicating with the loan API."}, status=500)
+
+#     else:
+#         return HttpResponse("Invalid request method.")
 
 ###################################### Withdraw #############################################
 
@@ -279,8 +376,43 @@ def Add_gold(request):
 
 
 
-###################################### Withdraw #############################################
+###################################### Gold Plan #############################################
 def Gold_plan(request):
+    if request.method == "POST":
+        quantity = request.POST.get('quantity')
+        
+        # Print the form data to the console (or handle it as needed)
+        # print("Quantity:", quantity)
+        
+        # Set the headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        # Make the API request
+        api_url = "https://www.vgold.co.in/dashboard/webservices/get_gold_plans.php"
+        response = requests.post(api_url, data={'quantity': quantity}, headers=headers)
+        # print(response.text)
+        
+        # Check if the API request was successful
+        if response.status_code == 200:
+            api_response = response.json()
+            if api_response.get("status") == "200":
+                data = api_response.get("Data", {})
+                # Print or process the API response data as needed
+                # print("API Response Data:", data)
+                # Optionally, you can pass the API response data to the template
+                return render(request, 'gold/gold_plan.html', {'data': data})
+            else:
+                # Handle the case where the API response status is not 200
+                # print("API Error Message:", api_response.get("Message"))
+                return render(request, 'gold/gold_plan.html', {'error': api_response.get("Message")})
+        else:
+            # Handle the case where the API request failed
+            # print("API request failed with status code:", response.status_code)
+            return render(request, 'gold/gold_plan.html', {'error': 'Failed to retrieve gold plan data'})
+    
+    # For GET requests, just render the template without any data
     return render(request, 'gold/gold_plan.html')
 
 ###################################### Our Vendors #############################################
@@ -626,20 +758,83 @@ def Gdeposit_history(request):
 
 ###################################### Gold Deposite #############################################
 def Gold_deposit(request):
-    return render(request, 'gold/gold_deposit.html')
+    if request.method == "POST":
+        gold_weight = request.POST.get('goldWeight')
+        deposit_charges = request.POST.get('depositCharges')
+        tenure = request.POST.get('tenure')
+        maturity_weight = request.POST.get('maturityWeight')
+        depositor = request.POST.get('depositor')
+        purity = request.POST.get('purity')
+        remark = request.POST.get('remark')
 
+        # Print the form data to the console (or handle it as needed)
+        print("Gold Weight:", gold_weight)
+        print("Deposit Charges:", deposit_charges)
+        print("Tenure:", tenure)
+        print("Maturity Weight:", maturity_weight)
+        print("Depositor:", depositor)
+        print("Purity:", purity)
+        print("Remark:", remark)
+
+    return render(request, 'gold/gold_deposit.html')
+###################################### Membership #############################################
 def Membership(request):
     return render(request, 'gold/membership.html')
-
+###################################### Money Wallet #############################################
 def Money_wallet(request):
     return render(request, 'gold/money_wallet.html')
-
+###################################### Pay Installment #############################################
 def Pay_installment(request):
     return render(request, 'gold/pay_installment.html')
-
+###################################### Add Money #############################################
 def Add_money(request):
+    if request.method == 'POST':
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+        
+        # Accessing the 'amount' and 'depositor' fields from the POST data
+        amount = request.POST.get('amount')
+        depositor = request.POST.get('depositor')
+        bankDetails = request.POST.get('bankDetails')
+        transactionId = request.POST.get('transactionId')
+        chequeNumber = request.POST.get('chequeNumber')
+        
+        payload={
+            "user_id":user_id,
+            "amount":amount,
+            "payment_option":depositor,
+            "bank_details":bankDetails,
+            "tr_id":transactionId,
+            "cheque_no":chequeNumber,
+        }
+        
+        # print("Payload:", payload)
+        
+        # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        try:
+            res = requests.post("https://www.vgold.co.in/dashboard/webservices/add_money.php", data=payload, headers=headers)
+            res.raise_for_status()  # Raises an exception for HTTP errors
+            response_data = res.json()
+
+            if response_data.get('status') == '200':
+                messages.success(request, response_data.get('Message'))             
+            else:
+                messages.error(request, response_data.get('Message'))
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"An error occurred while processing your request: {str(e)}")
+        
+        return redirect('add_money')
+
     return render(request, 'gold/add_money.html')
 
+###################################### Add Bank #############################################
 from django.shortcuts import render
 from django.http import HttpResponse
 
@@ -733,5 +928,11 @@ def Refer(request):
         return HttpResponse(message)
 
     return render(request, 'gold/refer.html')
+
+def Logout(request):
+    # Clear all sessions
+    request.session.clear()
+    # Redirect to the login page
+    return redirect('login')
 
 

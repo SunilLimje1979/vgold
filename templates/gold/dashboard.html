@@ -169,7 +169,7 @@
             /* Add vertical line */
             .logo-container-service div:not(:last-child) {
               border-right: 1px solid #ccc; /* Adjust color and thickness as needed */
-              padding-right: 10px; /* Adjust spacing */
+              padding-right: 5px; /* Adjust spacing */
               height: 70px;
             }
 
@@ -179,6 +179,7 @@
             }
             .container {
               background-color:rgb(11,20,58);
+              width:100%;
             }
 
             .carousel-item {
@@ -308,7 +309,7 @@
           <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
         </li>
         <li>
-          <a href="{% url 'login' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+          <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
       </li>
 
       </ul>
@@ -404,6 +405,7 @@
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
 
+
         <div class="logo-container-service">
           <div>
             <a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">
@@ -413,28 +415,31 @@
 
           <div><a href="" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;"> {% endcomment %}
-            <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
-            <p>Pay Installment</p></a>
+            <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
+            <p >Pay Installment</p></a>
           </div>
 
           <div><a href=" " style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'gold_deposit' %}" style="color: black; text-decoration: none;"> {% endcomment %}
-            <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
+            <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p>Deposit Gold</p></a>
           </div>
 
-          <div><a href=" " style="color: black; text-decoration: none;">
+          <div><a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
-            <center><img src="{% static 'assets/img/plan1.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
+            <center><img src="{% static 'assets/img/plan1.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p>Plan</p>
           </div>
 
-          <div><a href="" style="color: black; text-decoration: none;">
+          <div><a href=" " style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'loan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
-            <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 36px; height: 36px;margin-top: 8px;"></i></center>
+            <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 30px; height: 36px;margin-top: 8px;"></i></center>
             <p>Loan</p></a>
           </div>
         </div>
+
+
+
         <div class="center-image"><a href="{% url 'our_vendors' %}">
           <img
             src="{% static 'assets/img/dashboard_logo.jpg' %}"

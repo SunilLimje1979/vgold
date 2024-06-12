@@ -127,14 +127,15 @@
 <div class="container mt-5 custom-container">
   <div class="row">
       <div class="col-md-6 offset-md-3">
-          <form>
+        <form method="POST">
+            {% csrf_token %}
               <div class="mb-1">
                   <label for="goldWeight" class="form-label">Gold Weight (gm)</label>
-                  <input type="text" class="form-control" id="goldWeight" placeholder="">
+                  <input type="text" name="goldWeight" class="form-control" id="goldWeight" placeholder="">
               </div>
               <div class="mb-1">
                   <label for="depositCharges" class="form-label">Deposit Charges</label>
-                  <input type="text" class="form-control " id="depositCharges" placeholder="" readonly>
+                  <input type="text" name="depositCharges" class="form-control " id="depositCharges" placeholder="" readonly>
               </div>
 
               <div class="form-group form-element">
@@ -149,7 +150,7 @@
 
               <div class="mb-1">
                   <label for="maturityWeight" class="form-label">Maturity Weight</label>
-                  <input type="text" class="form-control " id="maturityWeight" placeholder="" readonly>
+                  <input type="text" name="maturityWeight" class="form-control " id="maturityWeight" placeholder="" readonly>
               </div>
 
               <div class="form-group form-element">
@@ -164,15 +165,16 @@
 
               <div class="mb-1">
                   <label for="purity" class="form-label">Purity</label>
-                  <input type="text" class="form-control" id="purity" placeholder="">
+                  <input type="text" name="purity" class="form-control" id="purity" placeholder="Purity">
               </div>
 
               <div class="mb-1">
                   <label for="remark" class="form-label">Remark</label>
-                  <input type="text" class="form-control" id="remark" placeholder="">
+                  <input type="text" name="remark" class="form-control" id="remark" placeholder="Remark">
               </div>
 
-              <button id="updateProfileBtn" type="button">Send Request</button>
+              <button id="updateProfileBtn" >Send Request</button>
+              
               <div class="center-image">
                   <img
                       src="{% static 'assets/img/bank_details.jpg' %}"

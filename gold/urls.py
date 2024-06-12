@@ -60,8 +60,7 @@ urlpatterns = [
     
     path('refer/', views.Refer, name='refer'),
     
-    
     path('booking_receipt/', views.BookingReceipt, name='booking_receipt'),
 
-    
+    path('logout/', views.Logout, name='logout'),
 ]
