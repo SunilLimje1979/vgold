@@ -63,4 +63,6 @@ urlpatterns = [
     path('booking_receipt/', views.BookingReceipt, name='booking_receipt'),
 
     path('logout/', views.Logout, name='logout'),
+    
+     path('handle_selection/', views.handle_selection, name='handle_selection'),
 ]

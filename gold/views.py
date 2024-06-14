@@ -784,8 +784,197 @@ def Membership(request):
 def Money_wallet(request):
     return render(request, 'gold/money_wallet.html')
 ###################################### Pay Installment #############################################
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+import requests
+
+@csrf_exempt
+@require_POST
+def handle_selection(request):
+    try:
+        # Fetch user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        # Check if user ID is available in session
+        if not user_id:
+            return HttpResponse("User ID not found in session data.", status=400)
+        
+        # print(user_id)  # Print user ID to server logs for debugging
+    
+        # Parse the JSON body of the request
+        data = json.loads(request.body)
+        selected_value = data.get('selected_value')
+        print(selected_value)  # Print selected value to server logs for debugging
+        
+        # Headers for the API requests
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        # First API call to fetch down payment details
+        api_url_down_payment = 'https://www.vgold.co.in/dashboard/webservices/fetch_down_payment.php'
+        api_data_down_payment = {'gbid': selected_value}
+        response_down_payment = requests.post(api_url_down_payment, data=api_data_down_payment, headers=headers)
+
+        response_data = {}
+        
+        if response_down_payment.status_code == 200:
+            api_response_down_payment = response_down_payment.json()
+            monthly_installment = api_response_down_payment.get('monthly_installment', 'N/A')
+            response_data['monthly_installment'] = monthly_installment
+            
+            # print(f"Monthly Installment: {monthly_installment}") 
+
+            message = api_response_down_payment.get('Message', 'Data fetched successfully')
+            response_data['message'] = message
+        else:
+            return JsonResponse({'error': 'Failed to fetch data from the down payment API'}, status=response_down_payment.status_code)
+        
+        # Second API call to fetch money wallet transactions
+        api_url_wallet_transactions = 'https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php'
+        api_data_wallet_transactions = {'user_id': user_id}
+        response_wallet_transactions = requests.post(api_url_wallet_transactions, data=api_data_wallet_transactions, headers=headers)
+
+        if response_wallet_transactions.status_code == 200:
+            api_response_wallet_transactions = response_wallet_transactions.json()
+            Wallet_Balance = api_response_wallet_transactions.get('Wallet_Balance', 'N/A')
+            response_data['wallet_balance'] = Wallet_Balance
+            
+            # print(f"Wallet Balance: {Wallet_Balance}")  # Print the wallet balance
+        else:
+            return JsonResponse({'error': 'Failed to fetch data from the wallet transactions API'}, status=response_wallet_transactions.status_code)
+                
+        # Third API call to fetch gold wallet transactions
+        api_url_gold_wallet_transactions = 'https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php'
+        api_data_gold_wallet_transactions = {'user_id': user_id}
+        response_gold_wallet_transactions = requests.post(api_url_gold_wallet_transactions, data=api_data_gold_wallet_transactions, headers=headers)
+        
+        if response_gold_wallet_transactions.status_code == 200:
+            api_response_gold_wallet_transactions = response_gold_wallet_transactions.json()
+            gold_Balance = api_response_gold_wallet_transactions.get('gold_Balance', 'N/A')
+            response_data['gold_balance'] = gold_Balance
+            
+            # print(f"Gold Balance: {gold_Balance}")  # Print the wallet balance
+        else:
+            return JsonResponse({'error': 'Failed to fetch data from the gold wallet transactions API'}, status=response_gold_wallet_transactions.status_code)
+        
+        # Return the combined response data as JSON
+        return JsonResponse(response_data)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+###################################### Pay Installment #############################################
+from django.shortcuts import render
+from django.http import HttpResponse
+import requests
+
 def Pay_installment(request):
-    return render(request, 'gold/pay_installment.html')
+    # Retrieve user data from session
+    purchase_rate_data = request.session.get('purchase_rate_data', {})
+    gold_purchase_rate = purchase_rate_data.get('Gold_purchase_rate', 'N/A')
+    
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    # Check if user ID is available
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    # API endpoint and headers
+    api_url = "https://www.vgold.co.in/dashboard/webservices/installment_booking_id.php"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # Prepare data for the POST request to get installment booking ID
+    post_data = {'user_id': user_id}
+    
+    try:
+        # Make the POST request to the API
+        response = requests.post(api_url, data=post_data, headers=headers)
+        response.raise_for_status()  # Raise HTTPError for bad responses
+        response_data = response.json()
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"An error occurred: {e}")
+
+    # Verify the API response status and message
+    if response_data.get('status') == '200' and response_data.get('Message') == 'success':
+        installment_data = response_data.get('Data', [])
+    else:
+        return HttpResponse("Failed to retrieve installment data.")
+    
+    # Handle form submission
+    if request.method == 'POST':
+        # Retrieve form data from POST request
+        gbid = request.POST.get('gbid')
+        payment_options = request.POST.get('paymentOptions')
+        minimumamt = request.POST.get('minimumamt')
+        other_amount_input = request.POST.get('otherAmountInput')
+        payment_option = request.POST.get('depositor')  # Default value if not 'moneyWallet' or 'goldWallet'
+        bank_details = request.POST.get('bankName')
+        tr_id = request.POST.get('transactionId')
+        cheque_no = request.POST.get('chequeNumber')
+        payable_amount = request.POST.get('payableAmount')
+        
+        # Determine payment_option and amountr based on payment_options
+        if payment_options == 'moneyWallet':
+            payment_option = 'MONEY WALLET'
+            amountr = payable_amount  # Use payable_amount if payment_options is 'moneyWallet'
+            other_amount_input = payable_amount
+        elif payment_options == 'goldWallet':
+            payment_option = 'GOLD WALLET'
+            amountr = payable_amount  
+            other_amount_input = payable_amount # Use payable_amount if payment_options is 'goldWallet'
+        elif payment_options == 'minimumAmount':
+            # payment_option = 'MINIMUM AMOUNT'
+            amountr = minimumamt 
+            other_amount_input = minimumamt# Use minimumamt if payment_options is 'minimumAmount'
+        else:
+            # Default case (if payment_options is not 'moneyWallet', 'goldWallet', or 'minimumAmount')
+            amountr = 0  # Set a default value, adjust as per your application logic
+        
+        # Prepare payload for the installment payment API request
+        payload = {
+            "user_id": user_id,
+            "gbid": gbid,
+            "amountr": amountr,
+            "payment_option": payment_option,
+            "bank_details": bank_details if bank_details else 0,  # Default value for bank_details if not provided
+            "amount_other": other_amount_input if other_amount_input else 0,  # Default value for amount_other if not provided
+            "tr_id": tr_id,
+            "cheque_no": cheque_no,
+            "confirmed": 0,
+        }
+        print(payload)
+        
+        # Make POST request to installment payment API
+        try:
+            res = requests.post("https://www.vgold.co.in/dashboard/webservices/installment.php", data=payload, headers=headers)
+            res.raise_for_status()  # Raise HTTPError for bad responses
+            api_response = res.json()
+            
+            # Handle success or failure based on API response
+            if api_response.get('status') == '200':
+                messages.success(request, api_response.get('Message'))
+            else:
+                messages.error(request, api_response.get('Message'))
+        
+        except requests.exceptions.RequestException as e:
+            return HttpResponse(f"An error occurred: {e}")
+       
+        return redirect(Pay_installment)  # Redirect back to Pay_installment view after form submission
+    
+    # Render the template with installment data in context
+    context = {'installment_data': installment_data, 'gold_purchase_rate': gold_purchase_rate}
+    return render(request, 'gold/pay_installment.html', context)
+
+
+
 ###################################### Add Money #############################################
 def Add_money(request):
     if request.method == 'POST':
