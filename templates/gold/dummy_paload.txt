@@ -1,0 +1,490 @@
+{% load i18n %} 
+{% load static %}
+{% load pwa %}
+{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="manifest" href="{% static "assets/manifest.json" %}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay Installment</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  
+  <!-- Font Awesome CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+  
+  <!-- Custom CSS -->
+  <style>
+    /* Navbar style */
+    .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px; /* Set the height to 55px */
+        color: white; /* Set text color to white */
+    }
+    .navbar-toggler-icon {
+        color: white;
+    }
+    .navbar-brand {
+        font-size: 20px;
+        margin-left: 20px;
+        color: white;
+    }
+
+    /* Custom styling for form */
+    .form-label {
+        display: block;
+        margin-bottom: 0px; /* Decrease the margin-bottom */
+        color: rgb(41, 39, 122) !important; /* Label color */
+        font-weight: bold;
+        padding-left: 10px;
+    }
+
+    .form-control {
+        border: none; /* Remove default border */
+        border-bottom: 1px solid #ccc; /* Add bottom border */
+        border-radius: 0; /* Remove border radius */
+        box-shadow: none; /* Remove box shadow */
+        padding-left: 10px;
+        width:100%;
+    }
+
+    /* Remove hover and focus effects */
+    .form-control:hover,
+    .form-control:focus {
+        box-shadow: none !important;
+    }
+
+    /* Disable cursor on input */
+    .form-control[readonly] {
+        cursor: default;
+    }
+    #vgoldID {
+        text-align: center;
+        margin-top: 80px; /* Add some top margin for spacing */
+        color: rgb(41, 39, 122); /* Set text color */
+    }
+    /* Update profile button */
+    #updateProfileBtn {
+        background-color: rgb(41, 39, 122);
+        color: white;
+        border: none;
+        padding: 12px 15px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 16px;
+        width: 80%; /* Set width to 80% */
+        margin: 20px auto; /* Center the button horizontally */
+        display: block; /* Ensure the button takes full width */
+    }
+
+    #updateProfileBtn:hover {
+        background-color: #29277a; /* Darker color on hover */
+    }
+    .center-image {
+        display: flex;
+        justify-content: center;
+        position: relative; /* Added relative positioning */
+        margin-left:8%;
+    }
+    .bold-text {
+        font-weight: bold;
+        color: rgb(41, 39, 122) !important; /* Label color */
+    }
+    .no-border-bottom {
+        border-bottom: none;
+    }
+
+    .form-check {
+        margin-left: 20px; /* Adjust the left margin as needed */
+    }
+    .amount-container {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+    .amount-container input,
+    .amount-container span {
+        margin-left: 10px;
+    }
+    .hidden-element {
+        display: none;
+    }
+    .image-container {
+        position: relative; /* Ensure the container is positioned relatively */
+        display: inline-block; /* Ensure the container size matches the image */
+    }
+    .share-icon {
+        position: absolute; /* Absolute positioning within the container */
+        top: 10px; /* Adjust as needed */
+        right: 15%; /* Adjust as needed */
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 40%;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 24px;
+    }
+    
+    .share-icon:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+  </style>
+
+</head>
+<body>
+  <!-- Navbar with menu drawer icon -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="">
+        <button class="navbar-toggler" type="button" id="menuBtn">
+            <a href="{% url 'dashboard' %}">
+            <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
+            </a>
+        </button>
+        <a class="navbar-brand">Pay Installment</a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Main container -->
+  <div class="container mt-3 custom-container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <form method="POST">
+          {% csrf_token %}
+          <input type="hidden" id="goldPurchaseRate" value="{{gold_purchase_rate}}">
+
+          <!-- Gold Booking ID selection -->
+          <div class="form-group form-element">
+            <label for="tenure" class="form-label">Gold Booking Id</label>
+            <select class="form-control no-border-bottom" id="tenure" name="gbid" onchange="sendSelectedValue()">
+                {% for installment in installment_data %}
+                    <option value="{{ installment.id }}">{{ installment.id }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          
+          <!-- Payment Amount Options -->
+      <!-- Payment Amount Options -->
+<div class="form-group form-element">
+    <label for="paymentAmount" class="form-label">How much do you want to pay?</label>
+
+    <div class="amount-container">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentOptions" id="minimumAmount" value="minimumAmount">
+            <label class="form-check-label" for="minimumAmount">
+                Minimum Amount
+            </label>
+            <span id="minimumAmountValue" style="display:none;"></span>
+            <input type="hidden" id="minimumamt" name="minimumamt">
+        </div>
+    </div>
+
+    <div class="amount-container">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentOptions" id="otherAmount" value="otherAmount">
+            <label class="form-check-label" for="otherAmount">
+                Other Amount
+            </label>
+            <input type="text" class="form-control" id="otherAmountInput" name="otherAmountInput" placeholder="Enter amount" style="display:none; width: 100px;">
+        </div>
+    </div>
+
+    <div class="amount-container">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentOptions" id="moneyWallet" value="moneyWallet">
+            <label class="form-check-label" for="moneyWallet">
+                Money Wallet
+            </label>
+            <span id="moneyWalletValue" style="display:none;"></span>
+        </div>
+    </div>
+
+    <div class="amount-container">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentOptions" id="goldWallet" value="goldWallet">
+            <label class="form-check-label" for="goldWallet">
+                Gold Wallet
+            </label>
+            <span id="goldWalletValue" style="display:none;"></span>
+        </div>
+    </div>
+</div>
+
+          <!-- Payment Option Select -->
+          <div class="form-group form-element hidden-element" id="paymentOptionSelect">
+            <select class="form-control bold-text no-border-bottom" id="depositor" name="depositor">
+              <option value="">-- Please select Payment Option --</option>
+              <option value="Cheque">Cheque</option>
+              <option value="Online">NEFT/RTGS</option>
+              <option value="UPI">UPI Payment</option>
+          </select>
+          </div>
+
+          <!-- Bank Details -->
+          <div id="bankDetails" style="display: none">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="bankNameInput" name="bankName" placeholder="Enter bank name">
+            </div>
+            <div class="mb-3" id="transactionIdDiv" style="display: none">
+                <input type="text" class="form-control" id="transactionIdInput" name="transactionId" placeholder="Enter transaction ID">
+            </div>
+            <div class="mb-3" id="chequeNumberDiv" style="display: none">
+                <input type="text" class="form-control" id="chequeNumberInput" name="chequeNumber" placeholder="Enter cheque number">
+            </div>
+          </div>
+          
+         <!-- Payable Amount Input -->
+        <div class="form-group form-element hidden-element" id="payableAmountInput">
+            <label for="payableAmount" class="form-label">Enter Payable Amount</label>
+            <input type="text" class="form-control" id="payableAmount" name="payableAmount" placeholder="Enter amount">
+        </div>
+
+        <!-- Card to display below the payable amount input field -->
+        <div class="card hidden-element" id="payableAmountCard">
+            <div class="card-body">
+                <h5 class="card-title">Payment Details</h5>
+                <p class="card-text">You have selected the Money Wallet option. Please enter the amount you wish to pay.</p>
+            </div>
+        </div>
+
+          <!-- Pay Installment Button -->
+          <button id="updateProfileBtn" type="submit">Pay Installment</button>
+
+          <!-- Display Messages -->
+          {% if messages %}
+          <div class="row justify-content-center mt-3">
+              {% for message in messages %}
+              <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" aria-label="Close"></button>
+              </div>
+              {% endfor %}
+          </div>
+          {% endif %}
+          
+          <!-- Display Bank Details Image -->
+          <div class="center-image">
+            <div class="image-container">
+                <img
+                  src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
+                  alt="Your Logo"
+                  class="logo"
+                  style="height: 90%; width: 90%; margin-bottom: 10px"
+                />
+                <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
+            </div>
+        </div>
+        
+
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (optional, for Bootstrap features) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- Custom JS -->
+  <script>
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Function to send selected value from Gold Booking ID dropdown to the server
+        function sendSelectedValue() {
+            const selectedValue = document.getElementById('tenure').value;
+            const csrfToken = getCookie('csrftoken');
+            const goldPurchaseRate = document.getElementById('goldPurchaseRate').value;
+
+            fetch('{% url "handle_selection" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ selected_value: selectedValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                console.log('Wallet Balance:', data.wallet_balance);
+                console.log('Gold Balance:', data.gold_balance);
+                console.log('Monthly Installment:', data.monthly_installment);
+                console.log('Gold Purchase Rate:', goldPurchaseRate);
+            
+                // Update HTML elements with received data
+                document.getElementById('minimumAmountValue').innerHTML = `₹ ${data.monthly_installment}`;
+                document.getElementById('minimumamt').value = data.monthly_installment; // Update hidden input field
+                document.getElementById('moneyWalletValue').innerHTML = `₹ ${data.wallet_balance}`;
+                
+                // Calculate the value of gold in rupees
+                const goldValueInRupees = data.gold_balance * goldPurchaseRate;
+                console.log('Gold Value in Rupees:', goldValueInRupees);
+            
+                // Combine gold balance in grams and its value in rupees into one string
+                const goldBalanceDisplay = `${data.gold_balance} GM (Worth ₹ ${goldValueInRupees})`;
+                document.getElementById('goldWalletValue').innerHTML = goldBalanceDisplay;
+                document.getElementById('goldWalletValue').style.display = 'inline';  // Make the element visible
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+    
+    <script>
+      // Function to handle radio button changes and display corresponding input fields
+document.addEventListener('DOMContentLoaded', function() {
+    const radioButtons = document.querySelectorAll('input[name="paymentOptions"]');
+    const minimumAmountValue = document.getElementById('minimumAmountValue');
+    const otherAmountInput = document.getElementById('otherAmountInput');
+    const moneyWalletValue = document.getElementById('moneyWalletValue');
+    const goldWalletValue = document.getElementById('goldWalletValue');
+    const paymentOptionSelect = document.getElementById('paymentOptionSelect');
+    const payableAmountInput = document.getElementById('payableAmountInput');
+    const payableAmountCard = document.getElementById('payableAmountCard');
+    const bankDetailsDiv = document.getElementById("bankDetails");
+    const transactionIdDiv = document.getElementById("transactionIdDiv");
+    const chequeNumberDiv = document.getElementById("chequeNumberDiv");
+
+    radioButtons.forEach(radio => {
+        radio.addEventListener('change', function(event) {
+            minimumAmountValue.style.display = "none";
+            otherAmountInput.style.display = "none";
+            moneyWalletValue.style.display = "none";
+            goldWalletValue.style.display = "none";
+            paymentOptionSelect.classList.add('hidden-element');
+            payableAmountInput.classList.add('hidden-element');
+            payableAmountCard.classList.add('hidden-element'); // Hide card by default
+            bankDetailsDiv.style.display = "none"; // Hide bank details by default
+
+            if (event.target.value === "minimumAmount") {
+                minimumAmountValue.style.display = "inline";
+                paymentOptionSelect.classList.remove('hidden-element');
+            } else if (event.target.value === "otherAmount") {
+                otherAmountInput.style.display = "inline";
+                paymentOptionSelect.classList.remove('hidden-element');
+            } else if (event.target.value === "moneyWallet") {
+                moneyWalletValue.style.display = "inline";
+                payableAmountInput.classList.remove('hidden-element');
+            } else if (event.target.value === "goldWallet") {
+                goldWalletValue.style.display = "inline";
+                payableAmountInput.classList.remove('hidden-element');
+            }
+        });
+    });
+
+    // Event listener for the payable amount input field
+    document.getElementById('payableAmount').addEventListener('input', function() {
+        if (document.getElementById('moneyWallet').checked && this.value) {
+            payableAmountCard.classList.remove('hidden-element'); // Show card when amount is entered
+        } else {
+            payableAmountCard.classList.add('hidden-element'); // Hide card if no amount
+        }
+    });
+
+    // Display bank details input fields based on selected payment option
+    document.getElementById("depositor").addEventListener("change", function() {
+        var depositMethod = this.value;
+
+        if (depositMethod === "Online" || depositMethod === "Cheque") {
+            bankDetailsDiv.style.display = "block";
+        } else {
+            bankDetailsDiv.style.display = "none";
+        }
+
+        if (depositMethod === "Online") {
+            transactionIdDiv.style.display = "block";
+            chequeNumberDiv.style.display = "none";
+        } else if (depositMethod === "Cheque") {
+            transactionIdDiv.style.display = "none";
+            chequeNumberDiv.style.display = "block";
+        } else {
+            transactionIdDiv.style.display = "none";
+            chequeNumberDiv.style.display = "none";
+        }
+    });
+});
+
+    </script>
+    
+    <script>
+        // Function to close alert messages
+        function closeAlert(alert) {
+            alert.classList.add("fade");
+            setTimeout(function () {
+                alert.remove();
+            }, 500);
+        }
+        
+        // Close alert messages automatically after 5 seconds or when the close button is clicked
+        document.addEventListener("DOMContentLoaded", function () {
+            var alertCloseButtons = document.querySelectorAll(".btn-close");
+            alertCloseButtons.forEach(function (button) {
+                button.addEventListener("click", function () {
+                    var alert = this.closest(".alert");
+                    closeAlert(alert);
+                });
+            });
+            var alerts = document.querySelectorAll(".alert");
+            alerts.forEach(function (alert) {
+                setTimeout(function () {
+                    closeAlert(alert);
+                }, 5000);
+            });
+        });
+
+        async function shareImage() {
+            const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+            const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    
+            try {
+              const response = await fetch(proxyUrl + imageUrl);
+              if (!response.ok) throw new Error('Network response was not ok.');
+              const blob = await response.blob();
+              const file = new File([blob], 'bank_details.png', { type: blob.type });
+    
+              if (navigator.share) {
+                navigator.share({
+                  title: 'Share Bank Details Image',
+                  files: [file]
+                }).then(() => {
+                  console.log('Thanks for sharing!');
+                }).catch(err => {
+                  console.error('Error while sharing', err);
+                });
+              } else {
+                const url = URL.createObjectURL(file);
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = url;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('Image URL copied to clipboard');
+                URL.revokeObjectURL(url);
+              }
+            } catch (err) {
+              console.error('Error fetching the image', err);
+            }
+          }
+    </script>
+</body>
+</html>

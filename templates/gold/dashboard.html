@@ -257,12 +257,12 @@
           <a href="{% url 'gbooking_history' %}"
             ><i class="bi bi-currency-dollar"></i> Gold Booking History</a
           >
-        </li>  {% comment %}
+        </li> 
         <li>
           <a href="{% url 'gdeposit_history' %}"
             ><i class="bi bi-wallet2"></i> Gold Deposit History</a
           >
-        </li>
+        </li> {% comment %}
         <li>
           <a href="{% url 'membership' %}"
             ><i class="bi bi-people"></i> Membership</a
@@ -274,12 +274,12 @@
         </li>
         <li>
           <a href="{% url 'money_wallet' %}" > <i class="bi bi-credit-card"></i> Money Wallet</a>
-        </li>
+        </li>{% endcomment %}
         <li>
           <a href="{% url 'pay_installment' %}"
             ><i class="bi bi-calendar-check"></i> Pay Installment</a
           >
-        </li>
+        </li>{% comment %}
        <li>
           <a href="{% url 'add_bank' %}"><i class="bi bi-bank"></i> Add Bank</a>
         </li>
@@ -290,12 +290,12 @@
         </li>
         <li>
           <a href="{% url 'review' %}"><i class="bi bi-star"></i> Review</a>
-        </li> 
+        </li>  {% endcomment %}
         <li>
           <a href="{% url 'complaint' %}"
             ><i class="bi bi-exclamation-diamond"></i> Complaint / Feedback</a
           >
-        </li> {% endcomment %}
+        </li>
         {% comment %} <li>
           <a href="{% url 'feedback' %}"
             ><i class="bi bi-chat-left-dots"></i> Feedback</a
@@ -419,7 +419,7 @@
             <p >Pay Installment</p></a>
           </div>
 
-          <div><a href=" " style="color: black; text-decoration: none;">
+          <div><a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'gold_deposit' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p>Deposit Gold</p></a>
@@ -431,7 +431,7 @@
             <p>Plan</p>
           </div>
 
-          <div><a href=" " style="color: black; text-decoration: none;">
+          <div><a href="{% url 'loan' %}" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'loan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 30px; height: 36px;margin-top: 8px;"></i></center>
             <p>Loan</p></a>
@@ -554,7 +554,7 @@
     }
 </script> {% endcomment %}
 
-<script>
+{% comment %} <script>
   async function RateshareFunction() {
       const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png";
       const proxyUrl = "https://cors-anywhere.herokuapp.com/";
@@ -593,10 +593,10 @@
           console.error('Error fetching the image', err);
       }
   }
-</script>
+</script> {% endcomment %}
 
 
-{% comment %} <script>
+ <script>
   async function RateshareFunction() {
       if (navigator.canShare && navigator.canShare({ files: [] })) {
           try {
@@ -620,7 +620,7 @@
           alert('Web Share API is not supported in your browser.');
       }
   }
-</script> {% endcomment %}
+</script>
 
 
   </body>

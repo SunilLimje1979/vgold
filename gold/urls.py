@@ -22,6 +22,8 @@ urlpatterns = [
     
     path('our_vendors/', views.Our_vendors, name='our_vendors'),
     
+    path('imagespecific/', views.Imagespecific, name='imagespecific'),
+    
     path('gold_wallet/', views.Gold_wallet, name='gold_wallet'),
     
     path('gbooking_history/', views.Gbooking_history, name='gbooking_history'),
@@ -33,6 +35,10 @@ urlpatterns = [
     path('gdeposit_history/', views.Gdeposit_history, name='gdeposit_history'),
     
     path('gold_deposit/', views.Gold_deposit, name='gold_deposit'),
+    
+    path('calculate_gold_deposite/', views.calculate_gold_deposite, name='calculate_gold_deposite'),
+    
+    path('cgold_mature_weight/', views.cgold_mature_weight, name='cgold_mature_weight'),
     
     path('membership/', views.Membership, name='membership'),
     

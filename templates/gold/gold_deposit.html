@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="manifest" href="{% static "assets/manifest.json" %}">
+  <link rel="manifest" href="{% static 'assets/manifest.json' %}">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gold Deposit</title>
   <!-- Bootstrap CSS -->
@@ -22,27 +22,26 @@
   <style>
     /* Navbar style */
     .navbar {
-        background-color: rgb(41, 39, 122);
-        height: 55px; /* Set the height to 400px */
-        color: white; /* Set text color to white */
+      background-color: rgb(41, 39, 122);
+      height: 55px;
+      color: white;
     }
     .navbar-toggler-icon {
-        color: white;
+      color: white;
     }
     .navbar-brand {
-        font-size: 20px;
-        margin-left: 20px;
-        color: white;
-        /* font-weight: bold; /* Make the text bold */
+      font-size: 20px;
+      margin-left: 20px;
+      color: white;
     }
 
     /* Custom styling for form */
     .form-label {
-        display: block;
-        margin-bottom: 0px; /* Decrease the margin-bottom */
-        color: rgb(41, 39, 122) !important; /* Label color */
-        font-weight: bold;
-        padding-left: 10px;
+      display: block;
+      margin-bottom: 0px;
+      color: rgb(41, 39, 122) !important;
+      font-weight: bold;
+      padding-left: 10px;
     }
 
     .form-control {
@@ -51,63 +50,71 @@
       border-radius: 0;
       box-shadow: none;
       padding-left: 10px;
-      height: 30px; /* Set the height of the input boxes */
-  }
+      height: 30px;
+    }
 
-    /* Remove hover and focus effects */
     .form-control:hover,
     .form-control:focus {
-        /* border-color: transparent !important; */
-        box-shadow: none !important;
+      box-shadow: none !important;
     }
 
-    /* Disable cursor on input */
     .form-control[readonly] {
-        cursor: default;
+      cursor: default;
     }
+    .no-border-bottom {
+      border-bottom: none !important;
+    }
+
     #vgoldID {
-        text-align: center;
-        margin-top: 80px; /* Add some top margin for spacing */
-        /* font-size: 16px; /* Adjust font size as needed */
-        /* font-weight: bold; /* Make the text bold */
-        color: rgb(41, 39, 122); /* Set text color */
+      text-align: center;
+      margin-top: 80px;
+      color: rgb(41, 39, 122);
     }
-    /* Update profile button */
+
     #updateProfileBtn {
-        background-color: rgb(41, 39, 122);
-        color: white;
-        border: none;
-        padding: 12px 15px;
-        border-radius: 15px;
-        cursor: pointer;
-        font-size: 16px;
-        width: 80%; /* Set width to 80% */
-        margin: 20px auto; /* Center the button horizontally */
-        display: block; /* Ensure the button takes full width */
+      background-color: rgb(41, 39, 122);
+      color: white;
+      border: none;
+      padding: 12px 15px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 80%;
+      margin: 20px auto;
+      display: block;
     }
 
     #updateProfileBtn:hover {
-        background-color: #29277a; /* Darker color on hover */
+      background-color: #29277a;
     }
+
     .center-image {
-        display: flex;
-        justify-content: center;
-      }
-
-      .custom-container {
-        margin-top: 60px !important; /* Override the margin-top */
-      }
-      .no-border-bottom {
-        border-bottom: none;
+      display: flex;
+      justify-content: center;
+      position: relative;
     }
-    
-    {% comment %} .custom-container {
-        margin: 0 auto; /* Center the container horizontally */
-        padding-left: 40px; /* Add left padding */
-        padding-right: 40px; /* Add right padding */
-    } {% endcomment %}
-</style>
 
+    .custom-container {
+      margin-top: 60px !important;
+    }
+
+    /* Style for the share icon */
+    .share-icon {
+        position: absolute;
+        top: 5%;
+        right: 10%;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        padding: 10px;
+        cursor: pointer;
+        font-size: 24px;
+    }
+
+    .share-icon:hover {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+  </style>
 </head>
 <body>
   <!-- Navbar with menu drawer icon -->
@@ -115,82 +122,248 @@
     <div class="container-fluid">
       <div class="">
         <button class="navbar-toggler" type="button" id="menuBtn">
-            <a href="{% url 'dashboard' %}">
+          <a href="{% url 'dashboard' %}">
             <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
-
-          </button>
+          </a>
+        </button>
         <a class="navbar-brand">Gold Deposit</a>
       </div>
     </div>
-</nav>
+  </nav>
 
-<div class="container mt-5 custom-container">
-  <div class="row">
+  <div class="container mt-5 custom-container">
+    <div class="row">
       <div class="col-md-6 offset-md-3">
         <form method="POST">
-            {% csrf_token %}
-              <div class="mb-1">
-                  <label for="goldWeight" class="form-label">Gold Weight (gm)</label>
-                  <input type="text" name="goldWeight" class="form-control" id="goldWeight" placeholder="">
-              </div>
-              <div class="mb-1">
-                  <label for="depositCharges" class="form-label">Deposit Charges</label>
-                  <input type="text" name="depositCharges" class="form-control " id="depositCharges" placeholder="" readonly>
-              </div>
+          {% csrf_token %}
+          {% if messages %}
+            <div class="row justify-content-center mt-3">
+              {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
 
-              <div class="form-group form-element">
-                  <label for="tenure" class="form-label">Tenure</label>
-                  <select class="form-control no-border-bottom" id="tenure" name="tenure">
-                      <option value="12">12 Months</option>
-                      <option value="24">24 Months</option>
-                      <option value="36">36 Months</option>
-                      <option value="40">40 Months</option>
-                  </select>
-              </div>
+          <!-- Gold Weight Input -->
+          <div class="mb-1">
+            <label for="goldWeight" class="form-label">Gold Weight (gm)</label>
+            <input type="text" name="goldWeight" class="form-control" id="goldWeight" placeholder="">
+          </div>
 
-              <div class="mb-1">
-                  <label for="maturityWeight" class="form-label">Maturity Weight</label>
-                  <input type="text" name="maturityWeight" class="form-control " id="maturityWeight" placeholder="" readonly>
-              </div>
+           {% comment %} <div class="mb-1">
+                <label for="depositCharges" class="form-label">Deposit Charges</label>
+                <input type="text" name="depositCharges" class="form-control " id="depositCharges" placeholder="" readonly>
+            </div> {% endcomment %}
 
-              <div class="form-group form-element">
-                  <label for="depositor" class="form-label">Willing to Deposit</label>
-                  <select class="form-control no-border-bottom" id="depositor" name="depositor">
-                      <option value="vighnaharta">Vighnaharta Gold Ltd</option>
-                      <option value="png">PNG Jewellers</option>
-                      <option value="ranka">Ranka Jewellers</option>
-                      <option value="hp">HP Jewellers</option>
-                  </select>
-              </div>
 
-              <div class="mb-1">
-                  <label for="purity" class="form-label">Purity</label>
-                  <input type="text" name="purity" class="form-control" id="purity" placeholder="Purity">
-              </div>
+          <!-- Deposit Charges Input -->
+          <div class="mb-1">
+            <label for="depositCharges" class="form-label">Deposit Charges</label>
+            <input type="text" name="depositCharges" class="form-control no-border-bottom" id="depositCharges" placeholder="" readonly>
+          </div>
 
-              <div class="mb-1">
-                  <label for="remark" class="form-label">Remark</label>
-                  <input type="text" name="remark" class="form-control" id="remark" placeholder="Remark">
-              </div>
+          <!-- Tenure Dropdown -->
+          <div class="form-group form-element">
+            <label for="tenure" class="form-label">Tenure</label>
+            <select class="form-control no-border-bottom" id="tenure" name="tenure" onchange="updateConsoleLogs()">
+              <option value=" ">--- Select ---</option>
+              <option value="12">12 Months</option>
+              <option value="24">24 Months</option>
+              <option value="36">36 Months</option>
+              <option value="40">40 Months</option>
+              <option value="60">60 Months</option>
+            </select>
+          </div>
 
-              <button id="updateProfileBtn" >Send Request</button>
-              
-              <div class="center-image">
-                  <img
-                      src="{% static 'assets/img/bank_details.jpg' %}"
-                      alt="Your Logo"
-                      class="logo"
-                      style="height: 230px; width: 260px; margin-bottom: 10px"
-                  />
-              </div>
-          </form>
+          <!-- Maturity Weight Input -->
+          <div class="mb-1">
+            <label for="maturityWeight" class="form-label">Maturity Weight</label>
+            <input type="text" name="maturityWeight" class="form-control no-border-bottom" id="maturityWeight" placeholder="" readonly>
+          </div>
+
+            {% comment %} <div class="mb-1">
+                <label for="maturityWeight" class="form-label">Maturity Weight</label>
+                <input type="text" name="maturityWeight" class="form-control " id="maturityWeight" placeholder="" readonly>
+            </div> {% endcomment %}
+
+          <!-- Willing to Deposit Dropdown -->
+          <div class="form-group form-element">
+            <label for="depositor" class="form-label">Willing to Deposit</label>
+            <select class="form-control no-border-bottom" id="depositor" name="depositor">
+              <option value="">--Select the vendor--</option>
+              {% for vendor in vendor_data %}
+                <option value="{{ vendor.vendor_id }}">{{ vendor.firm_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Purity Input -->
+          <div class="mb-1">
+            <label for="purity" class="form-label">Purity</label>
+            <input type="text" name="purity" class="form-control" id="purity" placeholder="">
+          </div>
+
+          <!-- Remark Input -->
+          <div class="mb-1">
+            <label for="remark" class="form-label">Remark</label>
+            <input type="text" name="remark" class="form-control" id="remark" placeholder="">
+          </div>
+
+          <!-- Send Request Button -->
+          <button id="updateProfileBtn">Send Request</button>
+
+          <!-- Center Image -->
+          <div class="center-image">
+            <img
+              src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
+              alt="Your Logo"
+              class="logo"
+              style="height: 80%; width: 90%; margin-bottom: 10px"
+            />
+            <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
+          </div>
+        </form>
       </div>
+    </div>
   </div>
-</div>
-
 
   <!-- Bootstrap JS (optional, for Bootstrap features) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    async function shareImage() {
+        const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
+        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+
+        try {
+            // Fetch the image using the CORS proxy and convert it to a Blob
+            const response = await fetch(proxyUrl + imageUrl);
+            if (!response.ok) throw new Error('Network response was not ok.');
+            const blob = await response.blob();
+
+            // Create a File object from the Blob
+            const file = new File([blob], 'bank_details.png', { type: blob.type });
+
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Share Bank Details Image',
+                    files: [file]
+                }).then(() => {
+                    console.log('Thanks for sharing!');
+                }).catch(err => {
+                    console.error('Error while sharing', err);
+                });
+            } else {
+                // Fallback for browsers that do not support the Web Share API
+                const url = URL.createObjectURL(file);
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = url;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('Image URL copied to clipboard');
+                URL.revokeObjectURL(url); // Clean up the object URL
+            }
+        } catch (err) {
+            console.error('Error fetching the image', err);
+        }
+    }
+</script>
+
+  <script>
+    function updateConsoleLogs() {
+      var goldWeight = $('#goldWeight').val();
+      var tenure = $('#tenure').val();
+
+      // Send AJAX request to Django view
+      $.ajax({
+        url: '{% url 'cgold_mature_weight' %}',
+        method: 'POST',
+        data: {
+          'gold_weight': goldWeight,
+          'tenure': tenure,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response) {
+          if (response.status == 200) {
+            $('#maturityWeight').val(response.data);
+          } else {
+            console.error('API response was unsuccessful.');
+          }
+        },
+        error: function(error) {
+          console.error('Error:', error);
+        }
+      });
+    }
+
+    $(document).ready(function() {
+      $('#goldWeight').on('input', function() {
+        var goldWeight = $(this).val();
+        console.log('Gold Weight changed to:', goldWeight);
+      });
+
+      $('#tenure').on('input', function() {
+        var tenure = $(this).val();
+        console.log('Tenure changed to:', tenure);
+      });
+    });
+  </script>
+
+  <script>
+    // Existing AJAX function remains here
+    $(document).ready(function() {
+      $('#goldWeight').on('input', function() {
+        var goldWeight = $(this).val();
+
+        // AJAX request remains here
+        $.ajax({
+          url: '{% url 'calculate_gold_deposite' %}',
+          method: 'POST',
+          data: {
+            'gold_weight': goldWeight,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(response) {
+            // Update depositCharges input field with charges value
+            $('#depositCharges').val(response.charges);
+          },
+          error: function(error) {
+            console.error('Error sending Gold Weight:', error);
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>
+    function closeAlert(alert) {
+      alert.classList.add("fade");
+      setTimeout(function() {
+        alert.remove();
+      }, 500);
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+      var alertCloseButtons = document.querySelectorAll(".btn-close");
+      alertCloseButtons.forEach(function(button) {
+        button.addEventListener("click", function() {
+          var alert = this.closest(".alert");
+          closeAlert(alert);
+        });
+      });
+      var alerts = document.querySelectorAll(".alert");
+      alerts.forEach(function(alert) {
+        setTimeout(function() {
+          closeAlert(alert);
+        }, 5000);
+      });
+    });
+  </script>
 </body>
 </html>

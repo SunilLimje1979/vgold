@@ -84,7 +84,7 @@ def OTP(request):
             response = requests.post(login_api_url, data=payload, headers=headers)
             response.raise_for_status()
             data = response.json()
-            # print (response.text)
+            print (response.text)
 
             if data.get("status") == 200:
                 # Store user data in session
@@ -177,63 +177,11 @@ def Dashboard(request):
 
 ###################################### Loan #############################################
 
-def Loan(request):
-    if request.method=='GET':
-        # Retrieve user data from session
-        user_data = request.session.get('user_data', {})
-        # print(user_data)
-        user_id = user_data.get('data', [{}])[0].get('User_ID')
-        First_Name = user_data.get('data', [{}])[0].get('First_Name')
-
-        if not user_id:
-            return HttpResponse("User ID not found in session data.")
-        
-        # Retrieve loan API response from session
-        loan_api_response = request.session.get('loan_api_response')
-        
-        # Print the loan API response to verify it
-        # print(loan_api_response)
-        
-        # Extract the loan amount from the loan API response
-        loan_amount = None
-        if loan_api_response and 'data' in loan_api_response:
-            loan_amount = loan_api_response['data'].get('loan_amount')
-        
-        # If you need to pass the response to the template, prepare the context
-        context = {
-            'First_Name': First_Name,
-            'loan_amount': loan_amount,
-        }
-        
-        # Render the template with the context
-        return render(request, 'gold/loan.html', context)
-    
-    else:
-        user_data = request.session.get('user_data', {})
-        user_id = user_data.get('data', [{}])[0].get('User_ID')
-
-        if not user_id:
-            return HttpResponse("User ID not found in session data.")
-        
-        
-        amount = request.POST.get('goldWeight')
-        comment = request.POST.get('depositor')
-        
-        payload = {
-            "user_id": user_id,
-            "amount": amount,
-            "comment": comment  
-        }
-
-        print("Payload:", payload)
-
-        # return HttpResponse("Data")
-        return redirect(Loan)
-    
 # def Loan(request):
-#     if request.method == 'GET':
+#     if request.method=='GET':
 #         # Retrieve user data from session
 #         user_data = request.session.get('user_data', {})
+#         # print(user_data)
 #         user_id = user_data.get('data', [{}])[0].get('User_ID')
 #         First_Name = user_data.get('data', [{}])[0].get('First_Name')
 
@@ -243,12 +191,15 @@ def Loan(request):
 #         # Retrieve loan API response from session
 #         loan_api_response = request.session.get('loan_api_response')
         
+#         # Print the loan API response to verify it
+#         # print(loan_api_response)
+        
 #         # Extract the loan amount from the loan API response
 #         loan_amount = None
 #         if loan_api_response and 'data' in loan_api_response:
 #             loan_amount = loan_api_response['data'].get('loan_amount')
         
-#         # Prepare the context for the template
+#         # If you need to pass the response to the template, prepare the context
 #         context = {
 #             'First_Name': First_Name,
 #             'loan_amount': loan_amount,
@@ -257,52 +208,110 @@ def Loan(request):
 #         # Render the template with the context
 #         return render(request, 'gold/loan.html', context)
     
-#     elif request.method == 'POST':
-#         # Retrieve user data from session
+#     else:
 #         user_data = request.session.get('user_data', {})
 #         user_id = user_data.get('data', [{}])[0].get('User_ID')
 
 #         if not user_id:
 #             return HttpResponse("User ID not found in session data.")
         
-#         # Get the amount and comment from the POST request
+        
 #         amount = request.POST.get('goldWeight')
 #         comment = request.POST.get('depositor')
         
-#         # Prepare the payload for the API request
 #         payload = {
 #             "user_id": user_id,
 #             "amount": amount,
 #             "comment": comment  
 #         }
-        
-#         print(payload)
-#         # API endpoint URL
-#         api_url = 'https://www.vgold.co.in/dashboard/webservices/save_loan_request.php'
-        
-#         # Headers for the request
-#         headers = {
-#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-#         }
-        
-#         # Make the POST request to the API
-#         response = requests.post(api_url, data=payload, headers=headers)
-#         print(response.text)
-        
-#         # Check the response from the API
-#         if response.status_code == 200:
-#             api_response = response.json()
-#             if api_response.get('status') == '200':
-#                 # Successful response, save it to the session if needed
-#                 request.session['loan_api_response'] = api_response
-#                 return JsonResponse({"message": api_response.get("Message")})
-#             else:
-#                 return JsonResponse({"message": "Failed to submit loan request."}, status=400)
-#         else:
-#             return JsonResponse({"message": "Error communicating with the loan API."}, status=500)
 
-#     else:
-#         return HttpResponse("Invalid request method.")
+#         print("Payload:", payload)
+
+#         # return HttpResponse("Data")
+#         return redirect(Loan)
+    
+def Loan(request):
+    if request.method == 'GET':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+        First_Name = user_data.get('data', [{}])[0].get('First_Name')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+        
+        # Retrieve loan API response from session
+        loan_api_response = request.session.get('loan_api_response')
+        
+        # Extract the loan amount from the loan API response
+        loan_amount = None
+        if loan_api_response and 'data' in loan_api_response:
+            loan_amount = loan_api_response['data'].get('loan_amount')
+        
+        # Prepare the context for the template
+        context = {
+            'First_Name': First_Name,
+            'loan_amount': loan_amount,
+        }
+        
+        # Render the template with the context
+        return render(request, 'gold/loan.html', context)
+    
+    elif request.method == 'POST':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+        
+        # Get the amount and comment from the POST request
+        amount = request.POST.get('goldWeight')
+        comment = request.POST.get('depositor')
+        
+        # Prepare the payload for the API request
+        payload = {
+            "user_id": user_id,
+            "amount": amount,
+            "comment": comment  
+        }
+        
+        # print(payload)
+        # API endpoint URL
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/save_loan_request.php'
+        
+        # Headers for the request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        # Make the POST request to the API
+        response = requests.post(api_url, data=payload, headers=headers)
+        # print(response.text)
+        
+        # Check the response from the API
+        if response.status_code == 200:
+            api_response = response.json()
+            if api_response.get('status') == '200':
+                # Successful response, save it to the session if needed
+                request.session['loan_api_response'] = api_response
+                
+                
+                messages.success(request, api_response.get('Message'))
+                return redirect(Loan)
+                # return JsonResponse({"message": api_response.get("Message")})
+            else:
+                messages.error(request, api_response.get('Message'))
+                return redirect(Loan)
+                # return JsonResponse({"message": "Failed to submit loan request."}, status=400)
+        
+        else:
+            return JsonResponse({"message": "Error communicating with the loan API."}, status=500)
+        
+    
+
+    else:
+        return HttpResponse("Invalid request method.")
 
 ###################################### Withdraw #############################################
 
@@ -416,8 +425,60 @@ def Gold_plan(request):
     return render(request, 'gold/gold_plan.html')
 
 ###################################### Our Vendors #############################################
+
 def Our_vendors(request):
-    return render(request, 'gold/our_vendors.html')
+    # URL of the API
+    api_url = "https://www.vgold.co.in/dashboard/webservices/vendor_upload.php"
+
+    # Set the headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    # Make a GET request to the API with headers
+    response = requests.get(api_url, headers=headers)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+
+        if data['status'] == '200':
+            # Extract vendor details and prepend the base URL
+            base_url = "https://www.vgold.co.in"
+            vendors = [
+                {
+                    'vendor_id': vendor['vendor_id'],
+                    'logo_path': base_url + vendor['logo_path'],
+                    'letter_path': base_url + vendor['letter_path'],
+                    'advertisement_path': base_url + vendor['advertisement_path']
+                }
+                for vendor in data['Data']
+            ]
+        else:
+            vendors = []
+    else:
+        vendors = []
+
+    context = {
+        'vendors': vendors,
+    }
+    return render(request, 'gold/our_vendors.html', context)
+
+###################################### Image Specific #############################################
+
+from django.shortcuts import render
+
+def Imagespecific(request):
+    # Get the vendor_id and logo_path from the query parameters
+    vendor_id = request.GET.get('vendor_id', None)
+    logo_path = request.GET.get('logo_path', None)
+    
+    context={'vendor_id': vendor_id, 'logo_path': logo_path}
+    # print(context)
+   
+    return render(request, 'gold/imagespecific.html',context)
+
 
 ###################################### Gold Wallet #############################################
 
@@ -735,29 +796,90 @@ def Booking_details(request):
 
 
 ###################################### Gold Deposite History #############################################
+
 def Gdeposit_history(request):
-    # Dummy JSON data
-    dummy_data = [
-         {
-            "number": "VG124356",
-            "status": "Active",
-            "booking_date": "January 1, 2024",  # Gold Deposit Date
-            "weight": "50 grams",  # Gold Deposit Weight
-            "booking_charge": "$50",  # Processing Fees
-            "rate": "99.9%",  # Gold Purity
-            "tenure": "12 months",  # Tenure
-            "remark": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",  # Remark
-            "closing_date": "December 31, 2024",  # Gold Maturity Date
-            "gold_maturity_weight": "50 grams",  # Gold Maturity Weight
-            "todays_deposit_weight": "5 grams",  # Today's Deposit Weight
-            "todays_deposit_value": "$500"  # Today's Deposit Value
-        },
-        # Add more dummy data as needed
-    ]
-    return render(request, 'gold/gdeposit_history.html', {'dummy_data': dummy_data})
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    # API endpoint and parameters
+    
+    api_url = "https://www.vgold.co.in/dashboard/webservices/gold_deposite_history.php"
+    api_params = {
+        'user_id': user_id
+    }
+
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    try:
+        # Make the API request with headers
+        response = requests.post(api_url, data=api_params, headers=headers)
+        response_data = response.json()
+        # print(response.text)
+
+        # Check if the API response status is success
+        if response_data['status'] == "200":
+            # Parse the data
+            api_data = response_data['Data']
+            # Prepare data for the template
+            deposit_history = [
+                {
+                    "number": entry["gold_deposite_id"],
+                    "status": entry["admin_status"],
+                    "booking_date": entry["added_date"],
+                    "weight": f"{entry['gold']} gm",
+                    "booking_charge": f"{entry['processing_fee']}",
+                    "rate": f"{entry['addpurity']}%",
+                    "tenure": f"{entry['tennure']} months",
+                    "remark": entry["remark"],
+                    "closing_date": entry["closing_date"],
+                    "gold_maturity_weight": f"{entry['maturity_weight']} gm",
+                    "todays_deposit_weight": f"{entry['gold_quality']} gm",
+                    "todays_deposit_value": f"{entry['current_value_amount']}"
+                }
+                for entry in api_data
+            ]
+        else:
+            # Handle the case when the API response status is not success
+            deposit_history = []
+    except Exception as e:
+        # Handle exceptions such as network errors
+        print(f"An error occurred: {e}")
+        deposit_history = []
+
+    return render(request, 'gold/gdeposit_history.html', {'deposit_history': deposit_history})
 
 ###################################### Gold Deposite #############################################
+
 def Gold_deposit(request):
+    # Headers for the API request
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    # print(user_id)
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    # Fetch the data from the API with headers
+    response = requests.get('https://www.vgold.co.in/dashboard/webservices/vendor_for_deposite.php', headers=headers)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        api_data = response.json()
+        # Extract vendor data
+        vendor_data = api_data.get('Data', [])
+    else:
+        vendor_data = []  # Handle the case where API request fails
+
     if request.method == "POST":
         gold_weight = request.POST.get('goldWeight')
         deposit_charges = request.POST.get('depositCharges')
@@ -766,23 +888,159 @@ def Gold_deposit(request):
         depositor = request.POST.get('depositor')
         purity = request.POST.get('purity')
         remark = request.POST.get('remark')
+        
+        # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
 
-        # Print the form data to the console (or handle it as needed)
-        print("Gold Weight:", gold_weight)
-        print("Deposit Charges:", deposit_charges)
-        print("Tenure:", tenure)
-        print("Maturity Weight:", maturity_weight)
-        print("Depositor:", depositor)
-        print("Purity:", purity)
-        print("Remark:", remark)
+        # Make the POST request to the external API
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/gold_deposite.php'
+        
+        payload={
+            "user_id":user_id,
+            "gw":gold_weight,
+            "deposite_charges":deposit_charges,
+            "tennure":tenure,
+            "cmw":maturity_weight,
+            "vendor_id":depositor,
+            "addpurity":purity,
+            "remark":remark,
+            "guarantee":"no"
+        }
+        # print(payload)
+        
+        try:
+            response = requests.post(api_url, data=payload, headers=headers)
+            print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "The request for gold deposit has been sent successfully.")
 
-    return render(request, 'gold/gold_deposit.html')
+                    else:
+                        messages.error(request, response_data.get('Message'))
+                    
+                    return redirect(Gold_deposit)
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
+        
+        return HttpResponse(message)
+
+    
+    # Pass vendor data to the template
+    return render(request, 'gold/gold_deposit.html', {'vendor_data': vendor_data})
+
+ ###################################### calculate_gold_deposite #############################################   
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import requests
+from django.shortcuts import render
+
+
+def calculate_gold_deposite(request):
+    if request.method == 'POST':
+        gold_weight = request.POST.get('gold_weight')
+        # print('Gold Weight received:', gold_weight)
+
+        # Headers for the API requests
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        # Make a POST request to the external API with headers
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/gold_deposite_charges.php'
+        payload = {'gw': gold_weight}
+
+        try:
+            response = requests.post(api_url, data=payload, headers=headers)
+            if response.status_code == 200:
+                data = response.json()
+                charges = data.get('charges')
+                
+                # Prepare JSON response to send back to frontend
+                json_response = {
+                    'gold_weight': gold_weight,
+                    'charges': charges,
+                    'message': 'Received Gold Weight successfully.'
+                }
+                # print(json_response)
+                return JsonResponse(json_response)
+            else:
+                return JsonResponse({'error': 'Failed to fetch charges from API.'}, status=response.status_code)
+
+        except requests.exceptions.RequestException as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+###################################### cgold_mature_weight #############################################
+import requests
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt  # Use only for demonstration; CSRF should be handled properly in production
+def cgold_mature_weight(request):
+    if request.method == 'POST':
+        gold_weight = request.POST.get('gold_weight')
+        tenure = request.POST.get('tenure')
+        
+        # Headers for the API requests
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        # Make a POST request to the external API with headers
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/calculate_gold_mature_weight.php'
+        
+        payload = {
+            'gold_weight': gold_weight,
+            'tennure': tenure,
+            'guarantee': "no"
+        }
+        
+        # print(payload)
+        
+        # Send the POST request
+        response = requests.post(api_url, headers=headers, data=payload)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            # print(response_data)
+            
+            # Check if the response is successful and contains the expected data
+            if response_data.get('status') == '200':
+                context = {
+                    'status': response_data.get('status'),
+                    'message': response_data.get('Message'),
+                    'data': response_data.get('Data')
+                }
+                return JsonResponse(context)  # Send context as JSON response
+            else:
+                return JsonResponse({'error': 'API response was unsuccessful.'}, status=400)
+        else:
+            return JsonResponse({'error': 'Failed to connect to the external API.'}, status=400)
+    
+    # Handle non-POST requests
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
 ###################################### Membership #############################################
 def Membership(request):
     return render(request, 'gold/membership.html')
 ###################################### Money Wallet #############################################
 def Money_wallet(request):
     return render(request, 'gold/money_wallet.html')
+
 ###################################### Pay Installment #############################################
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -867,11 +1125,9 @@ def handle_selection(request):
         return JsonResponse({'error': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
 
 ###################################### Pay Installment #############################################
-from django.shortcuts import render
-from django.http import HttpResponse
-import requests
 
 def Pay_installment(request):
     # Retrieve user data from session
@@ -973,8 +1229,6 @@ def Pay_installment(request):
     context = {'installment_data': installment_data, 'gold_purchase_rate': gold_purchase_rate}
     return render(request, 'gold/pay_installment.html', context)
 
-
-
 ###################################### Add Money #############################################
 def Add_money(request):
     if request.method == 'POST':
@@ -1024,9 +1278,6 @@ def Add_money(request):
     return render(request, 'gold/add_money.html')
 
 ###################################### Add Bank #############################################
-from django.shortcuts import render
-from django.http import HttpResponse
-
 def Add_bank(request):
     if request.method == "POST":
         bank_name = request.POST.get('bankName')
@@ -1050,19 +1301,72 @@ def Add_bank(request):
 
     return render(request, 'gold/add_bank.html')
 
-
+###################################### Channel_partner #############################################
 def Channel_partner(request):
     return render(request, 'gold/channel_partner.html')
-
+###################################### Review #############################################
 def Review(request):
     return render(request, 'gold/review.html')
 
+###################################### Complaint #############################################
+
 def Complaint(request):
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    if request.method == 'POST':
+        # Retrieve form data
+        complaint = request.POST.get('description')
+
+        # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Content-Type': 'application/json'  # Specify that the data is JSON
+        }
+        
+        api_url="http://vgold.co.in/dashboard/webservices/process_complaints.php"
+        
+        # Prepare query parameters for the API request
+        params = {
+            "user_id": user_id,
+            "complaint": complaint
+        }
+        print(params)
+        
+        try:
+            response = requests.post(api_url, params=params, headers=headers)  # Use params parameter
+            print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "Complaint registered.")
+                    else:
+                        messages.error(request, response_data.get('Message', 'An error occurred.'))
+                    
+                    return redirect('complaint')  # Assuming 'complaint' is the URL name for the complaint view
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
+        
+        messages.error(request, message)
+        return redirect('complaint')  # Redirect back to the complaint form page
+
     return render(request, 'gold/complaint.html')
 
+###################################### Feedback #############################################
 def Feedback(request):
     return render(request, 'gold/feedback.html')
-
+###################################### Refer #############################################
 def Refer(request):
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
@@ -1117,7 +1421,7 @@ def Refer(request):
         return HttpResponse(message)
 
     return render(request, 'gold/refer.html')
-
+###################################### Logout #############################################
 def Logout(request):
     # Clear all sessions
     request.session.clear()
