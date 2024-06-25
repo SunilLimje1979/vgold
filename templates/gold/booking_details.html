@@ -252,43 +252,50 @@
   </script> {% endcomment %}
   <script>
     async function shareImage() {
-        const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
-        const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-
-        try {
-            // Fetch the image using the CORS proxy and convert it to a Blob
-            const response = await fetch(proxyUrl + imageUrl);
-            if (!response.ok) throw new Error('Network response was not ok.');
-            const blob = await response.blob();
-
-            // Create a File object from the Blob
-            const file = new File([blob], 'bank_details.png', { type: blob.type });
-
-            if (navigator.share) {
-                navigator.share({
-                    title: 'Share Bank Details Image',
-                    files: [file]
-                }).then(() => {
-                    console.log('Thanks for sharing!');
-                }).catch(err => {
-                    console.error('Error while sharing', err);
-                });
-            } else {
-                // Fallback for browsers that do not support the Web Share API
-                const url = URL.createObjectURL(file);
-                const dummy = document.createElement('input');
-                document.body.appendChild(dummy);
-                dummy.value = url;
-                dummy.select();
-                document.execCommand('copy');
-                document.body.removeChild(dummy);
-                alert('Image URL copied to clipboard');
-                URL.revokeObjectURL(url); // Clean up the object URL
-            }
-        } catch (err) {
-            console.error('Error fetching the image', err);
-        }
-    }
+      const imageUrl = 'https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png';
+      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+  
+      try {
+          // Fetch the image using the CORS proxy and convert it to a Blob
+          const response = await fetch(proxyUrl + imageUrl, {
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest' // Required header for cors-anywhere
+              }
+          });
+  
+          if (!response.ok) {
+              throw new Error('Failed to fetch image via CORS proxy');
+          }
+  
+          const blob = await response.blob();
+          const file = new File([blob], 'bank_details.png', { type: blob.type });
+  
+          if (navigator.share) {
+              navigator.share({
+                  title: 'Share Bank Details Image',
+                  files: [file]
+              }).then(() => {
+                  console.log('Thanks for sharing!');
+              }).catch(err => {
+                  console.error('Error while sharing', err);
+              });
+          } else {
+              // Fallback for browsers that do not support the Web Share API
+              const url = URL.createObjectURL(file);
+              const dummy = document.createElement('input');
+              document.body.appendChild(dummy);
+              dummy.value = url;
+              dummy.select();
+              document.execCommand('copy');
+              document.body.removeChild(dummy);
+              alert('Image URL copied to clipboard');
+              URL.revokeObjectURL(url); // Clean up the object URL
+          }
+      } catch (err) {
+          console.error('Error fetching the image via CORS proxy', err);
+      }
+  }
+   
 </script>
 
   <script>

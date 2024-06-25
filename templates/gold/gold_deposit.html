@@ -242,7 +242,12 @@
   
       try {
           // Fetch the image using the CORS proxy and convert it to a Blob
-          const response = await fetch(proxyUrl + imageUrl);
+          const response = await fetch(proxyUrl + imageUrl, {
+              headers: {
+                  'X-Requested-With': 'XMLHttpRequest' // Required header for cors-anywhere
+              }
+          });
+  
           if (!response.ok) {
               throw new Error('Failed to fetch image via CORS proxy');
           }
@@ -275,7 +280,7 @@
           console.error('Error fetching the image via CORS proxy', err);
       }
   }
-  
+   
 </script>
 
 {% comment %} <script>
