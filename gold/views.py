@@ -910,30 +910,30 @@ def Gold_deposit(request):
         }
         # print(payload)
         
-        try:
-            response = requests.post(api_url, data=payload, headers=headers)
-            print(response.text)
-            # Ensure response content is not empty
-            if response.content:
-                try:
-                    response_data = response.json()
-                    # print(response_data)
+        # try:
+        #     response = requests.post(api_url, data=payload, headers=headers)
+        #     print(response.text)
+        #     # Ensure response content is not empty
+        #     if response.content:
+        #         try:
+        #             response_data = response.json()
+        #             # print(response_data)
                     
-                    if response_data.get('status') == '200':
-                        messages.success(request, "The request for gold deposit has been sent successfully.")
+        #             if response_data.get('status') == '200':
+        #                 messages.success(request, "The request for gold deposit has been sent successfully.")
 
-                    else:
-                        messages.error(request, response_data.get('Message'))
+        #             else:
+        #                 messages.error(request, response_data.get('Message'))
                     
-                    return redirect(Gold_deposit)
-                except ValueError:
-                    message = "Received invalid JSON response."
-            else:
-                message = "Received empty response from the API."
-        except requests.exceptions.RequestException as e:
-            message = f"An error occurred while making the request: {e}"
+        #             return redirect(Gold_deposit)
+        #         except ValueError:
+        #             message = "Received invalid JSON response."
+        #     else:
+        #         message = "Received empty response from the API."
+        # except requests.exceptions.RequestException as e:
+        #     message = f"An error occurred while making the request: {e}"
         
-        return HttpResponse(message)
+        # return HttpResponse(message)
 
     
     # Pass vendor data to the template
