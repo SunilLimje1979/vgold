@@ -168,51 +168,50 @@
           </div>
           
           <!-- Payment Amount Options -->
-      <!-- Payment Amount Options -->
-<div class="form-group form-element">
-    <label for="paymentAmount" class="form-label">How much do you want to pay?</label>
-
-    <div class="amount-container">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentOptions" id="minimumAmount" value="minimumAmount">
-            <label class="form-check-label" for="minimumAmount">
-                Minimum Amount
-            </label>
-            <span id="minimumAmountValue" style="display:none;"></span>
-            <input type="hidden" id="minimumamt" name="minimumamt">
-        </div>
-    </div>
-
-    <div class="amount-container">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentOptions" id="otherAmount" value="otherAmount">
-            <label class="form-check-label" for="otherAmount">
-                Other Amount
-            </label>
-            <input type="text" class="form-control" id="otherAmountInput" name="otherAmountInput" placeholder="Enter amount" style="display:none; width: 100px;">
-        </div>
-    </div>
-
-    <div class="amount-container">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentOptions" id="moneyWallet" value="moneyWallet">
-            <label class="form-check-label" for="moneyWallet">
-                Money Wallet
-            </label>
-            <span id="moneyWalletValue" style="display:none;"></span>
-        </div>
-    </div>
-
-    <div class="amount-container">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentOptions" id="goldWallet" value="goldWallet">
-            <label class="form-check-label" for="goldWallet">
-                Gold Wallet
-            </label>
-            <span id="goldWalletValue" style="display:none;"></span>
-        </div>
-    </div>
-</div>
+          <div class="form-group form-element">
+            <label for="paymentAmount" class="form-label">How much do you want to pay?</label>
+            
+            <div class="amount-container">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentOptions" id="minimumAmount" value="minimumAmount">
+                    <label class="form-check-label" for="minimumAmount">
+                        Minimum Amount
+                    </label>
+                    <span id="minimumAmountValue" style="display:none;"></span>
+                    <input type="hidden" id="minimumamt" name="minimumamt">
+                </div>
+            </div>
+            
+            <div class="amount-container">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentOptions" id="otherAmount" value="otherAmount">
+                    <label class="form-check-label" for="otherAmount">
+                        Other Amount
+                    </label>
+                    <input type="text" class="form-control" id="otherAmountInput" name="otherAmountInput" placeholder="Enter amount" style="display:none; width: 100px;">
+                </div>
+            </div>
+            
+            <div class="amount-container">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentOptions" id="moneyWallet" value="moneyWallet">
+                    <label class="form-check-label" for="moneyWallet">
+                        Money Wallet
+                    </label>
+                    <span id="moneyWalletValue" style="display:none;"></span>
+                </div>
+            </div>
+            
+            <div class="amount-container">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="paymentOptions" id="goldWallet" value="goldWallet">
+                    <label class="form-check-label" for="goldWallet">
+                        Gold Wallet
+                    </label>
+                    <span id="goldWalletValue" style="display:none;"></span>
+                </div>
+            </div>
+          </div>
 
           <!-- Payment Option Select -->
           <div class="form-group form-element hidden-element" id="paymentOptionSelect">
@@ -237,19 +236,11 @@
             </div>
           </div>
           
-         <!-- Payable Amount Input -->
-        <div class="form-group form-element hidden-element" id="payableAmountInput">
+          <!-- Payable Amount Input -->
+          <div class="form-group form-element hidden-element" id="payableAmountInput">
             <label for="payableAmount" class="form-label">Enter Payable Amount</label>
             <input type="text" class="form-control" id="payableAmount" name="payableAmount" placeholder="Enter amount">
-        </div>
-
-        <!-- Card to display below the payable amount input field -->
-        <div class="card hidden-element" id="payableAmountCard">
-            <div class="card-body">
-                <h5 class="card-title">Payment Details</h5>
-                <p class="card-text">You have selected the Money Wallet option. Please enter the amount you wish to pay.</p>
-            </div>
-        </div>
+          </div>
 
           <!-- Pay Installment Button -->
           <button id="updateProfileBtn" type="submit">Pay Installment</button>
@@ -350,79 +341,67 @@
     </script>
     
     <script>
-      // Function to handle radio button changes and display corresponding input fields
-document.addEventListener('DOMContentLoaded', function() {
-    const radioButtons = document.querySelectorAll('input[name="paymentOptions"]');
-    const minimumAmountValue = document.getElementById('minimumAmountValue');
-    const otherAmountInput = document.getElementById('otherAmountInput');
-    const moneyWalletValue = document.getElementById('moneyWalletValue');
-    const goldWalletValue = document.getElementById('goldWalletValue');
-    const paymentOptionSelect = document.getElementById('paymentOptionSelect');
-    const payableAmountInput = document.getElementById('payableAmountInput');
-    const payableAmountCard = document.getElementById('payableAmountCard');
-    const bankDetailsDiv = document.getElementById("bankDetails");
-    const transactionIdDiv = document.getElementById("transactionIdDiv");
-    const chequeNumberDiv = document.getElementById("chequeNumberDiv");
-
-    radioButtons.forEach(radio => {
-        radio.addEventListener('change', function(event) {
-            minimumAmountValue.style.display = "none";
-            otherAmountInput.style.display = "none";
-            moneyWalletValue.style.display = "none";
-            goldWalletValue.style.display = "none";
-            paymentOptionSelect.classList.add('hidden-element');
-            payableAmountInput.classList.add('hidden-element');
-            payableAmountCard.classList.add('hidden-element'); // Hide card by default
-            bankDetailsDiv.style.display = "none"; // Hide bank details by default
-
-            if (event.target.value === "minimumAmount") {
-                minimumAmountValue.style.display = "inline";
-                paymentOptionSelect.classList.remove('hidden-element');
-            } else if (event.target.value === "otherAmount") {
-                otherAmountInput.style.display = "inline";
-                paymentOptionSelect.classList.remove('hidden-element');
-            } else if (event.target.value === "moneyWallet") {
-                moneyWalletValue.style.display = "inline";
-                payableAmountInput.classList.remove('hidden-element');
-            } else if (event.target.value === "goldWallet") {
-                goldWalletValue.style.display = "inline";
-                payableAmountInput.classList.remove('hidden-element');
-            }
+        // Function to handle radio button changes and display corresponding input fields
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioButtons = document.querySelectorAll('input[name="paymentOptions"]');
+            const minimumAmountValue = document.getElementById('minimumAmountValue');
+            const otherAmountInput = document.getElementById('otherAmountInput');
+            const moneyWalletValue = document.getElementById('moneyWalletValue');
+            const goldWalletValue = document.getElementById('goldWalletValue');
+            const paymentOptionSelect = document.getElementById('paymentOptionSelect');
+            const payableAmountInput = document.getElementById('payableAmountInput');
+            const bankDetailsDiv = document.getElementById("bankDetails");
+            const transactionIdDiv = document.getElementById("transactionIdDiv");
+            const chequeNumberDiv = document.getElementById("chequeNumberDiv");
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function(event) {
+                    minimumAmountValue.style.display = "none";
+                    otherAmountInput.style.display = "none";
+                    moneyWalletValue.style.display = "none";
+                    goldWalletValue.style.display = "none";
+                    paymentOptionSelect.classList.add('hidden-element');
+                    payableAmountInput.classList.add('hidden-element');
+                    bankDetailsDiv.style.display = "none"; // Hide bank details by default
+    
+                    if (event.target.value === "minimumAmount") {
+                        minimumAmountValue.style.display = "inline";
+                        paymentOptionSelect.classList.remove('hidden-element');
+                    } else if (event.target.value === "otherAmount") {
+                        otherAmountInput.style.display = "inline";
+                        paymentOptionSelect.classList.remove('hidden-element');
+                    } else if (event.target.value === "moneyWallet") {
+                        moneyWalletValue.style.display = "inline";
+                        payableAmountInput.classList.remove('hidden-element');
+                    } else if (event.target.value === "goldWallet") {
+                        goldWalletValue.style.display = "inline";
+                        payableAmountInput.classList.remove('hidden-element');
+                    }
+                });
+            });
+    
+            // Display bank details input fields based on selected payment option
+            document.getElementById("depositor").addEventListener("change", function() {
+                var depositMethod = this.value;
+    
+                if (depositMethod === "Online" || depositMethod === "Cheque") {
+                    bankDetailsDiv.style.display = "block";
+                } else {
+                    bankDetailsDiv.style.display = "none";
+                }
+    
+                if (depositMethod === "Online") {
+                    transactionIdDiv.style.display = "block";
+                    chequeNumberDiv.style.display = "none";
+                } else if (depositMethod === "Cheque") {
+                    transactionIdDiv.style.display = "none";
+                    chequeNumberDiv.style.display = "block";
+                } else {
+                    transactionIdDiv.style.display = "none";
+                    chequeNumberDiv.style.display = "none";
+                }
+            });
         });
-    });
-
-    // Event listener for the payable amount input field
-    document.getElementById('payableAmount').addEventListener('input', function() {
-        if (document.getElementById('moneyWallet').checked && this.value) {
-            payableAmountCard.classList.remove('hidden-element'); // Show card when amount is entered
-        } else {
-            payableAmountCard.classList.add('hidden-element'); // Hide card if no amount
-        }
-    });
-
-    // Display bank details input fields based on selected payment option
-    document.getElementById("depositor").addEventListener("change", function() {
-        var depositMethod = this.value;
-
-        if (depositMethod === "Online" || depositMethod === "Cheque") {
-            bankDetailsDiv.style.display = "block";
-        } else {
-            bankDetailsDiv.style.display = "none";
-        }
-
-        if (depositMethod === "Online") {
-            transactionIdDiv.style.display = "block";
-            chequeNumberDiv.style.display = "none";
-        } else if (depositMethod === "Cheque") {
-            transactionIdDiv.style.display = "none";
-            chequeNumberDiv.style.display = "block";
-        } else {
-            transactionIdDiv.style.display = "none";
-            chequeNumberDiv.style.display = "none";
-        }
-    });
-});
-
     </script>
     
     <script>

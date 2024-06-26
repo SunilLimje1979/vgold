@@ -314,12 +314,118 @@ def Loan(request):
         return HttpResponse("Invalid request method.")
 
 ###################################### Withdraw #############################################
-
 def Withdraw(request):
+    if request.method == 'GET':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+
+        # API URL and data
+        api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
+        post_data = {'user_id': user_id}
+        
+        # Headers for the request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+
+        # Make a POST request to the API
+        response = requests.post(api_url, data=post_data, headers=headers)
+
+        if response.status_code == 200:
+            api_response = response.json()
+            # print(api_response)
+            if api_response.get("status") == "200":
+                wallet_balance = api_response.get("Wallet_Balance")
+                return render(request, 'gold/withdraw.html', {'wallet_balance': wallet_balance})
+            else:
+                return HttpResponse("API Error: " + api_response.get("Message", "Unknown error"))
+        else:
+            return HttpResponse("Failed to connect to the API")
+    
+    elif request.method == 'POST':
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+        
+        bank_name = request.POST.get('bankName')
+        comment = request.POST.get('comment')
+        
+        payload={
+            "user_id" :user_id,
+            "bank_name": bank_name,
+            "comment": comment
+        }
+    
+        print(payload)
+           
     return render(request, 'gold/withdraw.html')
+
+        
 ###################################### Withdraw #############################################
+
 def Sell_gold(request):
-    return render(request, 'gold/sell_gold.html')
+    if request.method == 'GET':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
+
+        # First API endpoint and headers for gold wallet transactions
+        wallet_url = 'https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        wallet_data = {'user_id': user_id}
+
+        # Second API endpoint and headers for getting gold sale rate
+        rate_url = 'https://www.vgold.co.in/dashboard/webservices/get_sale_rate.php'
+        rate_data = {'user_id': user_id}
+
+        try:
+            # Fetch gold wallet transactions data
+            response_wallet = requests.post(wallet_url, data=wallet_data, headers=headers)
+            wallet_data = response_wallet.json()
+
+            # Fetch gold sale rate data
+            response_rate = requests.post(rate_url, data=rate_data, headers=headers)
+            rate_data = response_rate.json()
+
+            # Check if both API requests were successful
+            if wallet_data.get('status') == '200' and rate_data.get('status') == '200':
+                gold_balance = wallet_data.get('gold_Balance', 'N/A')
+                gold_sale_rate = rate_data.get('Gold_sale_rate', 'N/A')
+                # print(f"Gold Balance: {gold_balance}")
+                # print(f"Gold Sale Rate: {gold_sale_rate}")
+
+                # Render your template with the retrieved data
+                return render(request, 'gold/sell_gold.html', {'gold_balance': gold_balance, 'gold_sale_rate': gold_sale_rate})
+            else:
+                return HttpResponse("Failed to fetch data from API.")
+
+        except requests.exceptions.RequestException as e:
+            return HttpResponse(f"Error: {str(e)}")
+        
+    elif request.method == 'POST':
+        # Handle POST request data
+        gold_weight = request.POST.get('gold_weight')
+        gold_amount = request.POST.get('gold_amount')
+
+        # Print the posted data for demonstration
+        print(f"Gold Weight: {gold_weight}")
+        print(f"Gold Amount: {gold_amount}")
+
+        # Add your logic to process the data further if needed
+
+        # Return a response or redirect as necessary
+        return redirect(Sell_gold)
+
+    return HttpResponse("Unsupported HTTP method.")
+
 ###################################### Add Gold #############################################
 def Add_gold(request):
     if request.method == 'POST':
@@ -910,32 +1016,31 @@ def Gold_deposit(request):
         }
         # print(payload)
         
-        # try:
-        #     response = requests.post(api_url, data=payload, headers=headers)
-        #     print(response.text)
-        #     # Ensure response content is not empty
-        #     if response.content:
-        #         try:
-        #             response_data = response.json()
-        #             # print(response_data)
+        try:
+            response = requests.post(api_url, data=payload, headers=headers)
+            print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
                     
-        #             if response_data.get('status') == '200':
-        #                 messages.success(request, "The request for gold deposit has been sent successfully.")
+                    if response_data.get('status') == '200':
+                        messages.success(request, "The request for gold deposit has been sent successfully.")
 
-        #             else:
-        #                 messages.error(request, response_data.get('Message'))
+                    else:
+                        messages.error(request, response_data.get('Message'))
                     
-        #             return redirect(Gold_deposit)
-        #         except ValueError:
-        #             message = "Received invalid JSON response."
-        #     else:
-        #         message = "Received empty response from the API."
-        # except requests.exceptions.RequestException as e:
-        #     message = f"An error occurred while making the request: {e}"
+                    return redirect(Gold_deposit)
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
         
-        # return HttpResponse(message)
+        return HttpResponse(message)
 
-    
     # Pass vendor data to the template
     return render(request, 'gold/gold_deposit.html', {'vendor_data': vendor_data})
 

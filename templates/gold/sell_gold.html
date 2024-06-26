@@ -144,32 +144,58 @@
 
 <div class="container mt-5 custom-container">
   <div class="row">
+    <form method="POST">
+      {% csrf_token %}
     <p id="vgoldID" class="wallet-balance">
-        <span class="wallet-balance-label">Wallet Balance :</span>
-        <span class="wallet-balance-amount">&#8377; 700.00</span>
+      <span class="wallet-balance-label">Wallet Balance :</span>
+      <span class="wallet-balance-amount">{{ gold_balance }} GM</span>
     </p>
     
-    <p id="vgoldID">Gold Sell Rate Per/GM <br> &#8377; 700/GM </p> <hr>
-      <div class="col-md-6 offset-md-3">
-          <form>
-              <div class="mb-3">
-                <label for="depositCharges" class="form-label">In Grams (gm)</label>
-                <input type="text" class="form-control" id="goldWeight" placeholder="Enter Gold Weight">
-              </div>
-              <div class="mb-3">
-                <label for="goldWeight" class="form-label">In Rupees(₹)</label>
-                <input type="text" class="form-control" id="goldAmount" placeholder="">
-              </div>
-
-           
-
-              <button id="updateProfileBtn" type="button">SELL</button>
-           
-          </form>
-      </div>
-  </div>
+    <p id="vgoldID">Gold Sell Rate Per/GM <br> &#8377; {{ gold_sale_rate }} /- </p>
+    <hr>
+    <div class="col-md-6 offset-md-3">
+      <label for="goldWeight" class="form-label">Enter gold weight to sell </label>
+      
+        <label for="goldWeight" class="form-label">In Grams (gm)</label>
+        <div class="mb-3">
+          <input type="text" class="form-control" id="goldWeight" name="gold_weight" placeholder="">
+        </div>
+        <div class="mb-3">
+          <label for="goldAmount" class="form-label">In Rupees(₹)</label>
+          <input type="text" class="form-control" id="goldAmount" name="gold_amount" placeholder="" readonly>
+        </div>
+        <button id="updateProfileBtn" >SELL</button>
+      
+    </div>
+  </form></div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const goldWeightInput = document.getElementById('goldWeight');
+    const goldAmountInput = document.getElementById('goldAmount');
 
+    goldWeightInput.addEventListener('input', function() {
+      // Get the entered weight
+      let goldWeight = parseFloat(this.value);
+      // Check if input is valid number
+      if (!isNaN(goldWeight)) {
+        // Calculate amount based on rate
+        let goldSaleRate = parseFloat("{{ gold_sale_rate }}");
+        let calculatedAmount = goldWeight * goldSaleRate;
+        
+        // Format amount to 2 decimal places and add Rupee symbol
+        let formattedAmount = calculatedAmount.toFixed(2);
+        if (Number.isInteger(calculatedAmount)) {
+          formattedAmount = calculatedAmount.toFixed(0);
+        }
+        goldAmountInput.value = formattedAmount + " ₹"; // Add Rupee symbol
+      } else {
+        // If input is not a valid number, clear the amount field
+        goldAmountInput.value = '';
+      }
+    });
+  });
+</script>
 
   <!-- Bootstrap JS (optional, for Bootstrap features) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
