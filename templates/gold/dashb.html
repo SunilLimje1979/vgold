@@ -1,0 +1,478 @@
+{% load i18n %} {% load static %}
+{% load pwa %} 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    <title>Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <style>
+      /* Navbar style */
+      .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px;
+      }
+      .navbar-toggler-icon {
+        color: white;
+        font-size: 13px;
+      }
+      .navbar-brand {
+        color: white;
+        font-size: 20px;
+        margin-left: 20px;
+      }
+
+      /* Style for the drawer */
+      .drawer {
+        position: fixed;
+        top: 50px;
+        left: -100%;
+        width: 70%;
+        height: calc(100% - 50px);
+        background-color: #f8f9fa;
+        transition: left 0.3s ease;
+        padding: 0px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        overflow-y: auto;
+      }
+
+      /* Drawer item style */
+      .drawer ul {
+        padding: 5px 17px;
+        font-size: 15px;
+      }
+
+      .drawer ul li {
+        list-style: none;
+        margin-bottom: 8px;
+      }
+      .drawer ul li a {
+        text-decoration: none;
+        color: #333;
+        font-size: 17px;
+        padding-left: 0px;
+      }
+      .drawer ul li a i {
+        margin-right: 25px;
+        font-size: 24px;
+      }
+
+      .white-button {
+        color: white;
+        background-color: white;
+      }
+
+      /* Additional content style */
+      .additional-content {
+        position: sticky;
+        top: 0;
+        background-color: rgb(41, 39, 122);
+        color: white;
+        padding: 1px;
+        z-index: 1001;
+        width: 100%;
+        text-align: center;
+      }
+
+      .additional-content img.logo {
+        display: block;
+        margin: 0 auto 16px;
+      }
+
+      .center-image {
+        display: flex;
+        justify-content: center;
+        margin-left: 0;
+        margin-right: 0;
+        width: 100%;
+      }
+      .card-with-radius {
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        border-radius: 30px 30px 0 0;
+        background-color: rgb(255, 255, 255);
+        height: 0px;
+      }
+
+      .logo-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 0px;
+        padding-left: 40px;
+        padding-right: 40px;
+      }
+
+      .logo-container div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 35px;
+      }
+
+      .logo-container p {
+        font-size: 12px;
+      }
+
+      .logo-container-service {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .logo-container-service > div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 10px;
+        margin-right: 10px;
+        font-size: 30px;
+      }
+
+      .logo-container-service p {
+        font-size: 12px;
+        margin-top: 5px;
+        text-align: center;
+      }
+
+      /* Add vertical line */
+      .logo-container-service div:not(:last-child) {
+        border-right: 1px solid #ccc;
+        padding-right: 5px;
+        height: 70px;
+      }
+
+      .center-image {
+        display: flex;
+        justify-content: center;
+      }
+      .container {
+        background-color: rgb(11, 20, 58);
+        width: 100%;
+      }
+   
+      .carousel-item {
+        position: relative;
+        text-align: center;
+      }
+      .carousel-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+      #carousel-heading {
+        color: #333;
+        font-size: 17px;
+      }
+      #carousel-button {
+        background-color: rgb(41, 39, 122);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+
+      .card {
+        background-color: orange;
+        margin: 0;
+        padding: 0;
+        {% comment %} margin-top: 0px;  {% endcomment %}
+    }
+
+    .card-body {
+        padding: 1rem;
+        padding-top: 8px; /* Add top padding */
+        padding-bottom: 8px; /* Add bottom padding */
+    }
+    
+
+    .card-text strong {
+        font-size: 16px;
+    }
+
+
+    /* Increase top margin for card text */
+    .card-text {
+        margin-top: 13px;
+    
+    }
+
+    .card-text i {
+        font-size: 4rem;
+    }
+
+    .offcanvas {
+        width: 300px; /* Adjust width as needed */
+    }
+    
+    .offcanvas-link {
+        font-size: 18px;
+        color: black;
+        transition: color 0.3s; /* Smooth transition for hover effect */
+    }
+    
+    .offcanvas-link:hover {
+        color: rgb(57, 159, 34); /* Change color on hover */
+    }
+    .mb-custom {
+        margin-bottom: 2px; 
+        
+    }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar with menu drawer icon -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+      <div class="container-fluid">
+        <div>
+          <button class="navbar-toggler white-button" type="button" id="menuBtn">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand">Welcome - {{ first_name }}</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Menu Drawer -->
+    <div id="drawer" class="drawer">
+      <!-- Additional content -->
+      <div class="additional-content">
+        <img src="https://vgold.co.in/wp-content/uploads/2024/03/Vgold-Logo.png" alt="Your Logo" class="logo" style="height: 60px; width: auto; margin-bottom: 10px" />
+        <p style="font-size: 13px">Digital loan | Gold loan | Foundation</p>
+      </div>
+      <ul>
+        <li>
+          <a href="{% url 'dashboard' %}"><i class="bi bi-house-door"></i> Home</a>
+        </li>
+        <li>
+          <a href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a>
+        </li>
+        <li>
+          <a href="{% url 'certificate' %}"><i class="bi bi-card-checklist"></i> Certificates</a>
+        </li>
+        <li>
+          <a href="{% url 'gbooking_history' %}"><i class="bi bi-currency-dollar"></i> Gold Booking History</a>
+        </li>
+        <li>
+          <a href="{% url 'gdeposit_history' %}"><i class="bi bi-wallet2"></i> Gold Deposit History</a>
+        </li>
+        <li>
+          <a href="{% url 'pay_installment' %}"><i class="bi bi-calendar-check"></i> Pay Installment</a>
+        </li>
+        <li>
+          <a href="{% url 'complaint' %}"><i class="bi bi-exclamation-diamond"></i> Complaint / Feedback</a>
+        </li>
+        <li>
+          <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share V-Gold App</a>
+        </li>
+        <li>
+          <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
+        </li>
+        <li>
+          <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="container" style="margin-top: 55px;">
+      <div class="center-image">
+        <a href="{% url 'gold_booking' %}">
+          <img src="https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png" alt="Your Logo" class="logo" style="width: 100%; margin-bottom: 0px" />
+        </a>
+      </div>
+      <div class="button" style="text-align: center; padding-top: 15px; padding-bottom: 15px;">
+        <div class="row">
+          <div class="col" style="text-align: right;">
+            <a href="{% url 'gold_booking' %}" style="text-decoration: none;">
+              <img src="{% static 'assets/img/booknow.png' %}" alt="Book Now" style="width: 135px; height: auto;" />
+            </a>
+          </div>
+          <div class="col" style="text-align: left;">
+            <img src="{% static 'assets/img/sharerate.png' %}" alt="Share" style="width: 135px; height: auto;" onclick="RateshareFunction()" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="containers m-1" >
+        {% comment %} <div class="containers mb-1" > {% endcomment %}
+        <div class="row row-cols-2 gx-1">
+    
+            <!-- Card 1 -->
+            <div class="col mb-custom">
+                <a href="" style="color: black; text-decoration: none;">
+                    <div class="card " style="background-color: rgb(11, 20, 58); width: 100%;">
+                        <div class="card-body text-center">
+                            <i class="bi bi-currency-dollar" style="font-size: 3rem; color: white;"></i>
+                            <p class="card-text"><strong style="font-size: 14px; color: white;">Gold Booking</strong></p>
+                        </div>
+                    </div>
+                </a>
+            </div>  
+    
+            <!-- Card 2 -->
+            <div class="col mb-custom">
+                <a href="" style="color: black; text-decoration: none;">
+                    <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
+                        <div class="card-body text-center">
+                            <i class="bi bi-wallet2" style="font-size: 3rem;color: white;"></i>
+                            {% if notification_counts.attendance_count > 0 %}
+                                <span class="notification-badge">{{ notification_counts.attendance_count }}</span>
+                            {% endif %}
+                            <p class="card-text"><strong style="font-size: 14px;color: white;">Gold Deposite</strong></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Card 3 -->
+            <div class="col mb-custom">
+                <a href="" style="color: black; text-decoration: none;">
+                    <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
+                        <div class="card-body text-center">
+                            <i class="bi bi-wallet" style="font-size: 3rem;color: white;"></i>
+                            {% if notification_counts.circular_count > 0 %}
+                                <span class="notification-badge">{{ notification_counts.circular_count }}</span>
+                            {% endif %}
+                            <p class="card-text"><strong style="font-size: 14px;color: white;">Gold Wallet</strong></p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+                 
+        <!-- Card 4 -->
+        <div class="col mb-custom">
+        
+            <a href="" style="color: black; text-decoration: none;">
+                <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
+                    <div class="card-body text-center">
+                        <i class="bi bi-bank" style="font-size: 3rem;color: white;"></i>
+                        {% if notification_counts.homework_count > 0 %}
+                            <span class="notification-badge">{{ notification_counts.homework_count }}</span>
+                        {% endif %}
+                        <p class="card-text"><strong style="font-size: 14px;color: white;">Loan</strong></p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+
+
+      <div class="card-with-radius">
+        <div class="logo-container-service"></div>
+
+        <div class="center-image">
+          <a href="{% url 'our_vendors' %}">
+            <img src="{% static 'assets/img/dashboard_logo.jpg' %}" alt="Your Logo" class="logo" style="height: 140px; width: 190px; margin-top: 5px" />
+          </a>
+        </div>
+        <p style="text-align: center; margin-bottom: 30px; color: rgb(41, 39, 122);">Associate</p>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS (optional, for Bootstrap features) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+      // Function to open the drawer
+      document.getElementById("menuBtn").addEventListener("click", function () {
+        document.getElementById("drawer").style.left = "0";
+      });
+
+      // Function to close the drawer
+      function closeDrawer() {
+        document.getElementById("drawer").style.left = "-100%";
+      }
+
+      // Event listener to close the drawer when clicking outside of it
+      window.addEventListener("click", function (event) {
+        if (!event.target.closest(".drawer") && !event.target.closest("#menuBtn")) {
+          closeDrawer();
+        }
+      });
+    </script>
+
+    <script>
+      function shareFunction() {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Check out V-Gold!',
+            text: 'Click the following link and Download V-Gold application. Check it out!',
+            url: 'https://www.vgold.app/vgold/login/'
+          }).then(() => {
+            console.log('Thanks for sharing!');
+          }).catch(err => {
+            console.error('Error sharing:', err);
+          });
+        } else {
+          alert('Web Share API is not supported in your browser.');
+        }
+      }
+    </script>
+
+    <script>
+      async function RateshareFunction() {
+        const imageUrl = 'https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png';
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+
+        try {
+          // Fetch the image using the CORS proxy and convert it to a Blob
+          const response = await fetch(proxyUrl + imageUrl, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest' // Required header for cors-anywhere
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to fetch image via CORS proxy');
+          }
+
+          const blob = await response.blob();
+          const file = new File([blob], 'Rate_image.png', { type: blob.type });
+
+          if (navigator.share) {
+            navigator.share({
+              title: 'Share Bank Details Image',
+              files: [file]
+            }).then(() => {
+              console.log('Thanks for sharing!');
+            }).catch(err => {
+              console.error('Error while sharing', err);
+            });
+          } else {
+            // Fallback for browsers that do not support the Web Share API
+            const url = URL.createObjectURL(file);
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = url;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            alert('Image URL copied to clipboard');
+            URL.revokeObjectURL(url); // Clean up the object URL
+          }
+        } catch (err) {
+          console.error('Error fetching the image via CORS proxy', err);
+        }
+      }
+    </script>
+  </body>
+</html>

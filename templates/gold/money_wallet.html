@@ -1,23 +1,17 @@
-{% load pwa %} 
-{% load i18n %} {% load static %}
-{% comment %} {% progressive_web_app_meta %} {% endcomment %}
-
+{% load pwa %}
+{% load i18n %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Meta tags -->
     <meta charset="UTF-8">
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Money Wallet</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
-        /* Navbar style */
         .navbar {
             background-color: rgb(41, 39, 122);
             height: 55px;
@@ -31,152 +25,112 @@
             margin-left: 10px;
             color: white;
         }
-        /* Style for the icon */
         .fa-arrow-left {
             color: white;
         }
-        /* Custom card style */
         .custom-card {
             background-color: rgb(41, 39, 122);
             width: 100%;
-            height: 150px; /* Adjust the height as needed */
-            padding: 20px; /* Adjust the padding as needed */
+            height: 150px;
+            padding: 20px;
             position: relative;
         }
-        /* Button style */
         .custom-button {
-            width: calc(50% - 30px); /* Adjusted width for equal spacing with margins */
+            width: calc(50% - 30px);
             background-color: white;
-            color: rgb(41, 39, 122); /* Text color */
+            color: rgb(41, 39, 122);
             border: none;
             outline: none;
             cursor: pointer;
             position: absolute;
             top: 10px;
-            border-radius: 20px; /* Increased border radius */
-            height: 50px; /* Increased button height */
-            margin: 0 5px; /* Added left-right margin */
+            border-radius: 20px;
+            height: 50px;
+            margin: 0 5px;
         }
-        /* Positioning the buttons */
         .custom-button:first-child {
-            left: 10px; /* Adjusted left position */
+            left: 10px;
         }
         .custom-button:last-child {
-            right: 10px; /* Adjusted right position */
+            right: 10px;
         }
-        /* Button style for footer */
         .custom-button-footer {
             position: absolute;
             bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
-            margin-top: 60px; /* Adjust the margin-top value as needed */
-            background-color: rgb(237, 66, 0); /* Change button color */
-            color: white; /* Change text color to white */
+            margin-top: 60px;
+            background-color: rgb(237, 66, 0);
+            color: white;
         }
-        /* Additional styling for list items */
         #listContainer {
-            max-height: 710px; /* Fixed height for the list container */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 710px;
+            overflow-y: auto;
         }
         #listContainer li {
             border: 1px solid #f0ad4e;
-            padding-bottom: 20px; /* Add padding */
+            padding-bottom: 20px;
             padding-left: 8px;
             padding-right: 10px;
-            margin-bottom: 12px; /* Add margin bottom for spacing */
+            margin-bottom: 12px;
             background-color: white;
-            border: 1px solid rgba(0, 0, 0, 0.125); /* Normal border */
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Floating shadow */
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .small-text {
+            font-size: 14px; /* Adjust the font size as needed */
         }
     </style>
 </head>
 <body>
-    <!-- Navbar with menu drawer icon -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container-fluid">
             <div class="">
                 <button class="navbar-toggler" type="button" id="menuBtn">
                     <a href="{% url 'dashboard' %}">
-                        <!-- Replace the existing toggle icon with Font Awesome icon -->
-                        <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i></a>
                 </button>
                 <a class="navbar-brand">Money Wallet</a>
             </div>
         </div>
     </nav>
 
-    <!-- Card -->
- <!-- Card -->
-<div class="custom-card mt-5 p-3">
-    <!-- Your content goes here -->
-    <div class="button-container d-flex justify-content-center align-items-center">
-        <!-- Current balance -->
-        <span style="color: white;">Current Balance <br> 
-            <!-- Current balance amount -->
-            <span style="color: white; display: flex; justify-content: center;">
-                <!-- Rupee icon and balance amount -->
-                <span>&#8377;</span> 0.123
+    <div class="custom-card mt-5 p-3">
+        <div class="button-container d-flex justify-content-center align-items-center">
+            <span style="color: white;">Current Balance <br>
+                <span style="color: white; display: flex; justify-content: center;">
+                    ₹ {{ Wallet_Balance }}
+                </span>
             </span>
-        </span>
+        </div>
+        <a href="{% url 'add_money' %}" class="custom-button custom-button-footer" style="display: inline-block; text-align: center; line-height: 40px; width: 150px; text-decoration: none; font-size: 18px; padding-top: 5px;">Add Money</a>
     </div>
-    <!-- Button below the footer card -->
-    <a href="{% url 'add_money' %}" class="custom-button custom-button-footer" style="display: inline-block; text-align: center; line-height: 40px; width: 150px; text-decoration: none; font-size: 18px;padding-top: 5px;">Add Money</a>
 
-</div>
-
-    <!-- New container for the list -->
     <div class="container mt-1 increased-padding">
         <div class="row">
             <div class="col">
                 <ul id="listContainer" class="list-unstyled" style="width: 100%; padding-top: 10px;">
-                    <!-- List items will be added dynamically here -->
+                    {% for transaction in transactions %}
+                    <li>
+                        <div style="display:flex; justify-content: space-between;">
+                           
+                               <div class="small-text">
+                                <strong>Transaction ID:</strong> <br>{{ transaction.transaction_id }}<br>
+                                <strong>Date:</strong> {{ transaction.transaction_date }}<br>
+                                 {{ transaction.received_from }}<br>
+                            </div>
+                            <div class="small-text">
+                                <strong></strong> ₹. {{ transaction.amount }}<br><br>
+                                <strong></strong> {{ transaction.status|capfirst }}
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS (optional, for Bootstrap features) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script>
-        // Sample data (you can replace this with your actual data)
-        var data = [
-            { transactionId: "123456", receivedFrom: "Rushika", date: "2024-05-02", success: true, gram: "10 gm" },
-           { transactionId: "789012", receivedFrom: "John", date: "2024-05-01", success: false, gram: "5 gm" },
-            { transactionId: "123456", receivedFrom: "Rushika", date: "2024-05-02", success: true, gram: "10 gm" }
-        ];
-
-        // Function to populate the list with data
-        function populateList() {
-            var listContainer = document.getElementById("listContainer");
-
-            // Clear existing list items
-            listContainer.innerHTML = "";
-
-            // Loop through the data and create list items
-            data.forEach(function(item) {
-                var listItem = document.createElement("li");
-                var successText = item.success ? "Success" : "Failure";
-                listItem.innerHTML = `
-                    <div style="display:flex; justify-content: space-between;">
-                        <div>
-                            <strong>Transaction ID:</strong> ${item.transactionId}<br>
-                            <strong>Date:</strong> ${item.date}<br>
-                            <strong>Received From:</strong> ${item.receivedFrom}<br>
-                        </div>
-                        <div>
-                            <strong>Gram:</strong> ${item.gram}<br><br>
-                            <strong>Status:</strong> ${successText}
-                        </div>
-                    </div>
-                `;
-                listContainer.appendChild(listItem);
-            });
-        }
-
-        // Call the function to populate the list when the page loads
-        populateList();
-    </script>
 </body>
 </html>

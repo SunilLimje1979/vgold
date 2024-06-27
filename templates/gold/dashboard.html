@@ -354,7 +354,7 @@
 
     <div class="card-with-radius">
         <div class="logo-container">
-          <a href="" style="color: black; text-decoration: none;">
+          <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
               {% comment %} <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;"> {% endcomment %}
                 <div>
                   <img src="{% static 'assets/img/goldwallet.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
@@ -380,7 +380,7 @@
         <!-- Adjust margin top and bottom -->
 
         <div class="logo-container">
-          <a href="" style="color: black; text-decoration: none;">
+          <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;">
           {% comment %} <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <div>
               <img src="{% static 'assets/img/moneywallet.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
@@ -404,8 +404,6 @@
     </div>
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
-
-
         <div class="logo-container-service">
           <div>
             <a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">

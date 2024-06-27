@@ -70,5 +70,7 @@ urlpatterns = [
 
     path('logout/', views.Logout, name='logout'),
     
-     path('handle_selection/', views.handle_selection, name='handle_selection'),
+    path('handle_selection/', views.handle_selection, name='handle_selection'),
+    
+    path('dashb/', views.dashb, name='dashb'),
 ]

@@ -589,7 +589,46 @@ def Imagespecific(request):
 ###################################### Gold Wallet #############################################
 
 def Gold_wallet(request):
-    return render(request, 'gold/gold_wallet.html')
+    # Retrieve purchase rate data from session
+    purchase_rate_data = request.session.get('purchase_rate_data', {})
+    gold_purchase_rate = purchase_rate_data.get('Gold_purchase_rate', 'N/A')
+    # gold_purchase_rate = purchase_rate_data.get('Gold_sale_rate', 'N/A')
+
+    # Retrieve user data from session
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+
+    # API endpoint and headers
+    api_url = "https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    payload = {'user_id': user_id}
+
+    try:
+        response = requests.post(api_url, headers=headers, data=payload)
+        response_data = response.json()
+        # print(response_data)
+
+        if response_data['status'] == "200":
+            gold_balance = response_data.get('gold_Balance')
+            transactions = response_data.get('Data', [])
+        else:
+            return HttpResponse(f"Error: {response_data.get('Message', 'Unknown error')}")
+
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"API request failed: {e}")
+
+    context = {
+        'gold_purchase_rate': gold_purchase_rate,
+        'gold_balance': gold_balance,
+        'transactions': transactions,
+    }
+
+    return render(request, 'gold/gold_wallet.html', context)
 
 ###################################### Profile #############################################
 
@@ -1144,7 +1183,40 @@ def Membership(request):
     return render(request, 'gold/membership.html')
 ###################################### Money Wallet #############################################
 def Money_wallet(request):
-    return render(request, 'gold/money_wallet.html')
+    # Retrieve user data from session
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+
+    # API endpoint and headers
+    api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    payload = {'user_id': user_id}
+
+    try:
+        response = requests.post(api_url, headers=headers, data=payload)
+        response_data = response.json()
+        # print(response_data)
+
+        if response_data['status'] == "200":
+            Wallet_Balance = response_data.get('Wallet_Balance')
+            transactions = response_data.get('Data', [])
+        else:
+            return HttpResponse(f"Error: {response_data.get('Message', 'Unknown error')}")
+
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"API request failed: {e}")
+
+    context = {
+        'Wallet_Balance': Wallet_Balance,
+        'transactions': transactions,
+    }
+    print(context)
+    return render(request, 'gold/money_wallet.html' , context)
 
 ###################################### Pay Installment #############################################
 from django.http import JsonResponse, HttpResponse
@@ -1533,4 +1605,6 @@ def Logout(request):
     # Redirect to the login page
     return redirect('login')
 
-
+###################################### Membership #############################################
+def dashb(request):
+    return render(request, 'gold/dashb.html')
