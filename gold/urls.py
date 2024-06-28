@@ -73,4 +73,17 @@ urlpatterns = [
     path('handle_selection/', views.handle_selection, name='handle_selection'),
     
     path('dashb/', views.dashb, name='dashb'),
+    
+    path('nc_login/', views.nc_login, name='nc_login'),
+    
+    path('nc_booking/', views.nc_booking, name='nc_booking'),
+    
+    path('nc_deposit/', views.nc_deposit, name='nc_deposit'),
+    
+    path('nc_wallet/', views.nc_wallet, name='nc_wallet'),
+    
+    path('nc_loan/', views.nc_loan, name='nc_loan'),
+    
+    path('nc_vendors/', views.nc_vendors, name='nc_vendors'),
+    
 ]

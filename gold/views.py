@@ -1691,6 +1691,286 @@ def Logout(request):
     # Redirect to the login page
     return redirect('login')
 
-###################################### Membership #############################################
+###################################### NC Login #############################################
+def nc_login(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        mobile = request.POST.get('mobile')
+        
+        payload = {
+            "name": name,
+            "mobile": mobile
+        }
+        
+        # Store payload in session
+        request.session['payload'] = payload
+        
+        # Redirect to the dashb view
+        return redirect('dashb')  # Use the name of the URL pattern for dashb
+    
+    return render(request, 'gold/nc_login.html')
+
+###################################### NC Dashboard #############################################
 def dashb(request):
-    return render(request, 'gold/dashb.html')
+    # Retrieve payload from session
+    payload = request.session.get('payload', {})
+    
+    # Extract name and mobile from payload
+    name = payload.get('name', '')
+    mobile = payload.get('mobile', '')
+    
+    # Print the payload for debugging
+    print(payload)
+    
+    # Pass name and mobile to the template context
+    context = {
+        'name': name,
+        'mobile': mobile
+    }
+    
+    return render(request, 'gold/dashb.html', context)
+
+###################################### NC Booking #############################################
+def nc_booking(request):
+    # First API endpoint and parameters
+    api_url1 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params1 = {
+        "App_Id": 1,
+        "Script_Code": 19
+    }
+    
+    # Second API endpoint and parameters
+    api_url2 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params2 = {
+        "App_Id": 1,
+        "Script_Code": 20
+    }
+    
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # Make POST request to the first API with headers
+    response1 = requests.post(api_url1, json=api_params1, headers=headers)
+    
+    # Check if first request was successful
+    if response1.status_code == 200:
+        api_data1 = response1.json()
+        message_html1 = api_data1.get('message_text', '')
+    else:
+        message_html1 = "<p>First API request failed. Please try again later.</p>"
+    
+    # Make POST request to the second API with headers
+    response2 = requests.post(api_url2, json=api_params2, headers=headers)
+    
+    # Check if second request was successful
+    if response2.status_code == 200:
+        api_data2 = response2.json()
+        message_html2 = api_data2.get('message_text', '')
+    else:
+        message_html2 = "<p>Second API request failed. Please try again later.</p>"
+    
+    # Pass both message_html to the template context
+    context = {
+        'message1': message_html1,
+        'message2': message_html2
+    }
+    
+    # Render the template with the messages in the context
+    return render(request, 'gold/nc_booking.html', context)
+
+
+###################################### NC Booking #############################################
+def nc_deposit(request):
+    # First API endpoint and parameters
+    api_url1 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params1 = {
+        "App_Id": 1,
+        "Script_Code": 27
+    }
+    
+    # Second API endpoint and parameters
+    api_url2 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params2 = {
+        "App_Id": 1,
+        "Script_Code": 28
+    }
+    
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # Make POST request to the first API with headers
+    response1 = requests.post(api_url1, json=api_params1, headers=headers)
+    
+    # Check if first request was successful
+    if response1.status_code == 200:
+        api_data1 = response1.json()
+        message_html1 = api_data1.get('message_text', '')
+    else:
+        message_html1 = "<p>First API request failed. Please try again later.</p>"
+    
+    # Make POST request to the second API with headers
+    response2 = requests.post(api_url2, json=api_params2, headers=headers)
+    
+    # Check if second request was successful
+    if response2.status_code == 200:
+        api_data2 = response2.json()
+        message_html2 = api_data2.get('message_text', '')
+    else:
+        message_html2 = "<p>Second API request failed. Please try again later.</p>"
+    
+    # Pass both message_html to the template context
+    context = {
+        'message1': message_html1,
+        'message2': message_html2
+    }
+    
+    # Render the template with the messages in the context
+    return render(request, 'gold/nc_deposit.html', context)
+
+###################################### NC Wallet #############################################
+def nc_wallet(request):
+    # First API endpoint and parameters
+    api_url1 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params1 = {
+        "App_Id": 1,
+        "Script_Code": 31
+    }
+    
+    # Second API endpoint and parameters
+    api_url2 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params2 = {
+        "App_Id": 1,
+        "Script_Code": 32
+    }
+    
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # Make POST request to the first API with headers
+    response1 = requests.post(api_url1, json=api_params1, headers=headers)
+    
+    # Check if first request was successful
+    if response1.status_code == 200:
+        api_data1 = response1.json()
+        message_html1 = api_data1.get('message_text', '')
+    else:
+        message_html1 = "<p>First API request failed. Please try again later.</p>"
+    
+    # Make POST request to the second API with headers
+    response2 = requests.post(api_url2, json=api_params2, headers=headers)
+    
+    # Check if second request was successful
+    if response2.status_code == 200:
+        api_data2 = response2.json()
+        message_html2 = api_data2.get('message_text', '')
+    else:
+        message_html2 = "<p>Second API request failed. Please try again later.</p>"
+    
+    # Pass both message_html to the template context
+    context = {
+        'message1': message_html1,
+        'message2': message_html2
+    }
+    
+    # Render the template with the messages in the context
+    return render(request, 'gold/nc_wallet.html', context)
+
+###################################### NC Loan #############################################
+def nc_loan(request):
+    # First API endpoint and parameters
+    api_url1 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params1 = {
+        "App_Id": 1,
+        "Script_Code": 29
+    }
+    
+    # Second API endpoint and parameters
+    api_url2 = "https://www.gyaagl.app/apis/chatbot/chatscripttext"
+    api_params2 = {
+        "App_Id": 1,
+        "Script_Code": 30
+    }
+    
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                      '(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+    
+    # Make POST request to the first API with headers
+    response1 = requests.post(api_url1, json=api_params1, headers=headers)
+    
+    # Check if first request was successful
+    if response1.status_code == 200:
+        api_data1 = response1.json()
+        message_html1 = api_data1.get('message_text', '')
+    else:
+        message_html1 = "<p>First API request failed. Please try again later.</p>"
+    
+    # Make POST request to the second API with headers
+    response2 = requests.post(api_url2, json=api_params2, headers=headers)
+    
+    # Check if second request was successful
+    if response2.status_code == 200:
+        api_data2 = response2.json()
+        message_html2 = api_data2.get('message_text', '')
+    else:
+        message_html2 = "<p>Second API request failed. Please try again later.</p>"
+    
+    # Pass both message_html to the template context
+    context = {
+        'message1': message_html1,
+        'message2': message_html2
+    }
+    
+    # Render the template with the messages in the context
+    return render(request, 'gold/nc_loan.html', context)
+
+############################################################################################
+def nc_vendors(request):
+    # URL of the API
+    api_url = "https://www.vgold.co.in/dashboard/webservices/vendor_upload.php"
+
+    # Set the headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    # Make a GET request to the API with headers
+    response = requests.get(api_url, headers=headers)
+    
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+
+        if data['status'] == '200':
+            # Extract vendor details and prepend the base URL
+            base_url = "https://www.vgold.co.in"
+            vendors = [
+                {
+                    'vendor_id': vendor['vendor_id'],
+                    'logo_path': base_url + vendor['logo_path'],
+                    'letter_path': base_url + vendor['letter_path'],
+                    'advertisement_path': base_url + vendor['advertisement_path']
+                }
+                for vendor in data['Data']
+            ]
+        else:
+            vendors = []
+    else:
+        vendors = []
+
+    context = {
+        'vendors': vendors,
+    }
+    return render(request, 'gold/nc_vendors.html', context)

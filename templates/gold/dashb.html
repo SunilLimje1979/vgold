@@ -246,7 +246,7 @@
           <button class="navbar-toggler white-button" type="button" id="menuBtn">
             <span class="navbar-toggler-icon"></span>
           </button>
-          <a class="navbar-brand">Welcome - {{ first_name }}</a>
+          <a class="navbar-brand">Welcome - {{ name }}</a>
         </div>
       </div>
     </nav>
@@ -260,48 +260,25 @@
       </div>
       <ul>
         <li>
-          <a href="{% url 'dashboard' %}"><i class="bi bi-house-door"></i> Home</a>
+          <a href="{% url 'dashb' %}"><i class="bi bi-house-door"></i> Home</a>
         </li>
+  
         <li>
-          <a href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a>
-        </li>
-        <li>
-          <a href="{% url 'certificate' %}"><i class="bi bi-card-checklist"></i> Certificates</a>
-        </li>
-        <li>
-          <a href="{% url 'gbooking_history' %}"><i class="bi bi-currency-dollar"></i> Gold Booking History</a>
-        </li>
-        <li>
-          <a href="{% url 'gdeposit_history' %}"><i class="bi bi-wallet2"></i> Gold Deposit History</a>
-        </li>
-        <li>
-          <a href="{% url 'pay_installment' %}"><i class="bi bi-calendar-check"></i> Pay Installment</a>
-        </li>
-        <li>
-          <a href="{% url 'complaint' %}"><i class="bi bi-exclamation-diamond"></i> Complaint / Feedback</a>
-        </li>
-        <li>
-          <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share V-Gold App</a>
-        </li>
-        <li>
-          <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
-        </li>
-        <li>
-          <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+          <a href="{% url 'nc_login' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
         </li>
       </ul>
     </div>
 
     <div class="container" style="margin-top: 55px;">
       <div class="center-image">
-        <a href="{% url 'gold_booking' %}">
+        <a href=" ">
           <img src="https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png" alt="Your Logo" class="logo" style="width: 100%; margin-bottom: 0px" />
         </a>
       </div>
       <div class="button" style="text-align: center; padding-top: 15px; padding-bottom: 15px;">
         <div class="row">
           <div class="col" style="text-align: right;">
-            <a href="{% url 'gold_booking' %}" style="text-decoration: none;">
+            <a href="" style="text-decoration: none;">
               <img src="{% static 'assets/img/booknow.png' %}" alt="Book Now" style="width: 135px; height: auto;" />
             </a>
           </div>
@@ -319,6 +296,7 @@
             <!-- Card 1 -->
             <div class="col mb-custom">
                 <a href="" style="color: black; text-decoration: none;">
+                {% comment %} <a href="{% url 'nc_booking' %}" style="color: black; text-decoration: none;"> {% endcomment %}
                     <div class="card " style="background-color: rgb(11, 20, 58); width: 100%;">
                         <div class="card-body text-center">
                             <i class="bi bi-currency-dollar" style="font-size: 3rem; color: white;"></i>
@@ -331,12 +309,10 @@
             <!-- Card 2 -->
             <div class="col mb-custom">
                 <a href="" style="color: black; text-decoration: none;">
+                {% comment %} <a href="{% url 'nc_deposit' %}" style="color: black; text-decoration: none;"> {% endcomment %}
                     <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
                         <div class="card-body text-center">
                             <i class="bi bi-wallet2" style="font-size: 3rem;color: white;"></i>
-                            {% if notification_counts.attendance_count > 0 %}
-                                <span class="notification-badge">{{ notification_counts.attendance_count }}</span>
-                            {% endif %}
                             <p class="card-text"><strong style="font-size: 14px;color: white;">Gold Deposite</strong></p>
                         </div>
                     </div>
@@ -346,12 +322,10 @@
             <!-- Card 3 -->
             <div class="col mb-custom">
                 <a href="" style="color: black; text-decoration: none;">
+                {% comment %} <a href="{% url 'nc_wallet' %}" style="color: black; text-decoration: none;"> {% endcomment %}
                     <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
                         <div class="card-body text-center">
                             <i class="bi bi-wallet" style="font-size: 3rem;color: white;"></i>
-                            {% if notification_counts.circular_count > 0 %}
-                                <span class="notification-badge">{{ notification_counts.circular_count }}</span>
-                            {% endif %}
                             <p class="card-text"><strong style="font-size: 14px;color: white;">Gold Wallet</strong></p>
                         </div>
                     </div>
@@ -360,27 +334,22 @@
                  
         <!-- Card 4 -->
         <div class="col mb-custom">
-        
             <a href="" style="color: black; text-decoration: none;">
+                {% comment %} <a href="{% url 'nc_loan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
                 <div class="card" style="background-color: rgb(11, 20, 58); width: 100%;">
                     <div class="card-body text-center">
                         <i class="bi bi-bank" style="font-size: 3rem;color: white;"></i>
-                        {% if notification_counts.homework_count > 0 %}
-                            <span class="notification-badge">{{ notification_counts.homework_count }}</span>
-                        {% endif %}
                         <p class="card-text"><strong style="font-size: 14px;color: white;">Loan</strong></p>
                     </div>
                 </div>
             </a>
         </div>
 
-
-
       <div class="card-with-radius">
         <div class="logo-container-service"></div>
 
         <div class="center-image">
-          <a href="{% url 'our_vendors' %}">
+          <a href="{% url 'nc_vendors' %}">
             <img src="{% static 'assets/img/dashboard_logo.jpg' %}" alt="Your Logo" class="logo" style="height: 140px; width: 190px; margin-top: 5px" />
           </a>
         </div>
