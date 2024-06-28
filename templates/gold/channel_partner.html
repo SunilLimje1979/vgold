@@ -1,13 +1,13 @@
-{% load i18n %} {% load static %}
-{% load pwa %} 
-{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+{% load i18n %}
+{% load static %}
+{% load pwa %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    <link rel="manifest" href="{% static "assets/manifest.json" %}">
     <title>Channel Partner</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -38,7 +38,7 @@
 
         /* Search box style */
         #searchContainer {
-          height: 120px;
+            height: 120px;
             background-color: rgb(41, 39, 122); /* Same color as navbar */
             padding: 10px; /* Add padding */
         }
@@ -58,32 +58,29 @@
 
         /* Custom card style */
         .custom-card {
-          background-color: white; /* Light gray background */
-          padding: 5px; 
-          {% comment %} border: 1px solid black; {% endcomment %}
-          border-radius: 10px;
-          margin-top: 15px;
-          height: 80px; /* Example height */
-          width: 100%; /* Example width */
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Shadow style */ 
-      }
-      .increased-padding {
-        padding-top: 20px; /* Adjust the top padding as needed */
-    
-      }
+            background-color: white; /* Light gray background */
+            padding: 2px; 
+            border-radius: 10px;
+            margin-top: 15px;
+            height: 80px; /* Example height */
+            width: 100%; /* Example width */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Shadow style */ 
+        }
+        .increased-padding {
+            padding-top: 20px; /* Adjust the top padding as needed */
+        }
 
-      .custom-card h4 {
-        font-size: 16px; /* Adjust the font size as needed */
-      }
-      /* Additional styling for list items */
-      #listContainer li {
-        border: 1px solid #f0ad4e; /* Yellow border */
-        background-color: rgb(255,186,42); /* Yellow background */
-        padding-bottom: 20px; /* Add padding */
-        padding-left:3px;
-        margin-bottom: 12px; /* Add margin bottom for spacing */
-        {% comment %} border-radius: 5px; /* Add border radius */ {% endcomment %}
-      }
+        .custom-card h4 {
+            font-size: 16px; /* Adjust the font size as needed */
+        }
+        /* Additional styling for list items */
+        #listContainer li {
+            border: 1px solid #f0ad4e; /* Yellow border */
+            background-color: rgb(255,186,42); /* Yellow background */
+            padding-bottom: 20px; /* Add padding */
+            padding-left: 3px;
+            margin-bottom: 12px; /* Add margin bottom for spacing */
+        }
     </style>
 </head>
 <body>
@@ -112,14 +109,14 @@
     <div class="col">
       <div class="custom-card">
         <div class="row  mt-3"  >
-          <div class="col text-center border-end border-2">
-            <h4 style="font-size: 15px;"><span>100</span> <br> User Count </h4>
+          <div id="userCount" class="col text-center border-end border-2">
+            <h5 style="font-size: 14px;"><span>0</span> <br> Users </h5>
           </div>
-          <div class="col text-center border-end border-2">
-            <h4 style="font-size: 15px;"><span>5000</span> <br> Commission </h4>
+          <div id="commissionCount" class="col text-center border-end border-2">
+            <h5 style="font-size: 14px;"><span>₹ 0</span> <br> Commission </h5>
           </div>
-          <div class="col text-center">
-            <h4 style="font-size: 15px;"><span>50</span> <br> Gold Booking</h4>
+          <div id="goldBookingCount" class="col text-center">
+            <h5 style="font-size: 14px;"><span>0 Gm</span> <br> Gold Booking </h5>
           </div>
         </div>
       </div>
@@ -133,9 +130,12 @@
 <div class="container mt-3 increased-padding">
   <div class="row">
     <div class="col">
-   
       <ul id="listContainer" class="list-unstyled" style="width: 100%; padding-top: 10px;">
-        <!-- List items will be added dynamically here -->
+        {% for item in data %}
+          <li data-uname="{{ item.uname }}" data-uid="{{ item.uid }}" data-umobile="{{ item.umobile }}" data-uemail="{{ item.uemail }}" data-commission="{{ item.total_commission_created }}" data-gold="{{ item.total_gold_in_account }}">
+            {{ item.uname }} - {{ item.total_gold_in_account }} gm
+          </li>
+        {% endfor %}
       </ul>
     </div>
   </div>
@@ -145,37 +145,82 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Custom JS -->
 <script>
-  // Sample data (you can replace this with your actual data)
-  var data = [
-    { description: "Amol Deshmukh 50 gm" },
-    { description: "Sachin Bhurgat 10 gm" },
-    { description: "Sarang Aloni 0 gm" },
-    { description: "Amol Deshmukh 50 gm" },
-    { description: "Sachin Bhurgat 10 gm" },
-    { description: "Sarang Aloni 0 gm" }
-    // Add more data objects as needed
-  ];
+    // Sample data (you can replace this with your actual data)
+    var data = {{ data|safe }};
+  
+    // Function to populate the list with data
+    function populateList(data) {
+      var listContainer = document.getElementById("listContainer");
 
-  // Function to populate the list with data
-  function populateList() {
-    var listContainer = document.getElementById("listContainer");
+      // Clear existing list items
+      listContainer.innerHTML = "";
 
-    // Clear existing list items
-    listContainer.innerHTML = "";
+      // Loop through the data and create list items
+      data.forEach(function(item) {
+        var listItem = document.createElement("li");
+        listItem.setAttribute('data-uname', item.uname);
+        listItem.setAttribute('data-uid', item.uid);
+        listItem.setAttribute('data-umobile', item.umobile);
+        listItem.setAttribute('data-uemail', item.uemail);
+        listItem.setAttribute('data-commission', item.total_commission_created);
+        listItem.setAttribute('data-gold', item.total_gold_in_account);
+        listItem.innerHTML = `${item.uname} - ${item.total_gold_in_account} gm`; // Display both uname and total_gold_in_account
+        listContainer.appendChild(listItem);
+      });
 
-    // Loop through the data and create list items
-    data.forEach(function(item) {
-      var listItem = document.createElement("li");
-      listItem.innerHTML = item.description;
-      listContainer.appendChild(listItem);
+      // Update counts initially
+      updateCounts(data);
+    }
+
+    // Initial population of the list using data from the context
+    populateList(data);
+
+    // Function to update counts based on filtered list
+    function updateCounts(filteredData) {
+      var userCount = filteredData.length;
+      var commissionTotal = filteredData.reduce(function(sum, item) {
+        return sum + parseFloat(item.total_commission_created || 0);
+      }, 0);
+      var goldBookingTotal = filteredData.reduce(function(sum, item) {
+        return sum + parseFloat(item.total_gold_in_account || 0);
+      }, 0);
+
+      // Update HTML elements with the calculated values
+      document.getElementById('userCount').innerHTML = `<h5 style="font-size: 14px;"><span>${userCount}</span> <br> Users </h5>`;
+      document.getElementById('commissionCount').innerHTML = `<h5 style="font-size: 14px;"><span>₹ ${commissionTotal.toFixed(2)}</span> <br> Commission </h5>`;
+      document.getElementById('goldBookingCount').innerHTML = `<h5 style="font-size: 14px;"><span>${goldBookingTotal.toFixed(2)} Gm</span> <br> Gold Booking </h5>`;
+    }
+
+    // Search functionality
+    document.getElementById('searchBox').addEventListener('input', function() {
+        var searchQuery = this.value.toLowerCase();
+        var listItems = document.querySelectorAll('#listContainer li');
+        var filteredData = [];
+
+        listItems.forEach(function(item) {
+            var uname = item.getAttribute('data-uname').toLowerCase();
+            var uid = item.getAttribute('data-uid').toLowerCase();
+            var umobile = item.getAttribute('data-umobile').toLowerCase();
+            var uemail = item.getAttribute('data-uemail').toLowerCase();
+
+            if (uname.includes(searchQuery) || uid.includes(searchQuery) || umobile.includes(searchQuery) || uemail.includes(searchQuery)) {
+                item.style.display = '';
+                filteredData.push({
+                  uname: item.getAttribute('data-uname'),
+                  uid: item.getAttribute('data-uid'),
+                  umobile: item.getAttribute('data-umobile'),
+                  uemail: item.getAttribute('data-uemail'),
+                  total_commission_created: parseFloat(item.getAttribute('data-commission') || 0),
+                  total_gold_in_account: parseFloat(item.getAttribute('data-gold') || 0)
+                });
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // Update counts based on filtered data
+        updateCounts(filteredData);
     });
-  }
-
-  populateList();
 </script>
-
-  <!-- Bootstrap JS (optional, for Bootstrap features) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Custom JS -->
 </body>
 </html>

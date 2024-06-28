@@ -282,13 +282,13 @@
         </li>{% comment %}
        <li>
           <a href="{% url 'add_bank' %}"><i class="bi bi-bank"></i> Add Bank</a>
-        </li>
+        </li>  {% endcomment %} 
         <li>
           <a href="{% url 'channel_partner' %}"
             ><i class="bi bi-building"></i> Channel Partner</a
           >
-        </li>
-        <li>
+        </li>{% comment %} 
+      <li>
           <a href="{% url 'review' %}"><i class="bi bi-star"></i> Review</a>
         </li>  {% endcomment %}
         <li>
@@ -367,7 +367,7 @@
                     <p>Add Gold</p>
                 </div>
             </a>
-            <a href="" style="color: black; text-decoration: none;">
+            <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;"> {% endcomment %}
               <div >
                   <img src="{% static 'assets/img/goldsell.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
@@ -394,7 +394,7 @@
                 <p>Add Money</p>
               </div>
           </a>
-          <a href="" style="color: black; text-decoration: none;">
+          <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;">
           {% comment %} <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <div>
               <img src="{% static 'assets/img/withdrawmoney.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
@@ -534,7 +534,7 @@
       }
   </script>
   
-  {% comment %} <script>
+ <script>
     function RateshareFunction() {
         if (navigator.share) {
             navigator.share({
@@ -550,7 +550,7 @@
             alert('Web Share API is not supported in your browser.');
         }
     }
-</script> {% endcomment %}
+</script> 
 
 {% comment %} <script>
   async function RateshareFunction() {
@@ -620,7 +620,7 @@
   }
 </script> {% endcomment %}
 
-<script>
+{% comment %} <script>
   async function RateshareFunction() {
     const imageUrl = 'https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png';
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
@@ -665,9 +665,7 @@
         console.error('Error fetching the image via CORS proxy', err);
     }
 }
- 
-</script>
-
+</script> {% endcomment %}
 
   </body>
 </html>

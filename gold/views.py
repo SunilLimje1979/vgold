@@ -155,7 +155,7 @@ def Dashboard(request):
         
         # API call to get user loan eligibility
         loan_eligibility_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
-        loan_post_data = {'user_id': user_id}
+        loan_post_data = {'user_id':user_id}
         loan_headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
@@ -239,24 +239,41 @@ def Loan(request):
 
         if not user_id:
             return HttpResponse("User ID not found in session data.")
+
+        # Call the external API
+        api_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        api_data = {
+            'user_id': user_id
+        }
         
-        # Retrieve loan API response from session
-        loan_api_response = request.session.get('loan_api_response')
-        
-        # Extract the loan amount from the loan API response
+        response = requests.post(api_url, headers=headers, data=api_data)
+        response.raise_for_status()  # Check for HTTP errors
+        loan_api_response = response.json()
+        # print(loan_api_response)
+
+        # Extract the loan amount from the API response
         loan_amount = None
+        status = None
         if loan_api_response and 'data' in loan_api_response:
             loan_amount = loan_api_response['data'].get('loan_amount')
-        
+            status = loan_api_response['status']
+                # is_eligible = loan_api_response['data'].get('is_eligible')
+                # print(status)
+            
         # Prepare the context for the template
         context = {
             'First_Name': First_Name,
             'loan_amount': loan_amount,
+            # 'is_eligible': is_eligible,
+            'status': status
         }
-        
+
         # Render the template with the context
         return render(request, 'gold/loan.html', context)
-    
+
     elif request.method == 'POST':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
@@ -314,6 +331,10 @@ def Loan(request):
         return HttpResponse("Invalid request method.")
 
 ###################################### Withdraw #############################################
+import requests
+from django.shortcuts import render, HttpResponse, redirect
+from django.contrib import messages
+
 def Withdraw(request):
     if request.method == 'GET':
         # Retrieve user data from session
@@ -337,7 +358,6 @@ def Withdraw(request):
 
         if response.status_code == 200:
             api_response = response.json()
-            # print(api_response)
             if api_response.get("status") == "200":
                 wallet_balance = api_response.get("Wallet_Balance")
                 return render(request, 'gold/withdraw.html', {'wallet_balance': wallet_balance})
@@ -347,23 +367,52 @@ def Withdraw(request):
             return HttpResponse("Failed to connect to the API")
     
     elif request.method == 'POST':
+        # Retrieve user data from session
         user_data = request.session.get('user_data', {})
         user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+        if not user_id:
+            return HttpResponse("User ID not found in session data.")
         
-        bank_name = request.POST.get('bankName')
+        amount = request.POST.get('bankName')  # Adjust to match your form field names
         comment = request.POST.get('comment')
         
-        payload={
-            "user_id" :user_id,
-            "bank_name": bank_name,
+        # Headers for the API request
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Content-Type': 'application/json',  # Specify content type as JSON
+        }
+        
+        api_url = "https://www.vgold.co.in/dashboard/webservices/add_withdraw_request.php"
+        
+        # Data to be sent as JSON
+        data = {
+            "user_id": user_id,
+            "amount": amount,
             "comment": comment
         }
-    
-        print(payload)
-           
-    return render(request, 'gold/withdraw.html')
-
         
+        print(data)
+        
+        try:
+            response = requests.post(api_url, json=data, headers=headers)
+            # print(response.text)
+            
+            if response.status_code == 200:
+                response_data = response.json()
+                if response_data.get('status') == '200':
+                    messages.success(request, "Request for withdraw amount has been sent successfully.")
+                else:
+                    messages.error(request, response_data.get('Message', 'An error occurred.'))
+            else:
+                messages.error(request, f"Failed to connect to the API. Status code: {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"An error occurred while making the request: {e}")
+        
+        return redirect('withdraw')  # Redirect back to the withdraw page
+    
+    return render(request, 'gold/withdraw.html')
+   
 ###################################### Withdraw #############################################
 
 def Sell_gold(request):
@@ -1480,7 +1529,44 @@ def Add_bank(request):
 
 ###################################### Channel_partner #############################################
 def Channel_partner(request):
-    return render(request, 'gold/channel_partner.html')
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('data', [{}])[0].get('User_ID')
+
+    if not user_id:
+        return HttpResponse("User ID not found in session data.")
+    
+    # URL for the API
+    api_url = "https://www.vgold.co.in/dashboard/webservices/cp_user_list.php"
+    
+    # Data to be sent in the POST request
+    post_data = {
+        'user_id': user_id
+    }
+
+    # Headers for the API request
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    try:
+        # Making the POST request
+        response = requests.post(api_url, data=post_data, headers=headers)
+        response_data = response.json()
+
+        # Check if the API response is successful
+        if response_data.get('status') == "200":
+            data = response_data.get('data', [])
+            # print(data)
+        else:
+            return HttpResponse("Failed to retrieve data from the API.")
+        
+    except Exception as e:
+        return HttpResponse(f"An error occurred: {str(e)}")
+        
+    # Render the template with the retrieved data
+    return render(request, 'gold/channel_partner.html', {'data': data})
+
+
 ###################################### Review #############################################
 def Review(request):
     return render(request, 'gold/review.html')

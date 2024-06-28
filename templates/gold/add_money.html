@@ -92,8 +92,8 @@
       }
       .share-icon {
         position: absolute;
-        top: 10px;
-        right: 10%;
+        top: 20px;
+        right: 13%;
         color: white;
         background-color: rgba(0, 0, 0, 0.5);
         border-radius: 40%;
@@ -202,7 +202,7 @@
             <button id="updateProfileBtn" type="submit">
               Add Money
             </button>
-            <div class="center-image">
+            {% comment %} <div class="center-image">
               <img
                 src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
                 alt="Your Logo"
@@ -210,7 +210,18 @@
                 style="height: 90%; width: 90%; margin-bottom: 10px"
               />
               <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
+            </div> {% endcomment %}
+
+            <div class="center-image">
+              <img
+                src="https://www.vgold.co.in/AccountQR.png"
+                alt="Your Logo"
+                class="logo"
+                style="height: 80%; width: 100%; margin-bottom: 10px"
+              />
+              <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
             </div>
+
           </form>
         </div>
       </div>
