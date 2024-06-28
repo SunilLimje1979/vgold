@@ -267,14 +267,14 @@
           <a href="{% url 'membership' %}"
             ><i class="bi bi-people"></i> Membership</a
           >
-        </li>
+        </li>{% endcomment %}
         <li>
           <a href="{% url 'gold_wallet' %}"
             ><i class="bi bi-wallet"></i> eGoldWallet</a>
         </li>
         <li>
           <a href="{% url 'money_wallet' %}" > <i class="bi bi-credit-card"></i> Money Wallet</a>
-        </li>{% endcomment %}
+        </li>
         <li>
           <a href="{% url 'pay_installment' %}"
             ><i class="bi bi-calendar-check"></i> Pay Installment</a
@@ -387,7 +387,7 @@
               <p>Money Wallet</p>
             </div>
           </a>
-          <a href=" " style="color: black; text-decoration: none;">
+          <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;">
             {% comment %} <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;"> {% endcomment %}
               <div>
                 <img src="{% static 'assets/img/addmoney.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
