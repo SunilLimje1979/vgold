@@ -72,6 +72,12 @@
         #updateProfileBtn:hover {
           background-color: #29277a;
         }
+        .form-label {
+            color: rgb(11, 20, 58);
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
     </style>
 </head>
 <body>
@@ -83,6 +89,15 @@
                         <img src="{% static 'assets/img/vgoldsvg.svg' %}" alt="Your Logo" class="logo" style="height: 80px; width: auto; margin-bottom: 5px" />
                     </div>
                     <div class="logo-text" style="margin-bottom: 15px;">DIGITAL GOLD | GOLD LOAN | FOUNDATION</div>
+                    <div class="text-center mb-2">
+                        <img src="{% static 'assets/img/girl_mobile.jpg' %}" alt="Your Logo" class="logo" style="height: 120px; width: auto; margin-bottom: 5px">
+                    </div>
+                </div>
+                <div class="text-center mb-2">
+                    {% comment %} <div class="logo-text">Lets Know Something About You</div> {% endcomment %}
+                    <div class="logo-text" style="color: rgb(41, 39, 122); font-size: 16px; font-weight: bold; margin-top: 0px;">
+                        Lets Know Something About You
+                    </div>
                 </div>
                 <form method="post">
                     {% csrf_token %}
@@ -92,7 +107,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="mobile" class="form-label">Mobile Number</label>
-                        <input type="tel" class="form-control" id="mobile" name="mobile" required>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" pattern="\d{10}" title="Please enter a valid 10-digit mobile number" required>
                     </div>
                     <button id="updateProfileBtn">Log in</button>
                 </form>
