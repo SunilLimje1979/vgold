@@ -1719,16 +1719,20 @@ def dashb(request):
     name = payload.get('name', '')
     mobile = payload.get('mobile', '')
     
+    # Truncate name to 10 characters and add ellipsis if it exceeds
+    truncated_name = name if len(name) <= 10 else name[:10] + '...'
+    
     # Print the payload for debugging
     print(payload)
     
-    # Pass name and mobile to the template context
+    # Pass truncated name and mobile to the template context
     context = {
-        'name': name,
+        'name': truncated_name,
         'mobile': mobile
     }
     
     return render(request, 'gold/dashb.html', context)
+
 
 ###################################### NC Booking #############################################
 def nc_booking(request):
