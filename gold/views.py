@@ -116,6 +116,57 @@ def OTP(request):
 
 ###################################### Registration #############################################
 def Registration(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        mobile_no = request.POST.get('mobile_no')
+        pancard_number = request.POST.get('pancard_number')
+        aadhar_number = request.POST.get('aadhar_number')
+        refer_code = request.POST.get('refer_code')
+        
+        payload={
+            "first":first_name,
+            "last": last_name,
+            "email": email,
+            "no": mobile_no,
+            "pancard": pancard_number,
+            "pass": aadhar_number,
+            "refer_code":refer_code
+        }
+        print(payload)
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        api_url="https://www.vgold.co.in/dashboard/webservices/register.php"
+        
+        try:
+            response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
+            print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "User registration successful")
+                    else:
+                        messages.error(request, response_data.get('Message', response_data.get('Message')))
+                    
+                    return redirect(Registration)  # Assuming 'complaint' is the URL name for the complaint view
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
+        
+ 
+        return redirect(Registration)
+    
     return render(request, 'gold/registration.html')
 
 ###################################### Dashboard #############################################
@@ -687,7 +738,7 @@ def Profile(request):
     user_info = user_data.get('data', [{}])[0]  # Access the first element in the data list
 
     # Print the user_data (for debugging purposes)
-    print(user_info)
+    # print(user_info)
 
     # Pass the user_info to the template context
     context = {'user_info': user_info}
@@ -697,9 +748,72 @@ def Profile(request):
 
 
 ###################################### Update Profile #############################################
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 def Update_profile(request):
-    return render(request, 'gold/update_profile.html')
+    if request.method == 'GET':
+        user_data = request.session.get('user_data', {})
+        user_info = user_data.get('data', [{}])[0]
+        context = {'user_info': user_info}
+        return render(request, 'gold/update_profile.html', context)
+
+    elif request.method == 'POST':
+        # Retrieve user data from session
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
+        
+        # input_email = request.POST.get('inputEmail')
+        input_mobile = request.POST.get('inputMobile')
+        input_address = request.POST.get('inputAddress')
+        input_city = request.POST.get('inputCity')
+        input_state = request.POST.get('inputState')
+        # input_adhar = request.POST.get('inputAdhar')
+        # input_pan = request.POST.get('inputPan')
+        
+        payload={
+            "user_id":user_id,
+            "no": input_mobile,
+            "address": input_address,
+            "city": input_city,
+            "state": input_state,
+            # "Email": input_email,
+            # "Adhar": input_adhar,
+            # "Pan": input_pan
+        }
+
+        # print(payload)
+         # Set the headers for the API request
+         
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        api_url="http://vgold.co.in/dashboard/webservices/update_profile.php"
+        
+        try:
+            response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
+            # print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "User profile updated")
+                    else:
+                        messages.error(request, response_data.get('Message', response_data.get('Message')))
+                    
+                    return redirect('update_profile')  # Assuming 'complaint' is the URL name for the complaint view
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
+
+    return redirect(reverse('update_profile'))
 
 ###################################### Certificate #############################################
 import requests

@@ -2,13 +2,12 @@
 {% load pwa %} 
 {% comment %} {% progressive_web_app_meta %} {% endcomment %}
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
     <title>Gold Wallet</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -18,32 +17,32 @@
     <style>
         /* Navbar style */
         .navbar {
-          background-color: rgb(41, 39, 122);
-          height: 55px;
-          color: white;
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
         }
         .navbar-toggler-icon {
-          color: white;
+            color: white;
         }
         .navbar-brand {
-          font-size: 20px;
-          margin-left: 10px;
-          color: white;
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
         }
       
         /* Style for the icon */
         .fa-arrow-left {
-          color: white;
+            color: white;
         }
       
         /* Custom card style */
         .custom-card {
-          background-color: rgb(41, 39, 122);
-          border-radius: 0 0 50px 50px;
-          width: 100%;
-          height: 130px; /* Adjust the height as needed */
-          padding: 20px; /* Adjust the padding as needed */
-          position: relative;
+            background-color: rgb(41, 39, 122);
+            border-radius: 0 0 50px 50px;
+            width: 100%;
+            height: 130px; /* Adjust the height as needed */
+            padding: 20px; /* Adjust the padding as needed */
+            position: relative;
         }
    
         #submitButtonContainer {
@@ -108,12 +107,12 @@
 
         /* Custom styles for the card layout */
         .card {
-          margin-bottom: 5px; /* Add some bottom margin between cards */
+            margin-bottom: 5px; /* Add some bottom margin between cards */
         }
   
         /* Set the card width to 30% of the container's width for three cards in one row */
         .card-columns {
-          column-count: 3;
+            column-count: 3;
         }
 
         .small-font {
@@ -137,97 +136,108 @@
     </nav>
 
     <!-- Card -->
-<div class="custom-card mt-5 p-3 text-center">
-    <!-- Profile icon -->
-<i class="fas fa-user-circle fa-6x ms-3 text-white"></i>
+    <div class="custom-card mt-5 p-3 text-center">
+        <!-- Profile icon -->
+        <i class="fas fa-user-circle fa-6x ms-3 text-white"></i>
 
-    <!-- Plus icon -->
-    <i class="fas fa-plus-circle fa-2x text-white mt-3"></i>
-</div>
+        <!-- Plus icon -->
+        <i class="fas fa-plus-circle fa-2x text-white mt-3"></i>
+    </div>
 
     <div class="container" style="margin-top: 10px;">
-        <form>
+        <form method="POST">
+            {% csrf_token %}
+            {% if messages %}
+            <div class="row justify-content-center mt-3">
+                {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="form-group form-element">
                 <label for="inputEmail" class="form-label">Enter Email</label>
-                <input type="text" class="form-control" id="inputEmail" name="inputEmail" placeholder="Enter Email">
+                <input type="text" class="form-control" id="inputEmail" name="inputEmail" placeholder="Enter Email" value="{{ user_info.Email }}" readonly>
             </div>
             <div class="form-group form-element">
                 <label for="inputMobile" class="form-label">Enter Mobile</label>
-                <input type="text" class="form-control" id="inputMobile" name="inputMobile" placeholder="Enter Mobile">
+                <input type="text" class="form-control" id="inputMobile" name="inputMobile" placeholder="Enter Mobile" value="{{ user_info.Mobile_no }}">
             </div>
             <div class="form-group form-element">
                 <label for="inputAddress" class="form-label">Enter Your Address</label>
-                <input type="text" class="form-control" id="inputAddress" name="inputAddress" placeholder="Enter Your Address">
+                <input type="text" class="form-control" id="inputAddress" name="inputAddress" placeholder="Enter Your Address" value="{{ user_info.Address }}">
             </div>
             <div class="form-group form-element">
                 <label for="inputCity" class="form-label">Enter Your City</label>
-                <input type="text" class="form-control" id="inputCity" name="inputCity" placeholder="Enter Your City">
+                <input type="text" class="form-control" id="inputCity" name="inputCity" placeholder="Enter Your City" value="{{ user_info.City }}">
             </div>
             <div class="form-group form-element">
                 <label for="inputState" class="form-label">Enter Your State</label>
-                <input type="text" class="form-control" id="inputState" name="inputState" placeholder="Enter Your State">
+                <input type="text" class="form-control" id="inputState" name="inputState" placeholder="Enter Your State" value="{{ user_info.State }}">
             </div>
             <div class="form-group form-element">
                 <label for="inputAdhar" class="form-label">Enter Adhar No</label>
-                <input type="text" class="form-control" id="inputAdhar" name="inputAdhar" placeholder="Enter Adhar No">
+                <input type="text" class="form-control" id="inputAdhar" name="inputAdhar" placeholder="Enter Adhar No" value="{{ user_info.aadhar_no }}" readonly>
             </div>
             <div class="form-group form-element">
                 <label for="inputPan" class="form-label">Enter Pan No</label>
-                <input type="text" class="form-control" id="inputPan" name="inputPan" placeholder="Enter Pan No">
+                <input type="text" class="form-control" id="inputPan" name="inputPan" placeholder="Enter Pan No" value="{{ user_info.pan_no }}" readonly>
             </div>
-        </form>
+      
     </div>
     
-<!-- Card layout -->
-<div class="container" style="margin-top: 10px;">
-    <div class="row">
-        <div class="card-columns">
-            <!-- Card 1 -->
-            <div class="card">
-                <div class="card-body">
-                    <!-- Input for file upload -->
-                    <label for="fileUpload1">
-                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 1" class="card-img-top clickable-image">
-                    </label>
-                    <input type="file" id="fileUpload1" class="d-none">
-                    <!-- Centered label below card -->
-                    <div class="d-flex justify-content-center mt-0">
-                        <label class="text-center small-font">Adhar Front</label>
+    <!-- Card layout -->
+    <div class="container" style="margin-top: 10px;">
+        <div class="row">
+            <div class="card-columns">
+                <!-- Card 1 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Input for file upload -->
+                        <label for="fileUpload1">
+                            <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 1" class="card-img-top clickable-image">
+                        </label>
+                        <input type="file" id="fileUpload1" class="d-none">
+                        <!-- Centered label below card -->
+                        <div class="d-flex justify-content-center mt-0">
+                            <label class="text-center small-font">Adhar Front</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="card">
-                <div class="card-body">
-                    <!-- Input for file upload -->
-                    <label for="fileUpload2">
-                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 2" class="card-img-top clickable-image">
-                    </label>
-                    <input type="file" id="fileUpload2" class="d-none">
-                    <!-- Centered label below card -->
-                    <div class="d-flex justify-content-center mt-0">
-                        <label class="text-center small-font">Adhar Back</label>
+                <!-- Card 2 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Input for file upload -->
+                        <label for="fileUpload2">
+                            <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 2" class="card-img-top clickable-image">
+                        </label>
+                        <input type="file" id="fileUpload2" class="d-none">
+                        <!-- Centered label below card -->
+                        <div class="d-flex justify-content-center mt-0">
+                            <label class="text-center small-font">Adhar Back</label>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="card">
-                <div class="card-body">
-                    <!-- Input for file upload -->
-                    <label for="fileUpload3">
-                        <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 3" class="card-img-top clickable-image">
-                    </label>
-                    <input type="file" id="fileUpload3" class="d-none">
-                    <!-- Centered label below card -->
-                    <div class="d-flex justify-content-center mt-0">
-                        <label class="text-center small-font">Pan Card</label>
+                <!-- Card 3 -->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Input for file upload -->
+                        <label for="fileUpload3">
+                            <img src="{% static 'assets/img/pan.jpg' %}" alt="Image for Card 3" class="card-img-top clickable-image">
+                        </label>
+                        <input type="file" id="fileUpload3" class="d-none">
+                        <!-- Centered label below card -->
+                        <div class="d-flex justify-content-center mt-0">
+                            <label class="text-center small-font">Pan Card</label>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
 
     <!-- Button -->
     <div id="submitButtonContainer">
@@ -235,7 +245,31 @@
             <button id="submitButton">UPDATE PROFILE</button>
         </a>
     </div>
+</form>
+<script>
 
+    function closeAlert(alert) {
+        alert.classList.add("fade");
+        setTimeout(function () {
+            alert.remove();
+        }, 500);
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        var alertCloseButtons = document.querySelectorAll(".btn-close");
+        alertCloseButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var alert = this.closest(".alert");
+                closeAlert(alert);
+            });
+        });
+        var alerts = document.querySelectorAll(".alert");
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
+                closeAlert(alert);
+            }, 5000);
+        });
+    });
+</script>
     <!-- Bootstrap JS (optional, for Bootstrap features) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
