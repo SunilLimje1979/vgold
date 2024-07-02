@@ -3,6 +3,7 @@ import requests
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.contrib import messages
+
 ###################################### Log in #############################################
 def Login(request):
     headers = {
@@ -25,7 +26,6 @@ def Login(request):
         
         # Print the extracted version
         print(serverappversion)
-        
         
     except requests.exceptions.RequestException as e:
         print(f"Failed to connect to the API: {str(e)}")
@@ -54,11 +54,7 @@ def Login(request):
     
     return render(request, 'gold/login.html' , {'serverappversion':serverappversion})
 
-
 ###################################### OTP #############################################
-import requests
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
 
 def OTP(request):
     if request.method == 'GET':
@@ -364,7 +360,6 @@ def Loan(request):
                 # Successful response, save it to the session if needed
                 request.session['loan_api_response'] = api_response
                 
-                
                 messages.success(request, api_response.get('Message'))
                 return redirect(Loan)
                 # return JsonResponse({"message": api_response.get("Message")})
@@ -372,19 +367,14 @@ def Loan(request):
                 messages.error(request, api_response.get('Message'))
                 return redirect(Loan)
                 # return JsonResponse({"message": "Failed to submit loan request."}, status=400)
-        
+
         else:
             return JsonResponse({"message": "Error communicating with the loan API."}, status=500)
         
-    
-
     else:
         return HttpResponse("Invalid request method.")
 
 ###################################### Withdraw #############################################
-import requests
-from django.shortcuts import render, HttpResponse, redirect
-from django.contrib import messages
 
 def Withdraw(request):
     if request.method == 'GET':
@@ -501,7 +491,6 @@ def Sell_gold(request):
                 gold_sale_rate = rate_data.get('Gold_sale_rate', 'N/A')
                 # print(f"Gold Balance: {gold_balance}")
                 # print(f"Gold Sale Rate: {gold_sale_rate}")
-
                 # Render your template with the retrieved data
                 return render(request, 'gold/sell_gold.html', {'gold_balance': gold_balance, 'gold_sale_rate': gold_sale_rate})
             else:
@@ -518,8 +507,6 @@ def Sell_gold(request):
         # Print the posted data for demonstration
         print(f"Gold Weight: {gold_weight}")
         print(f"Gold Amount: {gold_amount}")
-
-        # Add your logic to process the data further if needed
 
         # Return a response or redirect as necessary
         return redirect(Sell_gold)
