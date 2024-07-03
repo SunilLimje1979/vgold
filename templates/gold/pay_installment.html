@@ -308,19 +308,18 @@
         const payableAmountText = document.getElementById('payableAmountText');
         const moneyInWalletText = document.getElementById('moneyInWalletText');
         const remainingMoneyText = document.getElementById('remainingMoneyText');
-        const exceedNoteText = document.getElementById('exceedNoteText'); // Added for the exceed note
-        const moneyWalletValue = parseFloat(document.getElementById('moneyWalletValue').textContent) || 30;
+        const exceedNoteText = document.getElementById('exceedNoteText');
 
         payableAmountInput.addEventListener('input', function() {
+            const moneyWalletValue = parseFloat(document.getElementById('moneyWalletValue').textContent.replace('₹ ', '')) || 0;
             const amount = parseFloat(payableAmountInput.value) || 0;
-            const moneyInWallet = parseFloat(moneyWalletValue);
-            const remainingMoney = moneyInWallet - amount;
+            const remainingMoney = moneyWalletValue - amount;
 
             payableAmountText.textContent = `Payable Amount : ₹ ${amount}`;
-            moneyInWalletText.textContent = `Money in Wallet : ₹ ${moneyInWallet}`;
+            moneyInWalletText.textContent = `Money in Wallet : ₹ ${moneyWalletValue}`;
             remainingMoneyText.textContent = `Remaining Money in wallet : ₹ ${remainingMoney}`;
 
-            if (amount > moneyInWallet) {
+            if (amount > moneyWalletValue) {
                 exceedNoteText.textContent = 'Amount Exceeds Wallet Money.!!';
             } else {
                 exceedNoteText.textContent = '';
@@ -373,16 +372,16 @@
                 console.log('Gold Balance:', data.gold_balance);
                 console.log('Monthly Installment:', data.monthly_installment);
                 console.log('Gold Purchase Rate:', goldPurchaseRate);
-            
+                
                 // Update HTML elements with received data
                 document.getElementById('minimumAmountValue').innerHTML = `₹ ${data.monthly_installment}`;
                 document.getElementById('minimumamt').value = data.monthly_installment; // Update hidden input field
                 document.getElementById('moneyWalletValue').innerHTML = `₹ ${data.wallet_balance}`;
                 
-                // Calculate the value of gold in rupees
-                const goldValueInRupees = data.gold_balance * goldPurchaseRate;
+                // Calculate the value of gold in rupees and format to 2 decimal places
+                const goldValueInRupees = (data.gold_balance * goldPurchaseRate).toFixed(2);
                 console.log('Gold Value in Rupees:', goldValueInRupees);
-            
+                
                 // Combine gold balance in grams and its value in rupees into one string
                 const goldBalanceDisplay = `${data.gold_balance} GM (Worth ₹ ${goldValueInRupees})`;
                 document.getElementById('goldWalletValue').innerHTML = goldBalanceDisplay;
@@ -392,6 +391,7 @@
                 console.error('Error:', error);
             });
         }
+
     </script>
     
     <script>
