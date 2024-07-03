@@ -1607,24 +1607,54 @@ def Add_money(request):
 ###################################### Add Bank #############################################
 def Add_bank(request):
     if request.method == "POST":
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('data', [{}])[0].get('User_ID')
         bank_name = request.POST.get('bankName')
         branch = request.POST.get('branch')
         account_number = request.POST.get('accountNumber')
         account_type = request.POST.get('accountType')
         ifsc_code = request.POST.get('ifscCode')
         account_holder = request.POST.get('accountHolder')
-
+        
+        payload={
+            "user_id":user_id,
+            "bank_name": bank_name,
+            "branch": branch,
+            "acc_no": account_number,
+            "acc_type":account_type,
+            "ifsc": ifsc_code,
+            "name": account_holder
+        }
         # Print the received data
-        print("Bank Name:", bank_name)
-        print("Branch:", branch)
-        print("Account Number:", account_number)
-        print("Account Type:", account_type)
-        print("IFSC Code:", ifsc_code)
-        print("Account Holder:", account_holder)
-
-        # Here, you can process the data further, save it to the database, etc.
-
-        return HttpResponse("Form submitted successfully!")
+        # print(payload)
+        
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        
+        api_url="https://www.vgold.co.in/dashboard/webservices/bank_details.php"
+        
+        try:
+            response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
+            print(response.text)
+            # Ensure response content is not empty
+            if response.content:
+                try:
+                    response_data = response.json()
+                    # print(response_data)
+                    
+                    if response_data.get('status') == '200':
+                        messages.success(request, "Bank Details add Succesfully")
+                    else:
+                        messages.error(request, response_data.get('Message', response_data.get('Message')))
+                    
+                    return redirect('add_bank')  # Assuming 'complaint' is the URL name for the complaint view
+                except ValueError:
+                    message = "Received invalid JSON response."
+            else:
+                message = "Received empty response from the API."
+        except requests.exceptions.RequestException as e:
+            message = f"An error occurred while making the request: {e}"
 
     return render(request, 'gold/add_bank.html')
 
