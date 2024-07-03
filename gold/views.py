@@ -80,7 +80,7 @@ def OTP(request):
             response = requests.post(login_api_url, data=payload, headers=headers)
             response.raise_for_status()
             data = response.json()
-            print (response.text)
+            # print (response.text)
 
             if data.get("status") == 200:
                 # Store user data in session
@@ -130,7 +130,7 @@ def Registration(request):
             "pass": aadhar_number,
             "refer_code":refer_code
         }
-        print(payload)
+        # print(payload)
         
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -140,7 +140,7 @@ def Registration(request):
         
         try:
             response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
-            print(response.text)
+            # print(response.text)
             # Ensure response content is not empty
             if response.content:
                 try:
@@ -433,7 +433,7 @@ def Withdraw(request):
             "comment": comment
         }
         
-        print(data)
+        # print(data)
         
         try:
             response = requests.post(api_url, json=data, headers=headers)
@@ -1012,7 +1012,7 @@ def Booking_details(request):
     if request.method == 'GET':
         # Retrieve the API response from the session
         api_response = request.session.get('api_response')
-        print(api_response)
+        # print(api_response)
 
         if api_response:
             # Render the template with API response data
@@ -1207,7 +1207,7 @@ def Gold_deposit(request):
         
         try:
             response = requests.post(api_url, data=payload, headers=headers)
-            print(response.text)
+            # print(response.text)
             # Ensure response content is not empty
             if response.content:
                 try:
@@ -1533,7 +1533,7 @@ def Pay_installment(request):
             "cheque_no": cheque_no,
             "confirmed": 0,
         }
-        print(payload)
+        # print(payload)
         
         # Make POST request to installment payment API
         try:
@@ -1636,7 +1636,7 @@ def Add_bank(request):
         
         try:
             response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
-            print(response.text)
+            # print(response.text)
             # Ensure response content is not empty
             if response.content:
                 try:
@@ -1728,11 +1728,11 @@ def Complaint(request):
             "user_id": user_id,
             "complaint": complaint
         }
-        print(params)
+        # print(params)
         
         try:
             response = requests.post(api_url, params=params, headers=headers)  # Use params parameter
-            print(response.text)
+            # print(response.text)
             # Ensure response content is not empty
             if response.content:
                 try:
