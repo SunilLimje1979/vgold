@@ -143,9 +143,42 @@
                         </p>
                     </div>                    
                 </form>
+                <div style="display: flex; justify-content: center;">
+                    <button class="btn btn-success custom-btn" style="width: 50%; font-size: 15px; padding: 9px 18px; margin-top: 10px; background-color: rgb(41, 39, 122); text-decoration: none; color: white;" id="install" hidden>Install</button>
+                </div>
+                
             </div>
         </div>
     </div>
+   <script>
+        // JavaScript for handling PWA installation
+        let installPrompt = null;
+        const installButton = document.querySelector("#install");
+
+        window.addEventListener("beforeinstallprompt", (event) => {
+            event.preventDefault();
+            installPrompt = event;
+            installButton.removeAttribute("hidden");
+        });
+
+        installButton.addEventListener("click", async () => {
+            if (!installPrompt) return;
+            const result = await installPrompt.prompt();
+            console.log(`Install prompt was: ${result.outcome}`);
+            disableInAppInstallPrompt();
+        });
+
+        window.addEventListener("appinstalled", () => {
+            disableInAppInstallPrompt();
+        });
+
+        function disableInAppInstallPrompt() {
+            installPrompt = null;
+            installButton.setAttribute("hidden", "");
+        }
+    </script> 
+
+
     <script>
         // Assuming 'appversion' is provided by a templating engine and correctly injected into the script
         const serverAppVersion = '{{serverappversion}}';
