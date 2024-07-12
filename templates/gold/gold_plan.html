@@ -189,6 +189,45 @@
 
   <script>
     function RateshareFunction() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Check out V-Gold!',
+                text: 'This is Rate of Today Gold. Check it out!',
+                url: {{ data.pdf_url }}
+            }).then(() => {
+                console.log('Thanks for sharing!');
+            }).catch(err => {
+                console.error('Error sharing:', err);
+            });
+        } else {
+            alert('Web Share API is not supported in your browser.');
+        }
+    }
+</script> 
+
+<script>
+  function RateshareFunction() {
+      const pdfUrl = "{{ data.pdf_url }}";  // Get the dynamic URL from Django template
+
+      if (navigator.share) {
+          navigator.share({
+              title: 'Check out V-Gold!',
+              text: 'This is Gold Plan. Check it out!',
+              url: pdfUrl  // Use the dynamic URL here
+          }).then(() => {
+              console.log('Thanks for sharing!');
+          }).catch(err => {
+              console.error('Error sharing:', err);
+          });
+      } else {
+          alert('Web Share API is not supported in your browser.');
+      }
+  }
+</script>
+
+
+  {% comment %} <script>
+    function RateshareFunction() {
       const pdfUrl = "{{ data.pdf_url }}";
 
       if (pdfUrl) {
@@ -205,7 +244,10 @@
         alert("PDF URL is not available.");
       }
     }
+  </script>  {% endcomment %}
 
+
+  <script>
     // Assuming data.remaing_amount holds the value
     var remainingAmount = {{ data.remaing_amount }}; // Sample value for demonstration
     
