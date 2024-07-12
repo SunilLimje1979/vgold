@@ -197,7 +197,7 @@
 
         const link = document.createElement("a");
         link.href = pdfUrl;
-        link.download = "gold_plan.pdf"; // Specify the filename here
+        link.download = "gold_plan.jpg"; // Specify the filename here
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -209,20 +209,22 @@
     // Assuming data.remaing_amount holds the value
     var remainingAmount = {{ data.remaing_amount }}; // Sample value for demonstration
     
-    // Calculate divided amounts
-    var dividedAmount12 = remainingAmount / 12;
-    var dividedAmount24 = remainingAmount / 24;
-    var dividedAmount36 = remainingAmount / 36;
-    var dividedAmount48 = remainingAmount / 48;
-    var dividedAmount60 = remainingAmount / 60;
+    // Calculate divided amounts and round up
+    var dividedAmount12 = Math.ceil(remainingAmount / 12);
+    var dividedAmount24 = Math.ceil(remainingAmount / 24);
+    var dividedAmount36 = Math.ceil(remainingAmount / 36);
+    var dividedAmount48 = Math.ceil(remainingAmount / 48);
+    var dividedAmount60 = Math.ceil(remainingAmount / 60);
     
     // Update HTML with calculated values
-    document.getElementById("result12").textContent = dividedAmount12.toFixed(2);
-    document.getElementById("result24").textContent = dividedAmount24.toFixed(2);
-    document.getElementById("result36").textContent = dividedAmount36.toFixed(2);
-    document.getElementById("result48").textContent = dividedAmount48.toFixed(2);
-    document.getElementById("result60").textContent = dividedAmount60.toFixed(2);
-  </script>
+    document.getElementById("result12").textContent = dividedAmount12.toFixed(0);
+    document.getElementById("result24").textContent = dividedAmount24.toFixed(0);
+    document.getElementById("result36").textContent = dividedAmount36.toFixed(0);
+    document.getElementById("result48").textContent = dividedAmount48.toFixed(0);
+    document.getElementById("result60").textContent = dividedAmount60.toFixed(0);
+
+</script>
+
 
 
    {% comment %} <script>

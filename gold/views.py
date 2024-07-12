@@ -594,7 +594,7 @@ def Gold_plan(request):
         # Make the API request
         api_url = "https://www.vgold.co.in/dashboard/webservices/get_gold_plans.php"
         response = requests.post(api_url, data={'quantity': quantity}, headers=headers)
-        # print(response.text)
+        print(response.text)
         
         # Check if the API request was successful
         if response.status_code == 200:
@@ -1533,13 +1533,14 @@ def Pay_installment(request):
             "cheque_no": cheque_no,
             "confirmed": 0,
         }
-        # print(payload)
+        print(payload)
         
         # Make POST request to installment payment API
         try:
             res = requests.post("https://www.vgold.co.in/dashboard/webservices/installment.php", data=payload, headers=headers)
             res.raise_for_status()  # Raise HTTPError for bad responses
             api_response = res.json()
+            print(api_response )
             
             # Handle success or failure based on API response
             if api_response.get('status') == '200':
