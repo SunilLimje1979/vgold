@@ -63,6 +63,37 @@
             display: flex;
             justify-content: center;
         }
+        /* Modal Styling */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+        width: 80%;
+        max-width: 500px;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 24px;
+    }
+
     </style>
 </head>
 <body>
@@ -149,35 +180,97 @@
                         Download as Mobile App
                     </button>
                 </div>
+
+                <!-- Button to trigger iOS install modal -->
+                <button id="show-ios-install-modal" class="btn btn-success" style="display: none; font-size: 14px; padding: 9px 18px; margin-top: 10px; background-color: rgb(41, 39, 122); color: white;">
+                    <i class="fas fa-download" style="margin-right: 8px;"></i>
+                    Instruction For Install in IOS
+                </button>
+                
+                <!-- iOS Install Modal -->
+                <div id="ios-install-modal" class="modal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="close-btn">&times;</span>
+                        <h2>How to Install This App on iOS</h2>
+                        <p>Follow these steps to add this application to your home screen:</p>
+                        <ol>
+                            <li>Open the Share menu by tapping the “Share” icon at the bottom of your screen.</li>
+                            <li>In the Share menu, find and tap on “Add to Home Screen”.</li>
+                            <li>Follow the on-screen prompts to confirm and add the app to your home screen.</li>
+                        </ol>
+                    </div>
+                </div>
+                
+
             </div>
         </div>
     </div>
    <script>
-        // JavaScript for handling PWA installation
+    document.addEventListener("DOMContentLoaded", function () {
+        const iosModal = document.getElementById("ios-install-modal");
+        const closeModalBtn = iosModal.querySelector(".close-btn");
+        const showModalBtn = document.getElementById("show-ios-install-modal");
+    
+        // Function to detect iOS devices
+        function isIos() {
+            const userAgent = window.navigator.userAgent.toLowerCase();
+            return /iphone|ipad|ipod/.test(userAgent);
+        }
+    
+        // Function to check if the app is in standalone mode
+        function isInStandaloneMode() {
+            return "standalone" in window.navigator && window.navigator.standalone;
+        }
+    
+        // Function to show the iOS install modal
+        function showIosInstallModal() {
+            const localStorageKey = "iosInstallModalShown";
+            const iosInstallModalShown = localStorage.getItem(localStorageKey);
+            if (isIos() && !isInStandaloneMode() && !iosInstallModalShown) {
+                showModalBtn.style.display = "block";
+            }
+        }
+    
+        // Show the iOS install modal button
+        showIosInstallModal();
+    
+        // Show the iOS install modal when the button is clicked
+        showModalBtn.addEventListener("click", () => {
+            iosModal.style.display = "flex";
+        });
+    
+        // Close the iOS install modal
+        closeModalBtn.addEventListener("click", () => {
+            iosModal.style.display = "none";
+        });
+    
+        // Existing PWA installation code
         let installPrompt = null;
         const installButton = document.querySelector("#install");
-
+    
         window.addEventListener("beforeinstallprompt", (event) => {
             event.preventDefault();
             installPrompt = event;
             installButton.removeAttribute("hidden");
         });
-
+    
         installButton.addEventListener("click", async () => {
             if (!installPrompt) return;
             const result = await installPrompt.prompt();
             console.log(`Install prompt was: ${result.outcome}`);
             disableInAppInstallPrompt();
         });
-
+    
         window.addEventListener("appinstalled", () => {
             disableInAppInstallPrompt();
         });
-
+    
         function disableInAppInstallPrompt() {
             installPrompt = null;
             installButton.setAttribute("hidden", "");
         }
+    });
+    
     </script> 
 
 
