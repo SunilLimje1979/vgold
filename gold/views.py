@@ -919,7 +919,7 @@ def BookingReceipt(request):
             
             # return response
             
-            link = f"https://www.vgold.co.in/dashboard/user/module/goldbooking/booking_receipt.php?bid={number}&user_id={user_id}"
+            link = f"https://www.vgold.co.in/dashboard/user/module/goldbooking/transaction_pdf.php?bid={number}&user_id={user_id}"
             
             return JsonResponse({'link' : link})
 
