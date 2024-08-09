@@ -1512,9 +1512,9 @@ def Pay_installment(request):
             confirmed = 0
         elif payment_options == 'goldWallet':
             payment_option = 'GOLD WALLET'
-            amountr = payable_amount  
-            other_amount_input = payable_amount # Use payable_amount if payment_options is 'goldWallet'
-            confirmed = 1
+            amountr = payable_amount
+            other_amount_input = payable_amount# Use payable_amount if payment_options is 'goldWallet'
+            confirmed = '1'
         elif payment_options == 'minimumAmount':
             # payment_option = 'MINIMUM AMOUNT'
             amountr = minimumamt 
@@ -1541,7 +1541,10 @@ def Pay_installment(request):
         
         # Make POST request to installment payment API
         try:
-            res = requests.post("https://www.vgold.co.in/dashboard/webservices/installment.php", data=payload, headers=headers)
+            if(payment_option=="GOLD WALLET"):
+                res = requests.post("https://www.vgold.co.in/dashboard/webservices/installment.php", json=payload, headers=headers)
+            else:
+                res = requests.post("https://www.vgold.co.in/dashboard/webservices/installment.php", data=payload, headers=headers)
             res.raise_for_status()  # Raise HTTPError for bad responses
             api_response = res.json()
             print(api_response )
