@@ -1509,18 +1509,22 @@ def Pay_installment(request):
             payment_option = 'MONEY WALLET'
             amountr = payable_amount  # Use payable_amount if payment_options is 'moneyWallet'
             other_amount_input = payable_amount
+            confirmed = 0
         elif payment_options == 'goldWallet':
             payment_option = 'GOLD WALLET'
             amountr = payable_amount  
             other_amount_input = payable_amount # Use payable_amount if payment_options is 'goldWallet'
+            confirmed = 1
         elif payment_options == 'minimumAmount':
             # payment_option = 'MINIMUM AMOUNT'
             amountr = minimumamt 
+            confirmed = 0
             other_amount_input = minimumamt# Use minimumamt if payment_options is 'minimumAmount'
         else:
             # Default case (if payment_options is not 'moneyWallet', 'goldWallet', or 'minimumAmount')
             amountr = 0  # Set a default value, adjust as per your application logic
-        
+            confirmed = 0  # Default confirmed value for other cases
+       
         # Prepare payload for the installment payment API request
         payload = {
             "user_id": user_id,
@@ -1531,7 +1535,7 @@ def Pay_installment(request):
             "amount_other": other_amount_input if other_amount_input else 0,  # Default value for amount_other if not provided
             "tr_id": tr_id,
             "cheque_no": cheque_no,
-            "confirmed": 0,
+            "confirmed": confirmed, 
         }
         print(payload)
         
