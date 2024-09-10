@@ -123,8 +123,8 @@
   <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
     <div class="card-header">
         <span>{{ data.number }}</span>
-        <span class="status {% if data.status == '0' %}status-active{% else %}status-closed{% endif %}">
-            {% if data.status == '0' %}
+        <span class="status {% if data.status == '1' %}status-active{% else %}status-closed{% endif %}">
+            {% if data.status == '1' %}
                 Active
             {% else %}
                 Closed
