@@ -117,27 +117,27 @@
         <form>
           <div class="mb-1">
             <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" value="{{ user_info.First_Name }} {{ user_info.Middle_Name }} {{ user_info.Last_Name }}" readonly>
+            <input type="text" class="form-control" id="name" value="{{ user_info.UserFirstname }} {{ user_info.Middle_Name }} {{ user_info.Last_Name }}" readonly>
           </div>
           <div class="mb-1">
             <label for="crn" class="form-label">CRN</label>
-            <input type="text" class="form-control" id="crn" value="{{ user_info.User_ID }}" readonly>
+            <input type="text" class="form-control" id="crn" value="{{ user_info.UserCRNno }}" readonly>
           </div>
           <div class="mb-1">
             <label for="pan" class="form-label">PAN No.</label>
-            <input type="text" class="form-control" id="pan" value="{{ user_info.pan_no }}" readonly>
+            <input type="text" class="form-control" id="pan" value="{{ user_info.UserPannumber }}" readonly>
           </div>
           <div class="mb-2">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" value="{{ user_info.Email }}" readonly>
+            <input type="email" class="form-control" id="email" value="{{ user_info.UserEmail}}" readonly>
           </div>
           <div class="mb-2">
             <label for="phone" class="form-label">Phone</label>
-            <input type="tel" class="form-control" id="phone" value="{{ user_info.Mobile_no }}" readonly>
+            <input type="tel" class="form-control" id="phone" value="{{ user_info.UserMobileNo}}" readonly>
           </div>
           <div class="mb-2">
             <label for="address" class="form-label">Address</label>
-            <input type="text" class="form-control" id="address" value="{{ user_info.Address }}" readonly>
+            <input type="text" class="form-control" id="address" value="{{ user_info.UserAddress }}" readonly>
           </div>
 
           <a href="{% url 'update_profile' %}" style="text-decoration: none;">

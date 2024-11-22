@@ -32,7 +32,7 @@ def Login(request):
         username = request.POST.get('mobileNumber')
         password = request.POST.get('password')
         
-        api_url = "http://127.0.0.1:8000/vgold_admin/m_api/m_login/"
+        api_url = "https://vgold.app/vgold_admin/m_api/m_login/"
         payload = {'username': username, 'password': password}
 
         try:
@@ -132,19 +132,19 @@ def Registration(request):
             "email": email,
             "no": mobile_no,
             "pancard": pancard_number,
-            "pass": aadhar_number,
+            "aadhar_number": aadhar_number,
             "refer_code":refer_code
         }
         # print(payload)
         
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        # headers = {
+        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        # }
         
-        api_url="https://www.vgold.co.in/dashboard/webservices/register.php"
+        api_url="https://vgold.app/vgold_admin/m_api/register_user/"
         
         try:
-            response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
+            response = requests.post(api_url, json=payload)  # Use params parameter
             # print(response.text)
             # Ensure response content is not empty
             if response.content:
@@ -152,7 +152,7 @@ def Registration(request):
                     response_data = response.json()
                     # print(response_data)
                     
-                    if response_data.get('status') == '200':
+                    if response_data.get('message_code') == 1000:
                         messages.success(request, "User registration successful")
                     else:
                         messages.error(request, response_data.get('Message', response_data.get('Message')))
@@ -731,7 +731,8 @@ def Gold_wallet(request):
 def Profile(request):
     # Retrieve the user_data from the session
     user_data = request.session.get('user_data', {})
-    user_info = user_data.get('data', [{}])[0]  # Access the first element in the data list
+    print(user_data)
+    user_info = user_data  # Access the first element in the data list
 
     # Print the user_data (for debugging purposes)
     # print(user_info)
@@ -750,56 +751,58 @@ from django.urls import reverse
 def Update_profile(request):
     if request.method == 'GET':
         user_data = request.session.get('user_data', {})
-        user_info = user_data.get('data', [{}])[0]
+        user_info = user_data
         context = {'user_info': user_info}
         return render(request, 'gold/update_profile.html', context)
 
     elif request.method == 'POST':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
-        user_id = user_data.get('data', [{}])[0].get('User_ID')
+        user_id = user_data.get('User_Id')
         
-        # input_email = request.POST.get('inputEmail')
+        input_email = request.POST.get('inputEmail')
         input_mobile = request.POST.get('inputMobile')
         input_address = request.POST.get('inputAddress')
-        input_city = request.POST.get('inputCity')
-        input_state = request.POST.get('inputState')
-        # input_adhar = request.POST.get('inputAdhar')
-        # input_pan = request.POST.get('inputPan')
-        
+        # input_city = request.POST.get('inputCity')
+        # input_state = request.POST.get('inputState')
+        input_adhar = request.POST.get('inputAdhar')
+        input_pan = request.POST.get('inputPan')
+       
         payload={
-            "user_id":user_id,
-            "no": input_mobile,
-            "address": input_address,
-            "city": input_city,
-            "state": input_state,
-            # "Email": input_email,
-            # "Adhar": input_adhar,
-            # "Pan": input_pan
+            "User_Id":user_id,
+            "UserMobileNo": input_mobile,
+            "UserAddress": input_address,
+            # "city": input_city,
+            # "state": input_state,
+            "UserEmail": input_email,
+            "UserAadharNumber": input_adhar,
+            "UserPannumber": input_pan
         }
 
         # print(payload)
          # Set the headers for the API request
          
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        # headers = {
+        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        # }
         
-        api_url="http://vgold.co.in/dashboard/webservices/update_profile.php"
+        api_url="https://vgold.app/vgold_admin/m_api/update_user_details/"
         
         try:
-            response = requests.post(api_url, params=payload, headers=headers)  # Use params parameter
-            # print(response.text)
+            response = requests.post(api_url, json=payload)  # Use params parameter
+            #print(response.text)
             # Ensure response content is not empty
             if response.content:
                 try:
                     response_data = response.json()
                     # print(response_data)
                     
-                    if response_data.get('status') == '200':
+                    if response_data.get('message_code') == 1000:
+                        user_data = response_data.get("message_data", {})
+                        request.session['user_data'] = user_data
                         messages.success(request, "User profile updated")
                     else:
-                        messages.error(request, response_data.get('Message', response_data.get('Message')))
+                        messages.error(request, response_data.get('Message', response_data.get('message_text')))
                     
                     return redirect('update_profile')  # Assuming 'complaint' is the URL name for the complaint view
                 except ValueError:
@@ -858,7 +861,7 @@ def Certificate(request):
 ###################################### Gold Booking History #############################################
 def Gbooking_history(request):
     # API URL for local gold booking history endpoint
-    api_url = "http://127.0.0.1:8000/vgold_admin/m_api/gold_booking_history/"
+    api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
     
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
@@ -997,7 +1000,7 @@ def Gold_booking(request):
 
         try:
             # Send a POST request to the local API endpoint
-            response = requests.post('http://127.0.0.1:8000/vgold_admin/m_api/booking_details/', data=data, headers=headers)
+            response = requests.post('https://vgold.app/vgold_admin/m_api/booking_details/', data=data, headers=headers)
             response.raise_for_status()  # Raise an error for bad responses
 
             # Parse the API response
@@ -1122,7 +1125,7 @@ def Gdeposit_history(request):
         return HttpResponse("User ID not found in session data.")
     
     # New API endpoint and parameters
-    api_url = "http://127.0.0.1:8000/vgold_admin/m_api/gdeposite_history/"
+    api_url = "https://vgold.app/vgold_admin/m_api/gdeposite_history/"
     api_params = {
         'user_id': user_id
     }
@@ -1182,7 +1185,7 @@ def Gold_deposit(request):
     # Fetch vendor data from the new API endpoint
     vendor_data = []
     try:
-        response = requests.get('http://127.0.0.1:8000/vgold_admin/m_api/m_vendor_upload/')
+        response = requests.get('https://vgold.app/vgold_admin/m_api/m_vendor_upload/')
         if response.status_code == 200:
             api_data = response.json()
             if api_data.get('message_code') == 1000:
@@ -1255,7 +1258,7 @@ def calculate_gold_deposite(request):
         }
 
         # New API endpoint and payload
-        api_url = 'http://127.0.0.1:8000/vgold_admin/m_api/gold_deposite_charges/'
+        api_url = 'https://vgold.app/vgold_admin/m_api/gold_deposite_charges/'
         payload = {'gold_weight': gold_weight}
 
         try:
@@ -1727,7 +1730,7 @@ def Review(request):
 
 def Complaint(request):
     user_data = request.session.get('user_data', {})
-    user_id = user_data.get('data', [{}])[0].get('User_ID')
+    user_id = user_data.get('User_Id') 
 
     if not user_id:
         return HttpResponse("User ID not found in session data.")
@@ -1737,22 +1740,22 @@ def Complaint(request):
         complaint = request.POST.get('description')
 
         # Headers for the API request
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            'Content-Type': 'application/json'  # Specify that the data is JSON
-        }
+        # headers = {
+        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        #     'Content-Type': 'application/json'  # Specify that the data is JSON
+        # }
         
-        api_url="http://vgold.co.in/dashboard/webservices/process_complaints.php"
+        api_url="https://vgold.app/vgold_admin/m_api/add_feedback/"
         
         # Prepare query parameters for the API request
         params = {
             "user_id": user_id,
-            "complaint": complaint
+            "feedback_detail": complaint
         }
         # print(params)
         
         try:
-            response = requests.post(api_url, params=params, headers=headers)  # Use params parameter
+            response = requests.post(api_url, json=params)  # Use params parameter
             # print(response.text)
             # Ensure response content is not empty
             if response.content:
@@ -1760,8 +1763,8 @@ def Complaint(request):
                     response_data = response.json()
                     # print(response_data)
                     
-                    if response_data.get('status') == '200':
-                        messages.success(request, "Complaint registered.")
+                    if response_data.get('message_code') == 1000:
+                        messages.success(request, "Complaint/Feedback registered.")
                     else:
                         messages.error(request, response_data.get('Message', 'An error occurred.'))
                     
