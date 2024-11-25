@@ -85,5 +85,9 @@ urlpatterns = [
     path('nc_loan/', views.nc_loan, name='nc_loan'),
     
     path('nc_vendors/', views.nc_vendors, name='nc_vendors'),
+
+    ######################ShowDeals#########################
+    path('showDeals/',views.showDeals,name='showDeals'),
+    path('handle_deal_action/',views.handle_deal_action, name='handle_deal_action'),
     
 ]

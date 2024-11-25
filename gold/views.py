@@ -2133,3 +2133,49 @@ def nc_vendors(request):
         'vendors': vendors,
     }
     return render(request, 'gold/nc_vendors.html', context)
+
+
+###############################Deal#########################
+from time import time
+def showDeals(request):
+    if('user_data' in request.session):
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('User_Id') 
+        res = requests.post('https://vgold.app/vgold_admin/m_api/get_active_deals_by_visible_to/',json={"visible_to":"1","user_id":user_id}) #here '1' pass as a doctor==all user for vgold
+        # print(res.text)
+        if(res.json().get('message_code')==1000):
+            alldeals = res.json().get('message_data')
+        
+        else:
+            alldeals = []
+        
+        return render(request,'gold/showDeals.html',{'alldeals':alldeals,"timestamp":int(time())})
+    
+    else:
+        return redirect(Login)
+
+@csrf_exempt
+def handle_deal_action(request):
+    if request.method == 'POST':
+        deal_id = request.POST.get('deal_id')
+        DealAction_id = request.POST.get('DealAction_id')
+        action_type = request.POST.get('action_type')
+        #user_id = request.session.get('doctor_id')  # Assuming 'doctor_id' is stored in the session
+        # print(deal_id,DealAction_id,action_type,user_id)
+        
+        # Make request to external API
+        response = requests.post(
+            'https://vgold.app/vgold_admin/m_api/update_deal_action_type_by_DealactionId/',
+            json={"deal_id":deal_id,"dealaction_id":DealAction_id,"dealactiontype":action_type}
+        )
+        # print(response.text)
+
+        # Check response status
+        if response.status_code == 200 and response.json().get('message_code') == 1000:
+            return JsonResponse({"success": True})
+        else:
+            return JsonResponse({"success": False, "message": "Unable to perform action."})
+    
+    return JsonResponse({"success": False, "message": "Invalid request method."})
+
+
