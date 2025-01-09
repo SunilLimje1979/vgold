@@ -116,8 +116,8 @@
     <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
         <div class="card-header">
             <span>{{ data.number }}</span>
-            <span class="status {% if data.account_status == '1' %}status-active{% else %}status-closed{% endif %}">
-                {% if data.account_status == '1' %}
+            <span class="status {% if data.account_status == 1 %}status-active{% else %}status-closed{% endif %}">
+                {% if data.account_status == 1 %}
                     Active
                 {% else %}
                     Closed
@@ -160,35 +160,34 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const pdfButtons = document.querySelectorAll('.pdf-btn');
-
-            pdfButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const number = this.getAttribute('data-number');
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '{% url "booking_receipt" %}',
-                        data: {
-                            'number': number,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}'
-                        },
-                        success: function(response) {
-                            if (response && response.link) {
-                                window.open(response.link);
-                            } else {
-                                console.error('Error: Link not found in response');
-                            }
-                        },
-                        error: function(response) {
-                            console.log('Error:', response);
+        $(document).ready(function() {
+            $('.pdf-btn').on('click', function(event) {
+                event.preventDefault();
+                const number = $(this).data('number');
+            
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "transection_pdf" %}',  // Adjusted for Django's URL tag
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Send CSRF token
+                    },
+                    success: function(response) {
+                        if (response.link) {
+                            window.open(response.link, '_blank');  // Open the PDF in a new tab
+                        } else {
+                            alert('Error: PDF link not found.');
+                            console.error('Error: Link not found in response');
                         }
-                    });
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('An error occurred while fetching the PDF.');
+                        console.error('Error:', xhr.responseText);
+                    }
                 });
             });
         });
     </script>
+    
 </body>
 </html>

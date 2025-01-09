@@ -192,13 +192,16 @@
           <!-- Willing to Deposit Dropdown -->
           <div class="form-group form-element">
             <label for="depositor" class="form-label">Willing to Deposit</label>
-            <select class="form-control no-border-bottom" id="depositor" name="depositor">
-              <option value="">--Select the vendor--</option>
-              {% for vendor in vendor_data %}
-                <option value="{{ vendor.vendor_id }}">{{ vendor.firm_name }}</option>
-              {% endfor %}
+            <select class="form-control no-border-bottom" id="depositor" name="depositor" required>
+                <option value="">-- Select the vendor --</option>
+                {% for vendor in vendor_data %}
+                    <option value="{{ vendor.vendor_id }}">{{ vendor.vendor_name }}</option>
+                {% empty %}
+                    <option value="" disabled>No vendors available</option>
+                {% endfor %}
             </select>
-          </div>
+        </div>
+        
 
           <!-- Purity Input -->
           <div class="mb-1">

@@ -28,6 +28,8 @@ urlpatterns = [
     
     path('gbooking_history/', views.Gbooking_history, name='gbooking_history'),
     
+    path('transection_pdf/', views.transection_pdf, name='transection_pdf'),
+    
     path('gold_booking/', views.Gold_booking, name='gold_booking'),
     
     path('booking_details/', views.Booking_details, name='booking_details'),

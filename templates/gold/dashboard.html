@@ -178,7 +178,8 @@
               justify-content: center;
             }
             .container {
-              background-color:rgb(11,20,58);
+              {% comment %} background-color:rgb(11,20,58); {% endcomment %}
+              background-color:rgb(41,39,122);
               width:100%;
             }
 
@@ -248,11 +249,11 @@
         <li>
           <a href="{% url 'profile' %}"><i class="bi bi-person"></i> Profile</a>
         </li>
-        <li>
+        {% comment %} <li>
           <a href="{% url 'certificate' %}"
             ><i class="bi bi-card-checklist"></i> Certificates</a
           >
-        </li>
+        </li> {% endcomment %}
         <li>
           <a href="{% url 'gbooking_history' %}"
             ><i class="bi bi-currency-dollar"></i> Gold Booking History</a
@@ -267,7 +268,7 @@
           <a href="{% url 'membership' %}"
             ><i class="bi bi-people"></i> Membership</a
           >
-        </li>{% endcomment %}
+        </li>
         <li>
           <a href="{% url 'gold_wallet' %}"
             ><i class="bi bi-wallet"></i> eGoldWallet</a>
@@ -279,15 +280,15 @@
           <a href="{% url 'pay_installment' %}"
             ><i class="bi bi-calendar-check"></i> Pay Installment</a
           >
-        </li>
+        </li> {% endcomment %}
        <li>
           <a href="{% url 'add_bank' %}"><i class="bi bi-bank"></i> Add Bank</a>
         </li>
-        <li>
+        {% comment %} <li>
           <a href="{% url 'channel_partner' %}"
             ><i class="bi bi-building"></i> Channel Partner</a
           >
-        </li>{% comment %} 
+        </li>
       <li>
           <a href="{% url 'review' %}"><i class="bi bi-star"></i> Review</a>
         </li>  {% endcomment %}
@@ -335,10 +336,12 @@
       <div class="center-image">
         <a href="{% url 'gold_booking' %}">
           <img
-            src="https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png"
+            src="https://vgold.app/vgold_admin/vgold_rate_show_mobile/"
+            {% comment %} src="https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png" {% endcomment %}
             alt="Your Logo"
             class="logo"
-            style=" width: 100%; margin-bottom: 0px"
+            {% comment %} style=" width: 100%; margin-bottom: 0px" {% endcomment %}
+            style="width: 100%; margin-bottom: 0px; padding-top: 10px;"
           />
         </a>
       </div>
@@ -359,8 +362,7 @@
 
     <div class="card-with-radius">
         <div class="logo-container">
-          <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
-              {% comment %} <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;"> {% endcomment %}
+          {% comment %} <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
                 <div>
                   <img src="{% static 'assets/img/goldwallet.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
                   <p>eGold Wallet</p>
@@ -373,43 +375,80 @@
                 </div>
             </a>
             <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;"> {% endcomment %}
               <div >
                   <img src="{% static 'assets/img/goldsell.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
                   <p>Sell</p>
               </div>
-          </a>
+          </a> {% endcomment %}
+
+          <a href=" " style="color: black; text-decoration: none;">
+            <div>
+              <img src="{% static 'assets/img/goldwallet.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
+              <p>eGold Wallet</p>
+            </div>
+        </a>
+          <a href=" " style="color: black; text-decoration: none;">
+            <div>
+              <img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+                <p>Add Gold</p>
+            </div>
+        </a>
+        <a href=" " style="color: black; text-decoration: none;">
+          <div >
+              <img src="{% static 'assets/img/goldsell.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+              <p>Sell</p>
+          </div>
+      </a>
           
         </div>
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <!-- Adjust margin top and bottom -->
 
-        <div class="logo-container">
+        {% comment %} <div class="logo-container">
           <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;">
-          {% comment %} <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <div>
               <img src="{% static 'assets/img/moneywallet.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
               <p>Money Wallet</p>
             </div>
           </a>
           <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'add_money' %}" style="color: black; text-decoration: none;"> {% endcomment %}
               <div>
                 <img src="{% static 'assets/img/addmoney.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
                 <p>Add Money</p>
               </div>
           </a>
           <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;">
-          {% comment %} <a href="{% url 'withdraw' %}" style="color: black; text-decoration: none;"> {% endcomment %}
+            <div>
+              <img src="{% static 'assets/img/withdrawmoney.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+              <p>Withdrawal</p>
+            </div>
+        </a> {% endcomment %}
+
+        <div class="logo-container">
+          <a href=" " style="color: black; text-decoration: none;">
+            <div>
+              <img src="{% static 'assets/img/moneywallet.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
+              <p>Money Wallet</p>
+            </div>
+          </a>
+          <a href=" " style="color: black; text-decoration: none;">
+              <div>
+                <img src="{% static 'assets/img/addmoney.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
+                <p>Add Money</p>
+              </div>
+          </a>
+          <a href=" " style="color: black; text-decoration: none;">
             <div>
               <img src="{% static 'assets/img/withdrawmoney.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
               <p>Withdrawal</p>
             </div>
         </a>
     </div>
+    
+    {% comment %}
         <hr style="margin-top: 0px; margin-bottom: 0px" />
         <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
-        <div class="logo-container-service">
+         <div class="logo-container-service">
           <div>
             <a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">
            <center><img src="{% static 'assets/img/goldbooking.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
@@ -417,31 +456,55 @@
           </div>
 
           <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p >Pay Installment</p></a>
           </div>
 
           <div><a href="{% url 'gdeposit_history' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'gold_deposit' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p>Deposit Gold</p></a>
           </div>
 
           <div><a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/plan1.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p>Plan</p>
           </div>
 
           <div><a href="{% url 'loan' %}" style="color: black; text-decoration: none;">
-            {% comment %} <a href="{% url 'loan' %}" style="color: black; text-decoration: none;"> {% endcomment %}
             <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 30px; height: 36px;margin-top: 8px;"></i></center>
             <p>Loan</p></a>
           </div>
-        </div>
+      </div> {% endcomment %}
 
+      <hr style="margin-top: 0px; margin-bottom: 0px" />
+        <p style="font-size: 15px; margin: 5px 0 0px 10px">Services</p>
+         <div class="logo-container-service">
+          <div>
+            <a href="{% url 'gbooking_history' %}" style="color: black; text-decoration: none;">
+           <center><img src="{% static 'assets/img/goldbooking.png' %}" alt="Sell" style="width: 34px; height: 34px;"></i></center>
+            <p>My Booking</p></a>
+          </div>
 
+          <div><a href=" " style="color: black; text-decoration: none;">
+            <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
+            <p >Pay Installment</p></a>
+          </div>
+
+          <div><a href="{% url 'gdeposit_history' %}" style="color: black; text-decoration: none;">
+            <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
+            <p>Deposit Gold</p></a>
+          </div>
+
+          <div><a href="{% url 'gold_plan' %}" style="color: black; text-decoration: none;">
+            <center><img src="{% static 'assets/img/plan1.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
+            <p>Plan</p>
+          </div>
+
+          <div><a href=" " style="color: black; text-decoration: none;">
+            <center><img src="{% static 'assets/img/addgold.png' %}" alt="Sell" style="width: 30px; height: 36px;margin-top: 8px;"></i></center>
+            <p>Loan</p></a>
+          </div>
+      </div> 
 
         <div class="center-image"><a href="{% url 'our_vendors' %}">
           <img

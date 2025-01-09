@@ -165,14 +165,16 @@
           />
         </div>
         <div class="form-group form-element">
-          <input
-            type="text"
+          <select
             class="form-control"
             id="accountType"
             name="accountType"
-            placeholder="Account Type"
-          />
-        </div>
+          >
+            <option value="" disabled selected>Select Account Type</option>
+            <option value="1">Saving</option>
+            <option value="2">Current</option>
+          </select>
+        </div>        
         <div class="form-group form-element">
           <input
             type="text"
