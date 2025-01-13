@@ -279,6 +279,7 @@ def Dashboard(request):
         # Default values if no user data is found
         context = {'first_name': 'User'}
         user_id = None
+        return redirect('login') 
 
     
     if user_id:
@@ -389,7 +390,7 @@ def Loan(request):
         First_Name = user_data.get('data', [{}])[0].get('First_Name')
 
         if not user_id:
-            return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
 
         # Call the external API
         api_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
@@ -432,7 +433,7 @@ def Loan(request):
         user_id = user_data.get('User_Id') 
 
         if not user_id:
-            return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
         
         # Get the amount and comment from the POST request
         amount = request.POST.get('goldWeight')
@@ -489,7 +490,7 @@ def Withdraw(request):
         user_id = user_data.get('User_Id')  
 
         if not user_id:
-            return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
 
         # API URL and data
         api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
@@ -570,7 +571,7 @@ def Sell_gold(request):
         user_id = user_data.get('User_Id')  #
 
         if not user_id:
-            return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
 
         # First API endpoint and headers for gold wallet transactions
         wallet_url = 'https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php'
@@ -786,7 +787,7 @@ def Gold_wallet(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
 
     # API endpoint and headers
     api_url = "https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php"
@@ -916,7 +917,7 @@ def Certificate(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
     
     # print(user_id)
 
@@ -964,7 +965,7 @@ def Gbooking_history(request):
 
     # If user_id is not found in the session data, return an error message
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
     
     # Prepare the payload for the API call
     payload = {'user_id': user_id}
@@ -1018,7 +1019,7 @@ def transection_pdf(request):
 
     # If user_id is not found in the session data, return an error message
     if not user_id:
-        return JsonResponse({"error": "User ID not found in session data."}, status=400)
+        return redirect('login') 
 
     # Retrieve 'number' from POST request
     number = request.POST.get('number')
@@ -1095,7 +1096,7 @@ def Gold_booking(request):
     user_id = user_data.get('User_Id')  # Assuming 'User_Id' is the correct key
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
 
     if request.method == "POST":
         # Retrieve POST data from form
@@ -1267,7 +1268,7 @@ def Gdeposit_history(request):
     print(user_id)
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
 
     # Updated API endpoint and parameters
     api_url = "https://vgold.app/vgold_admin/m_api/m_gdeposite_history/"
@@ -1322,7 +1323,7 @@ def Gold_deposit(request):
     user_id = user_data.get('User_Id')
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -1518,7 +1519,7 @@ def Money_wallet(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
 
     # API endpoint and headers
     api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
@@ -1753,7 +1754,7 @@ def Add_money(request):
         user_id = user_data.get('User_Id')  #
 
         if not user_id:
-            return HttpResponse("User ID not found in session data.")
+            return redirect('login') 
         
         # Accessing the 'amount' and 'depositor' fields from the POST data
         amount = request.POST.get('amount')
@@ -1801,6 +1802,9 @@ def Add_bank(request):
         # Retrieve user data from the session
         user_data = request.session.get('user_data', {})
         user_id = user_data.get('User_Id')
+        if not user_id:
+            return redirect('login') 
+        
         bank_name = request.POST.get('bankName')
         branch = request.POST.get('branch')
         account_number = request.POST.get('accountNumber')
@@ -1861,7 +1865,7 @@ def Channel_partner(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
     
     # URL for the API
     api_url = "https://www.vgold.co.in/dashboard/webservices/cp_user_list.php"
@@ -1906,7 +1910,7 @@ def Complaint(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
     
     if request.method == 'POST':
         # Retrieve form data
@@ -1965,7 +1969,7 @@ def Refer(request):
     user_id = user_data.get('User_Id') 
 
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login') 
     
     if request.method == 'POST':
         # Retrieve form data
