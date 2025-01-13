@@ -5,6 +5,59 @@ from django.http import JsonResponse
 from django.contrib import messages
 
 ###################################### Log in #############################################
+# def Login(request):
+#     headers = {
+#         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+#         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+#         'Accept-Language': 'en-US,en;q=0.5',
+#         'Connection': 'keep-alive',
+#         'Upgrade-Insecure-Requests': '1'
+#     }
+
+#     # Fetch the app version
+#     try:
+#         response = requests.get("https://www.vgold.co.in/dashboard/webservices/webappversion.php", headers=headers)
+#         response.raise_for_status()
+        
+#         # Parse the JSON response and extract app version
+#         appversion = response.json()
+#         serverappversion = appversion.get('appVersionJson', None)
+        
+#     except requests.exceptions.RequestException as e:
+#         messages.error(request, f"Failed to retrieve app version: {str(e)}")
+#         serverappversion = None  # Default value in case of failure
+
+#     # Handle POST login request
+#     if request.method == 'POST':
+#         username = request.POST.get('mobileNumber')
+#         password = request.POST.get('password')
+        
+#         api_url = "https://vgold.app/vgold_admin/m_api/m_login/"
+#         payload = {'username': username, 'password': password}
+
+#         try:
+#             response = requests.post(api_url, data=payload)
+#             response.raise_for_status()  # Raise an error for HTTP issues
+            
+#             data = response.json()
+
+#             # Check if login was successful (status == "1000")
+#             if data.get("message_code") == 1000:
+#                 user_data = data.get("message_data", {})
+#                 # Store user_data in session
+#                 request.session['user_data'] = user_data
+#                 request.session['user_mobile'] = user_data.get('UserMobileNo')
+#                 return redirect('dashboard')
+#             else:
+#                 messages.error(request, data.get("message_text", "Login failed. Please try again."))
+#                 return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+
+#         except requests.exceptions.RequestException as e:
+#             messages.error(request, f"Failed to connect to the API: {str(e)}")
+#             return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+
+#     return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+
 def Login(request):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -13,8 +66,8 @@ def Login(request):
         'Connection': 'keep-alive',
         'Upgrade-Insecure-Requests': '1'
     }
-
-    # Fetch the app version
+    
+        # Fetch the app version
     try:
         response = requests.get("https://www.vgold.co.in/dashboard/webservices/webappversion.php", headers=headers)
         response.raise_for_status()
@@ -27,36 +80,77 @@ def Login(request):
         messages.error(request, f"Failed to retrieve app version: {str(e)}")
         serverappversion = None  # Default value in case of failure
 
-    # Handle POST login request
     if request.method == 'POST':
-        username = request.POST.get('mobileNumber')
-        password = request.POST.get('password')
+        step = request.POST.get('step')
         
-        api_url = "https://vgold.app/vgold_admin/m_api/m_login/"
-        payload = {'username': username, 'password': password}
+        # Step 1: Send OTP
+        if step == 'send_otp':
+            mobile_number = request.POST.get('mobileNumber')
+        
+            api_url = "https://vgold.app/vgold_admin/m_api/login_verify/"
+            payload = {"mobileno": mobile_number}
 
-        try:
-            response = requests.post(api_url, data=payload)
-            response.raise_for_status()  # Raise an error for HTTP issues
-            
-            data = response.json()
+            try:
+                response = requests.post(api_url, json=payload)
+                response.raise_for_status()
+                data = response.json()
 
-            # Check if login was successful (status == "1000")
-            if data.get("message_code") == 1000:
-                user_data = data.get("message_data", {})
-                # Store user_data in session
-                request.session['user_data'] = user_data
-                request.session['user_mobile'] = user_data.get('UserMobileNo')
-                return redirect('dashboard')
+                if data.get('message_code') == 1000:  # OTP generated successfully
+                    # Store OTP data in session
+                    request.session['otp_data'] = data['message_data']
+                    mobile_number = data['message_data'].get('mobile_no', '')  # Get mobile number from message_data
+
+                    # messages.success(request, "OTP sent successfully to your mobile number.")
+                    return render(request, 'gold/logiin.html', {'show_otp_form': True, 'mobile_number': mobile_number, 'step': 'verify_otp','serverappversion': serverappversion})
+                else:
+                    messages.error(request, data.get('message_text', 'Failed to generate OTP.'))
+
+            except requests.exceptions.RequestException as e:
+                messages.error(request, f"Error communicating with API: {str(e)}")
+                return redirect('login')
+
+        elif step == 'verify_otp':
+            # Fetch OTP from the form and session data
+            user_otp = request.POST.get('otp')
+            session_data = request.session.get('otp_data')
+            mobile_number = session_data.get('mobile_no') if session_data else ''  
+            # print(user_otp)
+            # print(mobile_number)
+            # Validate the OTP
+            if user_otp and user_otp == str(session_data.get('otp')):  # Comparing OTP from user input with the one from API response
+                # OTP matches, call the external API to verify OTP
+                api_url = "https://vgold.app/vgold_admin/m_api/verifyotp/"
+                payload = {
+                    "mobileno": mobile_number,
+                    "otp": user_otp
+                }
+                try:
+                    response = requests.post(api_url, data=payload)
+                    response_data = response.json()
+
+                    if response_data.get('message_code') == 1000:
+                        user_data = response_data.get("message_data", {})  # Fetching from response_data, not data
+                        request.session['user_data'] = user_data
+                        request.session['user_mobile'] = user_data.get('UserMobileNo') 
+                        # messages.success(request, "Login successful.")
+                        return redirect('dashboard')
+                    else:
+                        # OTP verification failed, show error message
+                        messages.error(request, "Incorrect OTP. Please try again.")
+                        return redirect('login')  # Replace with your OTP verification page URL
+                except requests.exceptions.RequestException as e:
+                    messages.error(request, f"Error communicating with API: {str(e)}")
+                    return redirect('login')
+
             else:
-                messages.error(request, data.get("message_text", "Login failed. Please try again."))
-                return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+                # OTP does not match, show error message
+                messages.error(request, "Invalid OTP. Please try again.")
+                return redirect('login')  # Replace with your OTP verification page URL
 
-        except requests.exceptions.RequestException as e:
-            messages.error(request, f"Failed to connect to the API: {str(e)}")
-            return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+    return render(request, 'gold/logiin.html',{'serverappversion': serverappversion})
 
-    return render(request, 'gold/login.html', {'serverappversion': serverappversion})
+
+###################################### Verify Mobile No ##################################################
 
 
 ###################################### OTP #############################################
