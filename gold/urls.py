@@ -6,6 +6,8 @@ urlpatterns = [
     
     path('otp/', views.OTP, name='otp'),
     
+    path('agreement/', views.agreement, name='agreement'),
+    
     path('registration/', views.Registration, name='registration'),
     
     path('dashboard/', views.Dashboard, name='dashboard'),

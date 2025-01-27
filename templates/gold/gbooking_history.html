@@ -115,7 +115,10 @@
     {% for data in bookings %}
     <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
         <div class="card-header">
-            <span>{{ data.number }}</span>
+            {% comment %} <span>{{ data.number }}</span> {% endcomment %}
+            <span class="data-number" data-number="{{ data.number }}" style="cursor: pointer;">
+                {{ data.number }}
+            </span>
             <span class="status {% if data.account_status == 1 %}status-active{% else %}status-closed{% endif %}">
                 {% if data.account_status == 1 %}
                     Active
@@ -187,6 +190,39 @@
                 });
             });
         });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('span').on('click', function(event) {
+                event.preventDefault();
+                const number = $(this).text().trim(); // Extract the number from the clicked span
+        
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "agreement" %}', // Adjust for Django's URL tag
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.otp_required) {
+                            alert('OTP verification is required.');
+                            // Implement OTP verification flow
+                        } else if (response.pdf_url) {
+                            window.open(response.pdf_url, '_blank'); // Open the PDF in a new tab
+                        } else {
+                            alert('Unexpected response. Please try again.');
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('An error occurred. Please try again.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+        
     </script>
     
 </body>

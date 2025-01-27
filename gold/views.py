@@ -1036,6 +1036,58 @@ def transection_pdf(request):
     # Return JSON response with link
     return JsonResponse(response_data)
 
+####################################### Agreement ######################################################
+
+def agreement(request):
+    if request.method == 'POST':
+        number = request.POST.get('number')
+        
+        # Prepare the data to send to the API
+        payload = {
+            "GBAccountDisplayId": number
+        }
+        
+        # API URL
+        api_url = "https://vgold.app/vgold_admin/m_api/get_agreement_copy/"
+
+        try:
+            # Send a POST request to the API
+            response = requests.post(api_url, json=payload)
+            response_data = response.json()  # Parse the JSON response
+
+            if response_data.get('message_code') == 1000:  # Check for success
+                agreement_data = response_data.get('message_data', {})
+                gb_agreement_seen = agreement_data.get('GBAgreement_Seen')
+                gb_agreement_url = agreement_data.get('GBAgreement_Url')
+
+                # Handle based on GBAgreement_Seen
+                if gb_agreement_seen == 1:
+                    # Call OTP function (implement this function as needed)
+                    return JsonResponse({
+                        'message': 'OTP verification required',
+                        'otp_required': True,
+                        'GBAccountDisplayId': number
+                    })
+                elif gb_agreement_seen == 2:
+                    # Directly show the PDF
+                    return JsonResponse({
+                        'message': 'PDF available',
+                        'pdf_url': gb_agreement_url,
+                        'otp_required': False
+                    })
+                else:
+                    return JsonResponse({'error': 'Unexpected GBAgreement_Seen value'}, status=400)
+            else:
+                return JsonResponse({
+                    'error': 'Failed to fetch agreement details from API',
+                    'message_text': response_data.get('message_text')
+                }, status=400)
+        except requests.exceptions.RequestException as e:
+            # Handle API request exceptions
+            return JsonResponse({'error': 'API request failed', 'details': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    
 #############################################################################################
 def BookingReceipt(request):
     user_data = request.session.get('user_data')
