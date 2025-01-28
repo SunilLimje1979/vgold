@@ -1023,6 +1023,7 @@ def transection_pdf(request):
 
     # Retrieve 'number' from POST request
     number = request.POST.get('number')
+    print(number)
     if not number:
         return JsonResponse({"error": "Number is required."}, status=400)
 
@@ -1059,15 +1060,19 @@ def agreement(request):
                 agreement_data = response_data.get('message_data', {})
                 gb_agreement_seen = agreement_data.get('GBAgreement_Seen')
                 gb_agreement_url = agreement_data.get('GBAgreement_Url')
-
-                # Handle based on GBAgreement_Seen
+                
                 if gb_agreement_seen == 1:
-                    # Call OTP function (implement this function as needed)
-                    return JsonResponse({
-                        'message': 'OTP verification required',
-                        'otp_required': True,
-                        'GBAccountDisplayId': number
-                    })
+                    otp_api_url = "https://vgold.app/vgold_admin/m_api/send_agreement_otp/"
+                    otp_response = requests.post(otp_api_url, json=payload).json()
+
+                    if otp_response.get('message_code') == 1000:
+                        return JsonResponse({
+                            'message': 'OTP verification required',
+                            'otp_required': True,
+                            'GBAccountDisplayId': number
+                        })
+                    return JsonResponse({'error': 'Failed to send OTP'}, status=400)
+                
                 elif gb_agreement_seen == 2:
                     # Directly show the PDF
                     return JsonResponse({
@@ -1082,11 +1087,102 @@ def agreement(request):
                     'error': 'Failed to fetch agreement details from API',
                     'message_text': response_data.get('message_text')
                 }, status=400)
+                
         except requests.exceptions.RequestException as e:
             # Handle API request exceptions
             return JsonResponse({'error': 'API request failed', 'details': str(e)}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=400)
+################################# Transection Seprate ############################################    
+def transaction_seprate(request, number):
+    # API endpoint and payload
+    api_url = "https://vgold.app/vgold_admin/m_api/get_transaction_list/"
+    
+    print(type(number),number)
+    payload = {
+        "GBAccountDisplayId": number
+    }
+    
+    # print(payload)
+    
+    try:
+        # Send POST request to the API
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()  # Parse the response as JSON
+        
+        # print(response_data)
+        
+        if response_data.get("message_code") == 1000:
+            # Success - extract transaction data
+            transactions = response_data.get("message_data", [])
+        else:
+            # Handle API response error
+            transactions = []
+            messages.error(request, response_data.get("message_text", "Failed to fetch transactions."))
+    except requests.RequestException as e:
+        # Handle request errors
+        transactions = []
+        messages.error(request, f"An error occurred while connecting to the API: {str(e)}")
+    
+    # Pass the transactions data to the template
+    return render(request, 'gold/transaction_list.html', {"transactions": transactions,"number": number,})
+
+####################################### Verify Agreement #########################################################
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def verify_agreement_otp(request):
+    if request.method == 'POST':
+        try:
+            # Parse the request data
+            data = json.loads(request.body)
+            gb_account_display_id = data.get('GBAccountDisplayId')
+            gb_agreement_otp = int(data.get('GBAgreement_Otp'))
+            
+            print(gb_account_display_id)
+            print(gb_agreement_otp)
+            
+            # Ensure the required fields are provided
+            if not gb_account_display_id or not gb_agreement_otp:
+                return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
+            
+            # Prepare the payload for the external API
+            payload = {
+                "GBAgreement_Otp": gb_agreement_otp,
+                "GBAccountDisplayId":gb_account_display_id,
+            }
+
+            # Call the external API
+            external_api_url = "https://vgold.app/vgold_admin/m_api/verify_agreement_otp/"
+            response = requests.post(external_api_url, json=payload)
+            response_data = response.json()
+            
+            # print(response_data)
+            
+            # Process the response from the API
+            if response_data.get('message_code') == 1000:  # Success case
+                message_data = response_data.get('message_data', {})
+                pdf_url = message_data.get('GBAgreement_Url')
+                
+                return JsonResponse({
+                    'success': True,
+                    'pdf_url': pdf_url,
+                    'message': response_data.get('message_text', 'Success')
+                })
+            else:
+                # Handle error from the API
+                return JsonResponse({
+                    'success': False,
+                    'message': response_data.get('message_text', 'Retry again')
+                }, status=400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data.'}, status=400)
+        except requests.RequestException as e:
+            return JsonResponse({'success': False, 'message': 'Error connecting to the API.', 'error': str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'An unexpected error occurred.', 'error': str(e)}, status=500)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
     
 #############################################################################################
 def BookingReceipt(request):

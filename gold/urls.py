@@ -8,6 +8,10 @@ urlpatterns = [
     
     path('agreement/', views.agreement, name='agreement'),
     
+    path('verify_agreement_otp/', views.verify_agreement_otp, name='verify_agreement_otp'),
+    
+    path('transaction_seprate/<str:number>/', views.transaction_seprate, name='transaction_seprate'),
+    
     path('registration/', views.Registration, name='registration'),
     
     path('dashboard/', views.Dashboard, name='dashboard'),

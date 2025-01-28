@@ -133,23 +133,28 @@
         <hr class="horizontal-line">
         <div class="row">
             <div class="col">
-                <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" style="height: 120px; width: auto; margin-bottom: 10px" /><br>
-                <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
-                <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
-                <p class="custom-p">EMI Amt: {{ data.monthly_installment }}</p>
+                <a href="{% url 'transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                    <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" style="height: 120px; width: auto; margin-bottom: 10px" /><br>
+                    <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
+                    <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
+                    <p class="custom-p">EMI Amt: {{ data.monthly_installment }}</p>
+                </a>
             </div>
             <div class="col">
-                <p class="custom-p">Booking Date: {{ data.booking_date }}</p>
-                <p class="custom-p">Weight: {{ data.weight }} gm</p>
-                <p class="custom-p">Rate: ₹{{ data.rate }}</p>
-                <p class="custom-p">Value: ₹{{ data.value }}</p>
-                <p class="custom-p">Tenure: {{ data.tenure }}</p><br>
-                <p class="custom-p">Booking Amt: ₹{{ data.booking_amount }}</p>
-                <p class="custom-p">Processing Fees: ₹{{ data.booking_charge }}</p>
-                <p class="custom-p">Balance Amt: ₹{{ data.balance_amount }}</p>
-                <p class="custom-p">Closing Date: {{ data.closing_date }}</p>
+                <a href="{% url 'transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                    <p class="custom-p">Booking Date: {{ data.booking_date }}</p>
+                    <p class="custom-p">Weight: {{ data.weight }} gm</p>
+                    <p class="custom-p">Rate: ₹{{ data.rate }}</p>
+                    <p class="custom-p">Value: ₹{{ data.value }}</p>
+                    <p class="custom-p">Tenure: {{ data.tenure }}</p><br>
+                    <p class="custom-p">Booking Amt: ₹{{ data.booking_amount }}</p>
+                    <p class="custom-p">Processing Fees: ₹{{ data.booking_charge }}</p>
+                    <p class="custom-p">Balance Amt: ₹{{ data.balance_amount }}</p>
+                    <p class="custom-p">Closing Date: {{ data.closing_date }}</p>
+                </a>
             </div>
-        </div>
+        </div>        
+        
     </div>
     {% endfor %}
 
@@ -157,6 +162,25 @@
         <a href="{% url 'gold_booking' %}">
             <button id="submitButton">BOOK GOLD</button>
         </a>
+    </div>
+
+    <!-- OTP Modal (Bootstrap) -->
+    <div class="modal fade" id="otpModal" tabindex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="otpModalLabel">OTP Verification</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="otpInput" class="form-control" placeholder="Enter OTP" />
+                </div>
+                <div class="modal-footer">
+                    <p class="text-muted">Note: Wait for 1 minute to receive the OTP. Please do not close this Screen.</p>
+                    <button type="button" class="btn btn-secondary" id="closeOtpModalFooter" data-dismiss="modal">Close</button>
+                    <button type="button" id="verifyOtp" class="btn btn-primary">Verify OTP</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -194,10 +218,15 @@
 
     <script>
         $(document).ready(function() {
+            // Trigger the close functionality on the modal close button
+            $('#closeOtpModal, #closeOtpModalFooter').on('click', function(event) {
+                $('#otpModal').modal('hide'); // Explicitly hide the modal
+            });
+    
             $('span').on('click', function(event) {
                 event.preventDefault();
                 const number = $(this).text().trim(); // Extract the number from the clicked span
-        
+            
                 $.ajax({
                     type: 'POST',
                     url: '{% url "agreement" %}', // Adjust for Django's URL tag
@@ -206,10 +235,50 @@
                         'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
                     },
                     success: function(response) {
-                        if (response.otp_required) {
-                            alert('OTP verification is required.');
-                            // Implement OTP verification flow
-                        } else if (response.pdf_url) {
+                        if (response.message === 'OTP verification required') {
+                            $('#otpModal').modal('show'); // Show OTP modal
+                            // OTP verification button click
+                            $('#verifyOtp').on('click', function() {
+                                const otp = $('#otpInput').val().trim();
+                                const gbAccountDisplayId = number; // Pass the actual GBAccountDisplayId dynamically
+                                console.log(gbAccountDisplayId)
+
+                                if (otp) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{% url "verify_agreement_otp" %}', // Replace with the URL for your `verify_otp` view
+                                        contentType: 'application/json', // Send data as JSON
+                                        data: JSON.stringify({
+                                            'GBAccountDisplayId': gbAccountDisplayId,
+                                            'GBAgreement_Otp': otp
+                                        }),
+                                        headers: {
+                                            'X-CSRFToken': '{{ csrf_token }}'
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                // Open the PDF URL in a new tab
+                                                window.open(response.pdf_url, '_blank');
+                                                $('#otpModal').modal('hide'); // Close the modal
+                                            } else {
+                                                alert(response.message || 'Invalid OTP. Please try again.');
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            alert('Incorrect OTP. Please try again.');
+                                            console.error('Error:', xhr.responseText);
+                                            setTimeout(function() {
+                                                location.reload();
+                                            }, 2000); 
+                                        }
+                                    });
+                                } else {
+                                    alert('Please enter the OTP.');
+                                }
+                            });
+                            
+
+                        } else if (response.message === 'PDF available') {
                             window.open(response.pdf_url, '_blank'); // Open the PDF in a new tab
                         } else {
                             alert('Unexpected response. Please try again.');
@@ -222,7 +291,6 @@
                 });
             });
         });
-        
     </script>
     
 </body>
