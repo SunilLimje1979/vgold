@@ -284,11 +284,12 @@
        <li>
           <a href="{% url 'add_bank' %}"><i class="bi bi-bank"></i> Add Bank</a>
         </li>
-        {% comment %} <li>
+        <li>
           <a href="{% url 'channel_partner' %}"
             ><i class="bi bi-building"></i> Channel Partner</a
           >
-        </li>
+        </li> 
+        {% comment %}
       <li>
           <a href="{% url 'review' %}"><i class="bi bi-star"></i> Review</a>
         </li>  {% endcomment %}
@@ -608,7 +609,7 @@
             navigator.share({
                 title: 'Check out V-Gold!',
                 text: 'This is Rate of Today Gold. Check it out!',
-                url: 'https://www.vgold.co.in/dashboard/vgold_rate/vgold_rate_show_mobile.png'
+                url: 'https://vgold.app/vgold_admin/vgold_rate_show_mobile/'
             }).then(() => {
                 console.log('Thanks for sharing!');
             }).catch(err => {

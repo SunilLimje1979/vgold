@@ -13,214 +13,178 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <style>
-        /* Navbar style */
         .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1020;
             background-color: rgb(41, 39, 122);
             height: 55px;
             color: white;
         }
-        
         .navbar-toggler-icon {
-            color: white;
-        }
-        
-        .navbar-brand {
-            font-size: 20px;
-            margin-left: 20px;
-            color: white;
-        }
+          color: white;
+      }
 
+      .navbar-brand {
+        font-size: 20px;
+        margin-left: 60px; /* Ensure no left margin */
+        color: white;
+        position: absolute;
+        left: 10px; /* Adjust as needed */
+       }
+    
         .fa-arrow-left {
             color: white;
         }
-
-        /* Search box style */
         #searchContainer {
-            height: 120px;
-            background-color: rgb(41, 39, 122); /* Same color as navbar */
-            padding: 10px; /* Add padding */
+            position: sticky;
+            top: 55px; /* Height of the navbar */
+            z-index: 1010;
+            height: 110px;
+            background-color: rgb(41, 39, 122);
+            padding: 10px;
         }
-
         #searchBox {
             width: 100%;
             padding: 10px;
             border-radius: 15px;
-            border: 1px solid white; /* Set border to white */
-            background-color: rgb(41, 39, 122); /* Semi-transparent white */
-            color: white; /* Text color */
+            border: 1px solid white;
+            background-color: rgb(41, 39, 122);
+            color: white;
         }
-        
         #searchBox::placeholder {
-            color: white; /* Placeholder text color */
+            color: white;
         }
-
-        /* Custom card style */
         .custom-card {
-            background-color: white; /* Light gray background */
-            padding: 2px; 
+            background-color: white;
+            padding: 2px;
             border-radius: 10px;
             margin-top: 15px;
-            height: 80px; /* Example height */
-            width: 100%; /* Example width */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5); /* Shadow style */ 
+            height: 60px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
         }
-        .increased-padding {
-            padding-top: 20px; /* Adjust the top padding as needed */
+        .custom-card h5 {
+            font-size: 14px;
         }
-
-        .custom-card h4 {
-            font-size: 16px; /* Adjust the font size as needed */
-        }
-        /* Additional styling for list items */
         #listContainer li {
-            border: 1px solid #f0ad4e; /* Yellow border */
-            background-color: rgb(255,186,42); /* Yellow background */
-            padding-bottom: 20px; /* Add padding */
+            border: 1px solid #f0ad4e;
+            background-color: rgb(255,186,42);
+            padding-bottom: 15px;
             padding-left: 3px;
-            margin-bottom: 12px; /* Add margin bottom for spacing */
+            margin-bottom: 12px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
-  <!-- Navbar with menu drawer icon -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <div class="">
-        <button class="navbar-toggler" type="button" id="menuBtn">
-          <a href="{% url 'dashboard' %}">
-            <!-- Replace the existing toggle icon with Font Awesome icon -->
-            <i class="fa fa-arrow-left" aria-hidden="true"></i>
-          </a>
-        </button>
-        <a class="navbar-brand">Channel Partner</a>
-      </div>
+      <button class="navbar-toggler" type="button">
+        <a href="{% url 'dashboard' %}">
+          <i class="fa fa-arrow-left" aria-hidden="true"></i>
+        </a>
+      </button>
+      <a class="navbar-brand">Channel Partner</a>
     </div>
   </nav>
 
-  <!-- Search box -->
   <div id="searchContainer">
     <input type="text" id="searchBox" placeholder="Search by Name, CRN No, Mobile No, Email" />
- 
- <!-- Rectangular card with 100% width -->
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <div class="custom-card">
-        <div class="row  mt-3"  >
-          <div id="userCount" class="col text-center border-end border-2">
-            <h5 style="font-size: 14px;"><span>0</span> <br> Users </h5>
-          </div>
-          <div id="commissionCount" class="col text-center border-end border-2">
-            <h5 style="font-size: 14px;"><span>₹ 0</span> <br> Commission </h5>
-          </div>
-          <div id="goldBookingCount" class="col text-center">
-            <h5 style="font-size: 14px;"><span>0 Gm</span> <br> Gold Booking </h5>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="custom-card">
+            <div class="row mt-3">
+              <div id="userCount" class="col text-center border-end border-2">
+                <h5><span>0</span> <br> Users </h5>
+              </div>
+              <div id="commissionCount" class="col text-center border-end border-2">
+                <h5><span>₹ 0</span> <br> Commission </h5>
+              </div>
+              <div id="goldBookingCount" class="col text-center">
+                <h5><span>0 Gm</span> <br> Gold Booking </h5>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-</div>
-
-<!-- New container for the list -->
-<div class="container mt-3 increased-padding">
-  <div class="row">
-    <div class="col">
-      <ul id="listContainer" class="list-unstyled" style="width: 100%; padding-top: 10px;">
-        {% for item in data %}
-          <li data-uname="{{ item.uname }}" data-uid="{{ item.uid }}" data-umobile="{{ item.umobile }}" data-uemail="{{ item.uemail }}" data-commission="{{ item.total_commission_created }}" data-gold="{{ item.total_gold_in_account }}">
-            {{ item.uname }} - {{ item.total_gold_in_account }} gm
-          </li>
-        {% endfor %}
-      </ul>
+  <div class="container mt-3">
+    <div class="row">
+      <div class="col">
+        <ul id="listContainer" class="list-unstyled">
+          {% for item in data %}
+            <li data-uname="{{ item.FullName }}" data-uid="{{ item.UserCRNno }}" data-umobile="{{ item.UserMobileNo }}" data-uemail="{{ item.UserEmail }}" data-commission="{{ item.Commission }}" data-gold="{{ item.TotalGBWeight }}">
+              {{ item.FullName }} - {{ item.TotalGBWeight }} gm
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- Bootstrap JS (optional, for Bootstrap features) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Custom JS -->
-<script>
-    // Sample data (you can replace this with your actual data)
+  <script>
     var data = {{ data|safe }};
-  
-    // Function to populate the list with data
-    function populateList(data) {
-      var listContainer = document.getElementById("listContainer");
 
-      // Clear existing list items
-      listContainer.innerHTML = "";
-
-      // Loop through the data and create list items
-      data.forEach(function(item) {
-        var listItem = document.createElement("li");
-        listItem.setAttribute('data-uname', item.uname);
-        listItem.setAttribute('data-uid', item.uid);
-        listItem.setAttribute('data-umobile', item.umobile);
-        listItem.setAttribute('data-uemail', item.uemail);
-        listItem.setAttribute('data-commission', item.total_commission_created);
-        listItem.setAttribute('data-gold', item.total_gold_in_account);
-        listItem.innerHTML = `${item.uname} - ${item.total_gold_in_account} gm`; // Display both uname and total_gold_in_account
-        listContainer.appendChild(listItem);
-      });
-
-      // Update counts initially
-      updateCounts(data);
-    }
-
-    // Initial population of the list using data from the context
-    populateList(data);
-
-    // Function to update counts based on filtered list
     function updateCounts(filteredData) {
       var userCount = filteredData.length;
-      var commissionTotal = filteredData.reduce(function(sum, item) {
-        return sum + parseFloat(item.total_commission_created || 0);
-      }, 0);
-      var goldBookingTotal = filteredData.reduce(function(sum, item) {
-        return sum + parseFloat(item.total_gold_in_account || 0);
-      }, 0);
+      var commissionTotal = filteredData.reduce((sum, item) => sum + parseFloat(item.Commission || 0), 0);
+      var goldBookingTotal = filteredData.reduce((sum, item) => sum + parseFloat(item.TotalGBWeight || 0), 0);
 
-      // Update HTML elements with the calculated values
-      document.getElementById('userCount').innerHTML = `<h5 style="font-size: 14px;"><span>${userCount}</span> <br> Users </h5>`;
-      document.getElementById('commissionCount').innerHTML = `<h5 style="font-size: 14px;"><span>₹ ${commissionTotal.toFixed(2)}</span> <br> Commission </h5>`;
-      document.getElementById('goldBookingCount').innerHTML = `<h5 style="font-size: 14px;"><span>${goldBookingTotal.toFixed(2)} Gm</span> <br> Gold Booking </h5>`;
+      document.getElementById('userCount').innerHTML = `<h5><span>${userCount}</span> <br> Users </h5>`;
+      document.getElementById('commissionCount').innerHTML = `<h5><span>₹ ${commissionTotal.toFixed(2)}</span> <br> Commission </h5>`;
+      document.getElementById('goldBookingCount').innerHTML = `<h5><span>${goldBookingTotal.toFixed(2)} Gm</span> <br> Gold Booking </h5>`;
     }
 
-    // Search functionality
     document.getElementById('searchBox').addEventListener('input', function() {
-        var searchQuery = this.value.toLowerCase();
-        var listItems = document.querySelectorAll('#listContainer li');
-        var filteredData = [];
+      var searchQuery = this.value.toLowerCase();
+      var listItems = document.querySelectorAll('#listContainer li');
+      var filteredData = [];
 
-        listItems.forEach(function(item) {
-            var uname = item.getAttribute('data-uname').toLowerCase();
-            var uid = item.getAttribute('data-uid').toLowerCase();
-            var umobile = item.getAttribute('data-umobile').toLowerCase();
-            var uemail = item.getAttribute('data-uemail').toLowerCase();
+      listItems.forEach(function(item) {
+        var uname = item.getAttribute('data-uname').toLowerCase();
+        var uid = item.getAttribute('data-uid').toLowerCase();
+        var umobile = item.getAttribute('data-umobile').toLowerCase();
+        var uemail = item.getAttribute('data-uemail').toLowerCase();
 
-            if (uname.includes(searchQuery) || uid.includes(searchQuery) || umobile.includes(searchQuery) || uemail.includes(searchQuery)) {
-                item.style.display = '';
-                filteredData.push({
-                  uname: item.getAttribute('data-uname'),
-                  uid: item.getAttribute('data-uid'),
-                  umobile: item.getAttribute('data-umobile'),
-                  uemail: item.getAttribute('data-uemail'),
-                  total_commission_created: parseFloat(item.getAttribute('data-commission') || 0),
-                  total_gold_in_account: parseFloat(item.getAttribute('data-gold') || 0)
-                });
-            } else {
-                item.style.display = 'none';
-            }
-        });
+        if (uname.includes(searchQuery) || uid.includes(searchQuery) || umobile.includes(searchQuery) || uemail.includes(searchQuery)) {
+          item.style.display = '';
+          filteredData.push({
+            FullName: item.getAttribute('data-uname'),
+            UserCRNno: item.getAttribute('data-uid'),
+            UserMobileNo: item.getAttribute('data-umobile'),
+            UserEmail: item.getAttribute('data-uemail'),
+            Commission: parseFloat(item.getAttribute('data-commission') || 0),
+            TotalGBWeight: parseFloat(item.getAttribute('data-gold') || 0)
+          });
+        } else {
+          item.style.display = 'none';
+        }
+      });
 
-        // Update counts based on filtered data
-        updateCounts(filteredData);
+      updateCounts(filteredData);
     });
-</script>
+  </script>
+  {% if messages %}
+        <div class="alert alert-danger" role="alert" id="message-box">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        <script>
+            // Close the message box after 5 seconds
+            setTimeout(function() {
+                const messageBox = document.getElementById('message-box');
+                if (messageBox) {
+                    messageBox.style.display = 'none';
+                }
+            }, 5000); // 5000ms = 5 seconds
+        </script>
+    {% endif %}
+
 </body>
 </html>

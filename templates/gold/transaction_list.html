@@ -38,9 +38,9 @@
         .fa-arrow-left {
             color: white;
         }
-        .card:first-child {
+        {% comment %} .card:first-child {
             margin-top: 60px; /* Adds top margin only to the first card */
-        }
+        } {% endcomment %}
 
         .card {
             margin-bottom: 8px; /* Reduced space between cards */
@@ -56,6 +56,9 @@
         p {
             margin-bottom: 6px; /* Reduce spacing between paragraphs */
         }
+        /* Remove blue color and underline from links inside cards */
+
+
     </style>
 </head>
 <body>
@@ -94,9 +97,10 @@
         </script>
     {% endif %}
 
-    <div class="container mt-3">
+    <div class="container" style="margin-top:65px;">
         <!-- Iterate over transactions data -->
         {% for transaction in transactions %}
+        <a href="{% url 'receipt_data' transaction.GBT_Id %}" style="text-decoration: none; color: inherit;">
         <div class="card">
             <div class="card-body d-flex justify-content-between">
                 <!-- Left Half: Receipt No and Amount -->
@@ -118,10 +122,12 @@
                 </div>
             </div>
         </div>
+    </a>
         {% empty %}
         <p>No transactions available.</p>
         {% endfor %}
     </div>
+    
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>

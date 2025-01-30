@@ -12,6 +12,10 @@ urlpatterns = [
     
     path('transaction_seprate/<str:number>/', views.transaction_seprate, name='transaction_seprate'),
     
+    path('receipt_data/<str:number>/', views.receipt_data, name='receipt_data'),
+    
+    path('pdf_specific/', views.pdf_specific, name='pdf_specific'),
+
     path('registration/', views.Registration, name='registration'),
     
     path('dashboard/', views.Dashboard, name='dashboard'),

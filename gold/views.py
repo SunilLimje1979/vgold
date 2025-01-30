@@ -1127,6 +1127,60 @@ def transaction_seprate(request, number):
     # Pass the transactions data to the template
     return render(request, 'gold/transaction_list.html', {"transactions": transactions,"number": number,})
 
+################################# Transection Seprate ############################################    
+def receipt_data(request, number):
+    api_url = "https://vgold.app/vgold_admin/m_api/get_details_transection/"
+    payload = {
+        "GBT_Id": number
+    }
+
+    try:
+        # Send POST request to the API
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()  # Parse the response as JSON
+        
+        # print(response_data)
+        
+        if response_data.get("message_code") == 1000:
+            # Success - extract transaction data
+            transactions = response_data.get("message_data", [])
+        else:
+            # Handle API response error
+            transactions = []
+            messages.error(request, response_data.get("message_text", "Failed to fetch transactions."))
+    except requests.RequestException as e:
+        # Handle request errors
+        transactions = []
+        messages.error(request, f"An error occurred while connecting to the API: {str(e)}")
+    
+    # Pass the transactions data to the template
+    return render(request, 'gold/receipt_data.html', {"transactions": transactions,"number": number,})
+
+
+######################################################################################
+def pdf_specific(request):
+    if request.method == "POST":
+        # Retrieve user session data
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('User_Id')  # Get User_Id from session
+
+        if not user_id:
+            return redirect('login')  # Redirect to login if user is not authenticated
+
+        # Get 'number' from POST request
+        number = request.POST.get('number')
+        if not number:
+            return JsonResponse({"error": "Number is required."}, status=400)
+
+        # Generate PDF link dynamically
+        response_data = {
+            "bid": number,
+            "link": f"https://vgold.app/vgold_admin/booking_statement_specific/{number}/"
+        }
+
+        return JsonResponse(response_data)
+    return JsonResponse({"error": "Invalid request method."}, status=405)
+    
 ####################################### Verify Agreement #########################################################
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
@@ -2009,43 +2063,30 @@ def Add_bank(request):
 ###################################### Channel_partner #############################################
 def Channel_partner(request):
     user_data = request.session.get('user_data', {})
-    # user_id = user_data.get('data', [{}])[0].get('User_ID')
-    user_id = user_data.get('User_Id') 
-
+    user_id = user_data.get('User_Id')
+    UserCRNno = user_data.get('UserCRNno')
+    
     if not user_id:
         return redirect('login') 
     
-    # URL for the API
-    api_url = "https://www.vgold.co.in/dashboard/webservices/cp_user_list.php"
+    api_url = "https://vgold.app/vgold_admin/m_api/get_cp_list/"
+    post_data = {'GBAccountDisplayId': UserCRNno}
     
-    # Data to be sent in the POST request
-    post_data = {
-        'user_id': user_id
-    }
-
-    # Headers for the API request
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
+    data = []  # Ensure data is always initialized
 
     try:
-        # Making the POST request
-        response = requests.post(api_url, data=post_data, headers=headers)
+        response = requests.post(api_url, data=post_data)
         response_data = response.json()
 
-        # Check if the API response is successful
-        if response_data.get('status') == "200":
-            data = response_data.get('data', [])
-            # print(data)
+        if response_data.get('message_code') == 1000:
+            data = response_data.get('message_data', [])
         else:
-            return HttpResponse("Failed to retrieve data from the API.")
-        
-    except Exception as e:
-        return HttpResponse(f"An error occurred: {str(e)}")
-        
-    # Render the template with the retrieved data
-    return render(request, 'gold/channel_partner.html', {'data': data})
+            messages.error(request, response_data.get('Message', 'An error occurred.'))
 
+    except Exception as e:
+        messages.error(request, f"An error occurred: {str(e)}")
+
+    return render(request, 'gold/channel_partner.html', {'data': data})
 
 ###################################### Review #############################################
 def Review(request):
