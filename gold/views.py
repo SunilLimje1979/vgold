@@ -283,24 +283,24 @@ def Dashboard(request):
 
     
     if user_id:
-        # API call to get total gold booking gain
-        gold_gain_url = 'https://www.vgold.co.in/dashboard/webservices/total_gold_booking_gain.php'
+        # New API endpoint for total gold booking gain
+        gold_gain_url = 'https://vgold.app/vgold_admin/m_api/total_gain/'
+
+        # Prepare POST data
         gold_post_data = {'user_id': user_id}
-        
-        gold_headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        gold_response = requests.post(gold_gain_url, data=gold_post_data, headers=gold_headers)
-        # print(gold_response.text)
-        
+
+        # Make the POST request
+        gold_response = requests.post(gold_gain_url, json=gold_post_data)
+
         # Check if gold API call is successful
-        if gold_response.json().get('status') == "200":
+        if gold_response.json().get('message_code') == 1000:
             gold_api_response = gold_response.json()
-            total_gain = gold_api_response['Data']['gain']
+            total_gain = gold_api_response['message_data']['total_gain_all_bookings']
             context['total_gain'] = total_gain  # Add total gain to context
+            # print(context)
         else:
             context['total_gain'] = 0
-            print("Failed to fetch gold API data")
+            # print("Failed to fetch gold API data")
             
         
         # API call to get user loan eligibility
@@ -321,7 +321,7 @@ def Dashboard(request):
             request.session['loan_api_response'] = loan_api_response
         else:
             context['loan_amount'] = 0
-            print("Failed to fetch loan API data")
+            # print("Failed to fetch loan API data")
     
     return render(request, 'gold/dashboard.html', context)
 
@@ -2154,7 +2154,6 @@ def Feedback(request):
 def Refer(request):
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
-    # user_id = user_data.get('data', [{}])[0].get('User_ID')
     user_id = user_data.get('User_Id') 
 
     if not user_id:
@@ -2166,13 +2165,10 @@ def Refer(request):
         enter_email = request.POST.get('enter_email', '')
         enter_mobileno = request.POST.get('enter_mobileno', '')
 
-        # Headers for the API request
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
+        # New API URL
+        api_url = 'https://vgold.app/vgold_admin/m_api/referal_link/'
 
-        # Make the POST request to the external API
-        api_url = 'https://www.vgold.co.in/dashboard/webservices/send_refer_link.php'
+        # Payload with the updated structure
         payload = {
             'user_id': user_id,
             'name': enterName,
@@ -2181,19 +2177,16 @@ def Refer(request):
         }
         
         try:
-            response = requests.post(api_url, data=payload, headers=headers)
+            response = requests.post(api_url, json=payload)
             # Ensure response content is not empty
             if response.content:
                 try:
                     response_data = response.json()
-                    # print(response_data)
-                    
-                    if response_data.get('status') == '200':
+
+                    if response_data.get('message_code') == 1000:
                         messages.success(request, "Refer link sent successfully.")
-    
-                      
                     else:
-                        messages.error(request, "Failed to send refer link.")
+                        messages.error(request, f"Failed to send refer link: {response_data.get('message_text')}")
                     
                     return redirect(Refer)
                 except ValueError:
