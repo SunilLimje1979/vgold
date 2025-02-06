@@ -124,19 +124,18 @@
     <div class="card-header">
         <span>{{ data.number }}</span>
         <span class="status 
-            {% if data.status == '1' %}status-active
-            {% elif data.status == '2' %}status-matured
+            {% if data.status|stringformat:"s" == '1' %}status-active
+            {% elif data.status|stringformat:"s" == '2' %}status-matured
             {% else %}status-closed{% endif %}">
-            
-            {% if data.status == '1' %}
+
+            {% if data.status|stringformat:"s" == '1' %}
                 Active
-            {% elif data.status == '2' %}
+            {% elif data.status|stringformat:"s" == '2' %}
                 Matured
             {% else %}
                 Closed
             {% endif %}
         </span>
-
         <a href="#" class="btn">
             <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
         </a>
