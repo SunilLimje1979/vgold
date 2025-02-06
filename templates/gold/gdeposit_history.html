@@ -123,13 +123,20 @@
   <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
     <div class="card-header">
         <span>{{ data.number }}</span>
-        <span class="status {% if data.status == '1' %}status-active{% else %}status-closed{% endif %}">
+        <span class="status 
+            {% if data.status == '1' %}status-active
+            {% elif data.status == '2' %}status-matured
+            {% else %}status-closed{% endif %}">
+            
             {% if data.status == '1' %}
                 Active
+            {% elif data.status == '2' %}
+                Matured
             {% else %}
                 Closed
             {% endif %}
         </span>
+
         <a href="#" class="btn">
             <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
         </a>

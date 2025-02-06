@@ -1505,7 +1505,7 @@ def Gdeposit_history(request):
             deposit_history = [
                 {
                     "number": entry["gold_deposite_id"],
-                    "status": entry["status_name"],
+                    "status": entry["account_status"],
                     "booking_date": entry["added_date"],
                     "weight": f"{entry['gold']} gm",
                     "booking_charge": f"{entry['processing_fee']} INR",
