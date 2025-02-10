@@ -440,56 +440,54 @@ def Loan(request):
     elif request.method == 'POST':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
-        # user_id = user_data.get('data', [{}])[0].get('User_ID')
         user_id = user_data.get('User_Id') 
 
         if not user_id:
             return redirect('login') 
         
         # Get the amount and comment from the POST request
+        # Get POST data
         amount = request.POST.get('goldWeight')
         comment = request.POST.get('depositor')
+
+        # Check if 'goldWeight' is missing and return with a message
+        if not amount:
+            messages.error(request, 'Amount is required.')
+            return redirect('loan')
         
-        # Prepare the payload for the API request
+        # Prepare the payload for the API request to the new endpoint
         payload = {
-            "user_id": user_id,
-            "amount": amount,
-            "comment": comment  
+            "LRUserId": user_id,
+            "LRAmount": amount,
+            "LRComment": comment  
         }
         
-        # print(payload)
-        # API endpoint URL
-        api_url = 'https://www.vgold.co.in/dashboard/webservices/save_loan_request.php'
-        
-        # Headers for the request
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        
+        # API endpoint URL for loan request
+        api_url = 'https://vgold.app/vgold_admin/m_api/loan_request/'
+
         # Make the POST request to the API
-        response = requests.post(api_url, data=payload, headers=headers)
-        # print(response.text)
+        response = requests.post(api_url, data=payload)
         
         # Check the response from the API
         if response.status_code == 200:
             api_response = response.json()
-            if api_response.get('status') == '200':
-                # Successful response, save it to the session if needed
-                request.session['loan_api_response'] = api_response
+            
+            # Check if the response status is successful (message_code 1000)
+            if api_response.get('message_code') == 1000:
+                # Successfully submitted the loan request
+                loan_data = api_response.get('message_data')
+                request.session['loan_api_response'] = loan_data
                 
-                messages.success(request, api_response.get('Message'))
-                return redirect(Loan)
-                # return JsonResponse({"message": api_response.get("Message")})
-            else:
-                messages.error(request, api_response.get('Message'))
-                return redirect(Loan)
-                # return JsonResponse({"message": "Failed to submit loan request."}, status=400)
+                messages.success(request, api_response.get('message_text'))
+                return redirect('loan')  # Redirect to the loan page after success
 
         else:
-            return JsonResponse({"message": "Error communicating with the loan API."}, status=500)
-        
+            # If the status is not 1000, show the error message
+            messages.error(request, api_response.get('message_text'))
+            return redirect('loan')
     else:
-        return HttpResponse("Invalid request method.")
+        messages.success(request, api_response.get('message_text'))
+        return redirect('dashboard') 
 
 ###################################### Withdraw #############################################
 
@@ -1507,6 +1505,7 @@ def Gdeposit_history(request):
                     "number": entry["gold_deposite_id"],
                     "status": entry["account_status"],
                     "booking_date": entry["added_date"],
+                    "maturity_date": entry["maturity_date"],
                     "weight": f"{entry['gold']} gm",
                     "booking_charge": f"{entry['processing_fee']} INR",
                     "rate": f"{entry['addpurity']}%",
