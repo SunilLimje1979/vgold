@@ -315,24 +315,27 @@ def Dashboard(request):
             
         
         # API call to get user loan eligibility
-        loan_eligibility_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
-        loan_post_data = {'user_id':user_id}
-        loan_headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-        loan_response = requests.post(loan_eligibility_url, data=loan_post_data, headers=loan_headers)
-        # print(loan_response.text)
+        loan_eligibility_url = 'https://vgold.app/vgold_admin/m_api/check_loan_eligibility/'
+        # loan_eligibility_url = 'http://127.0.0.1:8000/vgold_admin/m_api/check_loan_eligibility/'
+        loan_post_data = {'user_id': user_id}
+
+        loan_response = requests.post(loan_eligibility_url, json=loan_post_data)
+
         # Check if loan API call is successful
-        if loan_response.json().get('status')== "200":
+        if loan_response.status_code == 200:
             loan_api_response = loan_response.json()
-            # Extract loan amount from API response and add it to the context
-            loan_amount = loan_api_response['data']['loan_amount']
-            context['loan_amount'] = loan_amount
             
-            request.session['loan_api_response'] = loan_api_response
+            if loan_api_response.get('message_code') == 1000 and loan_api_response.get('message_data', {}).get('is_eligible'):
+                # Extract net_amount_85_percent from API response
+                loan_amount = loan_api_response['message_data']['net_amount_85_percent']
+            else:
+                loan_amount = 0
         else:
-            context['loan_amount'] = 0
-            # print("Failed to fetch loan API data")
+            loan_amount = 0
+
+        # Add loan amount to the context
+        context['loan_amount'] = loan_amount
+        request.session['loan_api_response'] = loan_api_response
     
     return render(request, 'gold/dashboard.html', context)
 
@@ -395,96 +398,76 @@ def Loan(request):
     if request.method == 'GET':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
-        # user_id = user_data.get('data', [{}])[0].get('User_ID')
-        user_id = user_data.get('User_Id') 
-        
-        First_Name = user_data.get('data', [{}])[0].get('First_Name')
+        user_id = user_data.get('User_Id')
 
         if not user_id:
-            return redirect('login') 
+            return redirect('login')
 
-        # Call the external API
-        api_url = 'https://www.vgold.co.in/dashboard/webservices/get_user_loan_eligiblity.php'
+        # Call the new API
+        api_url = 'https://vgold.app/vgold_admin/m_api/check_loan_eligibility/'
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Content-Type': 'application/json'  # Ensure JSON content type
         }
         api_data = {
-            'user_id': user_id
+            "user_id": user_id
         }
-        
-        response = requests.post(api_url, headers=headers, data=api_data)
-        response.raise_for_status()  # Check for HTTP errors
-        loan_api_response = response.json()
-        # print(loan_api_response)
 
-        # Extract the loan amount from the API response
-        loan_amount = None
-        status = None
-        if loan_api_response and 'data' in loan_api_response:
-            loan_amount = loan_api_response['data'].get('loan_amount')
-            status = loan_api_response['status']
-                # is_eligible = loan_api_response['data'].get('is_eligible')
-                # print(status)
-            
-        # Prepare the context for the template
+        try:
+            response = requests.post(api_url, headers=headers, json=api_data)
+            response.raise_for_status()  # Raise exception for HTTP errors
+            loan_api_response = response.json()
+
+            # Extract the required fields from the API response
+            message_text = None
+            if loan_api_response and 'message_code' in loan_api_response and loan_api_response['message_code'] == 1000:
+                message_text = loan_api_response.get('message_text', "You are not eligible for a loan.")
+
+        except requests.exceptions.RequestException as e:
+            message_text = "Error retrieving loan eligibility data."
+
+        # Prepare context
         context = {
-            'First_Name': First_Name,
-            'loan_amount': loan_amount,
-            # 'is_eligible': is_eligible,
-            'status': status
+            'message_text': message_text
         }
 
-        # Render the template with the context
+        # Render the template
         return render(request, 'gold/loan.html', context)
 
-    elif request.method == 'POST':
+    if request.method == 'POST':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
-        user_id = user_data.get('User_Id') 
+        user_id = user_data.get('User_Id')
 
         if not user_id:
-            return redirect('login') 
-        
-        # Get the amount and comment from the POST request
-        # Get POST data
+            return redirect('login')
+
+        # Get form data
         amount = request.POST.get('goldWeight')
         comment = request.POST.get('depositor')
 
-        # Check if 'goldWeight' is missing and return with a message
         if not amount:
             messages.error(request, 'Amount is required.')
             return redirect('loan')
-        
-        # Prepare the payload for the API request to the new endpoint
-        payload = {
-            "LRUserId": user_id,
-            "LRAmount": amount,
-            "LRComment": comment  
-        }
-        
-        # API endpoint URL for loan request
+
+        # API request
+        # api_url = 'http://127.0.0.1:8000/vgold_admin/m_api/loan_request/'
         api_url = 'https://vgold.app/vgold_admin/m_api/loan_request/'
+        payload = {"LRUserId": user_id, "LRAmount": amount, "LRComment": comment}
 
-        # Make the POST request to the API
-        response = requests.post(api_url, data=payload)
-        
-        # Check the response from the API
-        if response.status_code == 200:
-            api_response = response.json()
-            
-            # Check if the response status is successful (message_code 1000)
+        try:
+            response = requests.post(api_url, json=payload)
+            api_response = response.json() if response.status_code == 200 else {}
+
             if api_response.get('message_code') == 1000:
-                # Successfully submitted the loan request
-                loan_data = api_response.get('message_data')
-                request.session['loan_api_response'] = loan_data
-                
+                request.session['loan_api_response'] = api_response.get('message_data')
                 messages.success(request, api_response.get('message_text'))
-                return redirect('loan')  # Redirect to the loan page after success
+            else:
+                messages.error(request, api_response.get('message_text', 'An error occurred.'))
+        except requests.exceptions.RequestException:
+            messages.error(request, "Failed to connect to the server.")
 
-        else:
-            # If the status is not 1000, show the error message
-            messages.error(request, api_response.get('message_text'))
-            return redirect('loan')
+        return redirect('loan')
     else:
         messages.success(request, api_response.get('message_text'))
         return redirect('dashboard') 
