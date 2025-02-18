@@ -2532,3 +2532,7 @@ def handle_deal_action(request):
     return JsonResponse({"success": False, "message": "Invalid request method."})
 
 
+###################################### Feedback #############################################
+def chatbot(request):
+    
+    return render(request, 'gold/chatbot.html')

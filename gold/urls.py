@@ -102,4 +102,7 @@ urlpatterns = [
     path('showDeals/',views.showDeals,name='showDeals'),
     path('handle_deal_action/',views.handle_deal_action, name='handle_deal_action'),
     
+    
+    path('chatbot/', views.chatbot, name='chatbot'),
+    
 ]
