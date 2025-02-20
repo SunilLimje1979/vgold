@@ -953,7 +953,7 @@ def Gbooking_history(request):
     
     # Extract user_id from the session data
     user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
-    print(user_id)
+    # print(user_id)
 
     # If user_id is not found in the session data, return an error message
     if not user_id:
@@ -1015,7 +1015,7 @@ def transection_pdf(request):
 
     # Retrieve 'number' from POST request
     number = request.POST.get('number')
-    print(number)
+    print(number,"1018")
     if not number:
         return JsonResponse({"error": "Number is required."}, status=400)
 
@@ -1295,6 +1295,7 @@ def Gold_booking(request):
     if request.method == "POST":
         # Retrieve POST data from form
         gold_in_gm = request.POST.get('quantity')
+        print(gold_in_gm)
         tenure = request.POST.get('tensure')  # Make sure the name matches the form field
         
          # Store quantity and tenure in session

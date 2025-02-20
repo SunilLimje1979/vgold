@@ -71,12 +71,13 @@
                     </a>
                 </button>
                 <a class="navbar-brand">Gold Transaction History</a>
-                {% for data in transactions %}
-                <a href="#" class="btn pdf-btn" data-number="{{ data.Account_id }}" style="margin-left: auto;">
-                    <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
-                </a>
-                {% endfor %}
-            </div>
+            
+                {% if transactions %}
+                    <a href="#" class="btn pdf-btn" data-number="{{ transactions.0.Account_id }}" style="margin-left: auto;">
+                        <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
+                    </a>
+                {% endif %}
+            </div>            
         </div>
     </nav>
     
@@ -130,12 +131,12 @@
     
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.pdf-btn').on('click', function(event) {
                 event.preventDefault();
                 const number = $(this).data('number');
-                console.log(number)
             
                 $.ajax({
                     type: 'POST',
@@ -151,11 +152,8 @@
                             alert('Error: PDF link not found.');
                             console.error('Error: Link not found in response');
                         }
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        alert('An error occurred while fetching the PDF.');
-                        console.error('Error:', xhr.responseText);
                     }
+                   
                 });
             });
         });

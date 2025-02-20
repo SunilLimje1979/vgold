@@ -206,11 +206,8 @@
                             alert('Error: PDF link not found.');
                             console.error('Error: Link not found in response');
                         }
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        alert('An error occurred while fetching the PDF.');
-                        console.error('Error:', xhr.responseText);
                     }
+                   
                 });
             });
         });
