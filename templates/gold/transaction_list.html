@@ -71,15 +71,15 @@
                     </a>
                 </button>
                 <a class="navbar-brand">Gold Transaction History</a>
-            
+    
                 {% if transactions %}
-                    <a href="#" class="btn pdf-btn" data-number="{{ transactions.0.Account_id }}" style="margin-left: auto;">
+                    <a href="#" class="btn pdf-btn" data-number="{% firstof transactions.0.Account_id '' %}" style="margin-left: auto;">
                         <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
                     </a>
                 {% endif %}
-            </div>            
+            </div>
         </div>
-    </nav>
+    </nav>    
     
     {% if messages %}
         <div class="alert alert-danger" role="alert" id="message-box">
@@ -131,29 +131,34 @@
     
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script>
-        $(document).ready(function() {
-            $('.pdf-btn').on('click', function(event) {
-                event.preventDefault();
-                const number = $(this).data('number');
-            
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "transection_pdf" %}',  // Adjusted for Django's URL tag
-                    data: {
-                        'number': number,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Send CSRF token
-                    },
-                    success: function(response) {
-                        if (response.link) {
-                            window.open(response.link, '_blank');  // Open the PDF in a new tab
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.pdf-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const number = this.dataset.number;
+        
+                    fetch("{% url 'transection_pdf' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: new URLSearchParams({ "number": number })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.link) {
+                            window.open(data.link, '_blank');
                         } else {
-                            alert('Error: PDF link not found.');
-                            console.error('Error: Link not found in response');
+                            alert("Error: PDF link not found.");
+                            console.error("Error: No link in response");
                         }
-                    }
-                   
+                    })
+                    .catch(error => {
+                        alert("An error occurred while fetching the PDF.");
+                        console.error("Fetch Error:", error);
+                    });
                 });
             });
         });

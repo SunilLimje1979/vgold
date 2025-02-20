@@ -187,31 +187,38 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            $('.pdf-btn').on('click', function(event) {
-                event.preventDefault();
-                const number = $(this).data('number');
-            
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "transection_pdf" %}',  // Adjusted for Django's URL tag
-                    data: {
-                        'number': number,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Send CSRF token
-                    },
-                    success: function(response) {
-                        if (response.link) {
-                            window.open(response.link, '_blank');  // Open the PDF in a new tab
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.pdf-btn').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const number = this.dataset.number;
+        
+                    fetch("{% url 'transection_pdf' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: new URLSearchParams({ "number": number })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.link) {
+                            window.open(data.link, '_blank');
                         } else {
-                            alert('Error: PDF link not found.');
-                            console.error('Error: Link not found in response');
+                            alert("Error: PDF link not found.");
+                            console.error("Error: No link in response");
                         }
-                    }
-                   
+                    })
+                    .catch(error => {
+                        alert("An error occurred while fetching the PDF.");
+                        console.error("Fetch Error:", error);
+                    });
                 });
             });
         });
-    </script>
+        </script>
+        
 
     <script>
         $(document).ready(function() {
@@ -282,7 +289,7 @@
                         }
                     },
                     error: function(xhr, textStatus, errorThrown) {
-                        alert('An error occurred. Please try again.');
+                        alert('Agreement Not present for this booking.');
                         console.error('Error:', xhr.responseText);
                     }
                 });
