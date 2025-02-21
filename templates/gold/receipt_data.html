@@ -124,7 +124,11 @@
                     </div>
 
                     <div class="col-12" style="text-align: center; font-weight: bold; font-size: 18px;">
-                        <a href="#" class="btn pdf-btn" data-number="{{ transaction.GBT_Id }}" style="background-color: rgb(41, 39, 122); color: white; padding: 8px 50px; text-decoration: none; border-radius: 15px; margin-top: 10px;">
+                        <a href="javascript:void(0);" 
+                           onclick="openReceipt('{{ transaction.GBT_Id }}')" 
+                           class="btn pdf-btn" 
+                           style="background-color: rgb(41, 39, 122); color: white; padding: 8px 50px; 
+                                  text-decoration: none; border-radius: 15px; margin-top: 10px;">
                             DOWNLOAD RECEIPT
                         </a>                        
                     </div>
@@ -138,7 +142,7 @@
     <!-- Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+    {% comment %} <script>
         $(document).ready(function() {
             $('.pdf-btn').on('click', function(event) {
                 event.preventDefault(); // Prevent the default anchor behavior
@@ -169,6 +173,17 @@
                 });
             });
         });
+    </script> {% endcomment %}
+
+    <script>
+        function openReceipt(gbtId) {
+            if (gbtId) {
+                var pdfUrl = `https://vgold.app/vgold_admin/booking_statement_specific/${gbtId}/`;
+                window.open(pdfUrl, "_blank");
+            } else {
+                alert("Receipt not available");
+            }
+        }
     </script>
     
 </body>
