@@ -1042,17 +1042,12 @@ def transection_pdf(request):
 
     pdf_link = f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"
 
-    # Simulating alternative approach in case of failure
-    try:
-        # Here, you could check if the URL is valid, accessible, etc.
-        response_data = {
-            "bid": number,
-            "user_id": user_id,
-            "link": pdf_link
-        }
-        return JsonResponse(response_data)
-    except Exception as e:
-        return JsonResponse({"error": "Failed to generate PDF", "alternative": "Please contact support or try later."}, status=500)
+    # Ensure the link is a proper string before sending it
+    if not isinstance(pdf_link, str) or " " in pdf_link:
+        return JsonResponse({"error": "Invalid PDF link generated."}, status=500)
+
+    return JsonResponse({"bid": number, "user_id": user_id, "link": pdf_link})
+
 
 ####################################### Agreement ######################################################
 

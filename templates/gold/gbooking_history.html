@@ -126,9 +126,9 @@
                     Closed
                 {% endif %}
             </span>
-            <a href="#" class="btn pdf-btn" data-number="{{ data.number }}">
+            <a href="javascript:void(0);" class="btn pdf-btn" data-number="{{ data.number }}">
                 <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
-            </a>
+            </a>            
         </div>
         <hr class="horizontal-line">
         <div class="row">
@@ -190,8 +190,15 @@
         $(document).ready(function() {
             $('.pdf-btn').on('click', function(event) {
                 event.preventDefault();
-                const number = $(this).data('number');
-            
+                
+                let number = $(this).data('number');
+        
+                if (!number) {
+                    alert("Error: Number is missing.");
+                    console.error("Missing data-number attribute.");
+                    return;
+                }
+        
                 $.ajax({
                     type: 'POST',
                     url: '{% url "transection_pdf" %}', 
@@ -200,31 +207,17 @@
                         'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
                     success: function(response) {
-                        if (response.link) {
-                            // Attempt to open in a new tab
-                            let pdfWindow = window.open(response.link, '_blank');
-        
-                            if (!pdfWindow || pdfWindow.closed || typeof pdfWindow.closed === 'undefined') {
-                                // If popup is blocked or fails to open, provide alternative
-                                let downloadLink = `<a href="${response.link}" target="_blank">Click here to download the PDF</a>`;
-                                $('body').append(`<div class="pdf-error-msg">Failed to open PDF. ${downloadLink}</div>`);
-                            }
+                        if (response.link && typeof response.link === 'string') {
+                            console.log("Opening PDF:", response.link);
+                            window.open(response.link, '_blank');
                         } else {
-                            alert('Error: PDF link not found.');
-                            console.error('Error: Link not found in response');
+                            alert('Error: Invalid PDF link received.');
+                            console.error('Invalid Response:', response);
                         }
                     },
                     error: function(xhr, textStatus, errorThrown) {
                         alert('An error occurred while fetching the PDF.');
                         console.error('Error:', xhr.responseText);
-        
-                        // Provide alternative link or retry option
-                        let retryButton = `<button class="retry-btn" data-number="${number}">Retry</button>`;
-                        $('body').append(`<div class="pdf-error-msg">Failed to load PDF. ${retryButton}</div>`);
-        
-                        $('.retry-btn').on('click', function() {
-                            location.reload(); // Reload page or reattempt request
-                        });
                     }
                 });
             });
