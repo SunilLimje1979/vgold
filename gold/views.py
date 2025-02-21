@@ -1004,50 +1004,30 @@ def Gbooking_history(request):
 ##############################################################################################
 from django.http import JsonResponse
 
-# def transection_pdf(request):
-#     # Retrieve user data from session
-#     user_data = request.session.get('user_data', {})
-#     user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
-
-#     # If user_id is not found in the session data, return an error message
-#     if not user_id:
-#         return redirect('login') 
-
-#     # Retrieve 'number' from POST request
-#     number = request.POST.get('number')
-#     print(number)
-#     if not number:
-#         return JsonResponse({"error": "Number is required."}, status=400)
-
-#     # Mocking API response with generated PDF link
-#     response_data = {
-#         "bid": number,
-#         "user_id": user_id,
-#         "link": f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"  # Use 'number' here
-#     }
-
-#     # Return JSON response with link
-#     return JsonResponse(response_data)
-
 def transection_pdf(request):
+    # Retrieve user data from session
     user_data = request.session.get('user_data', {})
-    user_id = user_data.get('User_Id')
+    user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
 
+    # If user_id is not found in the session data, return an error message
     if not user_id:
-        return redirect('login')
+        return redirect('login') 
 
+    # Retrieve 'number' from POST request
     number = request.POST.get('number')
+    print(number)
     if not number:
         return JsonResponse({"error": "Number is required."}, status=400)
 
-    pdf_link = f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"
+    # Mocking API response with generated PDF link
+    response_data = {
+        "bid": number,
+        "user_id": user_id,
+        "link": f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"  # Use 'number' here
+    }
 
-    # Ensure the link is a proper string before sending it
-    if not isinstance(pdf_link, str) or " " in pdf_link:
-        return JsonResponse({"error": "Invalid PDF link generated."}, status=500)
-
-    return JsonResponse({"bid": number, "user_id": user_id, "link": pdf_link})
-
+    # Return JSON response with link
+    return JsonResponse(response_data)
 
 ####################################### Agreement ######################################################
 
