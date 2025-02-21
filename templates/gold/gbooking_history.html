@@ -194,14 +194,21 @@
             
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "transection_pdf" %}',  // Adjusted for Django's URL tag
+                    url: '{% url "transection_pdf" %}', 
                     data: {
                         'number': number,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Send CSRF token
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
                     },
                     success: function(response) {
                         if (response.link) {
-                            window.open(response.link, '_blank');  // Open the PDF in a new tab
+                            // Attempt to open in a new tab
+                            let pdfWindow = window.open(response.link, '_blank');
+        
+                            if (!pdfWindow || pdfWindow.closed || typeof pdfWindow.closed === 'undefined') {
+                                // If popup is blocked or fails to open, provide alternative
+                                let downloadLink = `<a href="${response.link}" target="_blank">Click here to download the PDF</a>`;
+                                $('body').append(`<div class="pdf-error-msg">Failed to open PDF. ${downloadLink}</div>`);
+                            }
                         } else {
                             alert('Error: PDF link not found.');
                             console.error('Error: Link not found in response');
@@ -210,10 +217,19 @@
                     error: function(xhr, textStatus, errorThrown) {
                         alert('An error occurred while fetching the PDF.');
                         console.error('Error:', xhr.responseText);
+        
+                        // Provide alternative link or retry option
+                        let retryButton = `<button class="retry-btn" data-number="${number}">Retry</button>`;
+                        $('body').append(`<div class="pdf-error-msg">Failed to load PDF. ${retryButton}</div>`);
+        
+                        $('.retry-btn').on('click', function() {
+                            location.reload(); // Reload page or reattempt request
+                        });
                     }
                 });
             });
         });
+        
     </script>
 
     <script>

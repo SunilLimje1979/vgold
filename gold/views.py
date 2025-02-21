@@ -1004,30 +1004,55 @@ def Gbooking_history(request):
 ##############################################################################################
 from django.http import JsonResponse
 
+# def transection_pdf(request):
+#     # Retrieve user data from session
+#     user_data = request.session.get('user_data', {})
+#     user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
+
+#     # If user_id is not found in the session data, return an error message
+#     if not user_id:
+#         return redirect('login') 
+
+#     # Retrieve 'number' from POST request
+#     number = request.POST.get('number')
+#     print(number)
+#     if not number:
+#         return JsonResponse({"error": "Number is required."}, status=400)
+
+#     # Mocking API response with generated PDF link
+#     response_data = {
+#         "bid": number,
+#         "user_id": user_id,
+#         "link": f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"  # Use 'number' here
+#     }
+
+#     # Return JSON response with link
+#     return JsonResponse(response_data)
+
 def transection_pdf(request):
-    # Retrieve user data from session
     user_data = request.session.get('user_data', {})
-    user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
+    user_id = user_data.get('User_Id')
 
-    # If user_id is not found in the session data, return an error message
     if not user_id:
-        return redirect('login') 
+        return redirect('login')
 
-    # Retrieve 'number' from POST request
     number = request.POST.get('number')
-    print(number)
     if not number:
         return JsonResponse({"error": "Number is required."}, status=400)
 
-    # Mocking API response with generated PDF link
-    response_data = {
-        "bid": number,
-        "user_id": user_id,
-        "link": f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"  # Use 'number' here
-    }
+    pdf_link = f"https://vgold.app/vgold_admin/generate_booking_statement/{number}/"
 
-    # Return JSON response with link
-    return JsonResponse(response_data)
+    # Simulating alternative approach in case of failure
+    try:
+        # Here, you could check if the URL is valid, accessible, etc.
+        response_data = {
+            "bid": number,
+            "user_id": user_id,
+            "link": pdf_link
+        }
+        return JsonResponse(response_data)
+    except Exception as e:
+        return JsonResponse({"error": "Failed to generate PDF", "alternative": "Please contact support or try later."}, status=500)
 
 ####################################### Agreement ######################################################
 
