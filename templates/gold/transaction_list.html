@@ -73,7 +73,10 @@
                 <a class="navbar-brand">Gold Transaction History</a>
     
                 {% if transactions %}
-                    <a href="#" class="btn pdf-btn" data-number="{% firstof transactions.0.Account_id '' %}" style="margin-left: auto;">
+                    <a href="javascript:void(0);" class="btn pdf-btn" 
+                    data-number="{% firstof transactions.0.Account_id '' %}" 
+                    style="margin-left: auto;" 
+                    onclick="openBookingStatement(this)">
                         <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
                     </a>
                 {% endif %}
@@ -131,7 +134,7 @@
     
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
+    {% comment %} <script>
         $(document).ready(function() {
             $('.pdf-btn').on('click', function(event) {
                 event.preventDefault();
@@ -160,8 +163,19 @@
                 });
             });
         });
+    </script> {% endcomment %}
+    <script>
+        function openBookingStatement(element) {
+            var number = element.getAttribute("data-number");
+            if (number) {
+                var url = "https://vgold.app/vgold_admin/generate_booking_statement/" + number + "/";
+                window.open(url, "_blank");
+            } else {
+                alert("Booking statement not available");
+            }
+        }
     </script>
-
+    
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
