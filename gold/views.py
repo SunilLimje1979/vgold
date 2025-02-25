@@ -1090,7 +1090,7 @@ def transaction_seprate(request, number):
     # API endpoint and payload
     api_url = "https://vgold.app/vgold_admin/m_api/get_transaction_list/"
     
-    print(type(number),number)
+    # print(type(number),number)
     payload = {
         "GBAccountDisplayId": number
     }
