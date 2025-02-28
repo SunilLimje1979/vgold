@@ -336,6 +336,21 @@ def Dashboard(request):
         # Add loan amount to the context
         context['loan_amount'] = loan_amount
         request.session['loan_api_response'] = loan_api_response
+
+         # **NEW API: Get Pending Agreement List**
+        agreement_url = 'https://vgold.app/vgold_admin/m_api/get_pending_agreement_list/'
+        agreement_post_data = {'GBUserId': user_id}
+        
+        agreement_response = requests.post(agreement_url, json=agreement_post_data)
+
+        if agreement_response.status_code == 200:
+            agreement_api_response = agreement_response.json()
+            if agreement_api_response.get('message_code') == 1000:
+                context['pending_agreements'] = agreement_api_response.get('message_data', [])
+            else:
+                context['pending_agreements'] = []
+        else:
+            context['pending_agreements'] = []
     
     return render(request, 'gold/dashboard.html', context)
 
