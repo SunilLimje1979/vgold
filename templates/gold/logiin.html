@@ -126,8 +126,15 @@
                         <div class="flex justify-center mt-2">
                             <input name="otp" placeholder="Enter OTP" class="form-control" required>
                             <input type="hidden" name="mobileNumber" value="{{ mobile_number }}">
-                        </div><br>
-                
+                        </div>
+
+                        <div class="d-flex justify-content-end align-items-center" style="gap: 10px;margin-top: 10px;">
+                            <span id="resend-timer" style="font-size: 14px; color: rgb(41, 39, 122); font-weight: bold;"></span>
+                            <a href="#" id="resend-link" class="text-primary" style="font-size: 14px; cursor: pointer; text-decoration: none; pointer-events: none; opacity: 0.5;">
+                                Resend OTP
+                            </a>
+                        </div>
+
                         <div class="row justify-content-center mt-2">
                             <button type="submit" class="btn btn-success custom-btn" style="width: 100%; font-size: 15px; padding: 10px 18px; border-radius: 17px; background-color: rgb(41, 39, 122);">
                                 VERIFY OTP
@@ -225,6 +232,67 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let timer = 20; // 20 seconds countdown
+            let resendLink = document.getElementById("resend-link");
+            let timerDisplay = document.getElementById("resend-timer");
+            let mobileNumber = document.querySelector('input[name="mobileNumber"]').value; // Get mobile number
+        
+            function updateTimer() {
+                let minutes = Math.floor(timer / 60);
+                let seconds = timer % 60;
+                timerDisplay.textContent = `Resend OTP in ${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+        
+                if (timer > 0) {
+                    timer--;
+                    setTimeout(updateTimer, 1000);
+                } else {
+                    resendLink.style.pointerEvents = "auto";
+                    resendLink.style.opacity = "1";
+                    timerDisplay.textContent = ""; // Remove timer text
+                }
+            }
+        
+            updateTimer();
+        
+            // Handle Resend OTP Click
+            resendLink.addEventListener("click", function (e) {
+                e.preventDefault();
+        
+                // Disable the button again
+                resendLink.style.pointerEvents = "none";
+                resendLink.style.opacity = "0.5";
+                timer = 300; // Reset the timer
+                updateTimer();
+        
+                // Send AJAX request to resend OTP
+                fetch("{% url 'login' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value
+                    },
+                    body: new URLSearchParams({
+                        "step": "send_otp",
+                        "mobileNumber": mobileNumber
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("OTP resent successfully!");
+                    } else {
+                        alert("Failed to resend OTP. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error resending OTP:", error);
+                });
+            });
+        });
+        
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const iosModal = document.getElementById("ios-install-modal");

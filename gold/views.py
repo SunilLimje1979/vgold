@@ -143,6 +143,7 @@ def Login(request):
                         user_data = response_data.get("message_data", {})  # Fetching from response_data, not data
                         request.session['user_data'] = user_data
                         request.session['user_mobile'] = user_data.get('UserMobileNo') 
+                        request.session['flag']=True
                         # messages.success(request, "Login successful.")
                         return redirect('dashboard')
                     else:
@@ -289,69 +290,68 @@ def Dashboard(request):
     else:
         # Default values if no user data is found
         context = {'first_name': 'User'}
-        user_id = None
         return redirect('login') 
 
-    
     if user_id:
-        # New API endpoint for total gold booking gain
-        gold_gain_url = 'https://vgold.app/vgold_admin/m_api/total_gain/'
+        # **Initialize loan_api_response to avoid UnboundLocalError**
+        loan_api_response = {}
 
-        # Prepare POST data
+        # **New API endpoint for total gold booking gain**
+        gold_gain_url = 'https://vgold.app/vgold_admin/m_api/total_gain/'
         gold_post_data = {'user_id': user_id}
 
-        # Make the POST request
-        gold_response = requests.post(gold_gain_url, json=gold_post_data)
+        try:
+            gold_response = requests.post(gold_gain_url, json=gold_post_data)
+            gold_response_data = gold_response.json()
 
-        # Check if gold API call is successful
-        if gold_response.json().get('message_code') == 1000:
-            gold_api_response = gold_response.json()
-            total_gain = gold_api_response['message_data']['total_gain_all_bookings']
-            context['total_gain'] = total_gain  # Add total gain to context
-            # print(context)
-        else:
+            # Check if gold API call is successful
+            if gold_response_data.get('message_code') == 1000:
+                context['total_gain'] = gold_response_data['message_data'].get('total_gain_all_bookings', 0)
+            else:
+                context['total_gain'] = 0
+        except requests.RequestException:
             context['total_gain'] = 0
-            # print("Failed to fetch gold API data")
-            
-        
-        # API call to get user loan eligibility
+
+        # **API call to get user loan eligibility**
         loan_eligibility_url = 'https://vgold.app/vgold_admin/m_api/check_loan_eligibility/'
-        # loan_eligibility_url = 'http://127.0.0.1:8000/vgold_admin/m_api/check_loan_eligibility/'
         loan_post_data = {'user_id': user_id}
 
-        loan_response = requests.post(loan_eligibility_url, json=loan_post_data)
-
-        # Check if loan API call is successful
-        if loan_response.status_code == 200:
-            loan_api_response = loan_response.json()
-            
-            if loan_api_response.get('message_code') == 1000 and loan_api_response.get('message_data', {}).get('is_eligible'):
-                # Extract net_amount_85_percent from API response
-                loan_amount = loan_api_response['message_data']['net_amount_85_percent']
+        try:
+            loan_response = requests.post(loan_eligibility_url, json=loan_post_data)
+            if loan_response.status_code == 200:
+                loan_api_response = loan_response.json()
+                if loan_api_response.get('message_code') == 1000 and loan_api_response.get('message_data', {}).get('is_eligible'):
+                    loan_amount = loan_api_response['message_data'].get('net_amount_85_percent', 0)
+                else:
+                    loan_amount = 0
             else:
                 loan_amount = 0
-        else:
+        except requests.RequestException:
             loan_amount = 0
 
         # Add loan amount to the context
         context['loan_amount'] = loan_amount
         request.session['loan_api_response'] = loan_api_response
 
-         # **NEW API: Get Pending Agreement List**
-        agreement_url = 'https://vgold.app/vgold_admin/m_api/get_pending_agreement_list/'
-        agreement_post_data = {'GBUserId': user_id}
-        
-        agreement_response = requests.post(agreement_url, json=agreement_post_data)
+        # **NEW API: Get Pending Agreement List**
+        if request.session['flag']:
+            request.session['flag']=False
+            agreement_url = 'https://vgold.app/vgold_admin/m_api/get_pending_agreement_list/'
+            agreement_post_data = {'GBUserId': user_id}
 
-        if agreement_response.status_code == 200:
-            agreement_api_response = agreement_response.json()
-            if agreement_api_response.get('message_code') == 1000:
-                context['pending_agreements'] = agreement_api_response.get('message_data', [])
-            else:
+            try:
+                agreement_response = requests.post(agreement_url, json=agreement_post_data)
+                if agreement_response.status_code == 200:
+                    agreement_api_response = agreement_response.json()
+                    if agreement_api_response.get('message_code') == 1000:
+                        context['pending_agreements'] = agreement_api_response.get('message_data', [])
+                    else:
+                        context['pending_agreements'] = []
+                else:
+                    context['pending_agreements'] = []
+            except requests.RequestException:
                 context['pending_agreements'] = []
-        else:
-            context['pending_agreements'] = []
-    
+
     return render(request, 'gold/dashboard.html', context)
 
 ###################################### Loan #############################################
