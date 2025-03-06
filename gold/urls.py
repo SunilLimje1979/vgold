@@ -97,6 +97,8 @@ urlpatterns = [
     path('nc_loan/', views.nc_loan, name='nc_loan'),
     
     path('nc_vendors/', views.nc_vendors, name='nc_vendors'),
+    
+    path('user_nominee_details/', views.user_nominee_details, name='user_nominee_details'),
 
     ######################ShowDeals#########################
     path('showDeals/',views.showDeals,name='showDeals'),

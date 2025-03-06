@@ -224,28 +224,31 @@ def OTP(request):
 def Registration(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
+        middle_name = request.POST.get('middle_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         mobile_no = request.POST.get('mobile_no')
         pancard_number = request.POST.get('pancard_number')
         aadhar_number = request.POST.get('aadhar_number')
+        address = request.POST.get('address')
         refer_code = request.POST.get('refer_code')
+        dob = request.POST.get('dob')
         
         payload={
             "first":first_name,
+            "middle":middle_name,
             "last": last_name,
             "email": email,
             "no": mobile_no,
             "pancard": pancard_number,
             "aadhar_number": aadhar_number,
-            "refer_code":refer_code
+            "refer_code":refer_code,
+            "address":address,
+            "dob":dob
         }
         # print(payload)
         
-        # headers = {
-        #     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        # }
-        
+
         api_url="https://vgold.app/vgold_admin/m_api/register_user/"
         
         try:
@@ -2546,6 +2549,43 @@ def handle_deal_action(request):
             return JsonResponse({"success": False, "message": "Unable to perform action."})
     
     return JsonResponse({"success": False, "message": "Invalid request method."})
+
+###################################### Nominee Details Form #############################################
+
+def user_nominee_details(request):
+    if request.method == "POST":
+        # Retrieve form data
+        account_type = request.POST.get("accountType")
+        name = request.POST.get("name")
+        booking_deposit = request.POST.get("bookingDeposit")
+        first_name = request.POST.get("firstName")
+        last_name = request.POST.get("lastName")
+        email = request.POST.get("email")
+        mobile_no = request.POST.get("mobileNo")
+        dob = request.POST.get("dob")
+        occupation = request.POST.get("occupation")
+        pan_card = request.POST.get("panCard")
+        relation = request.POST.get("relation")
+        minor = request.POST.get("minor")
+
+        # Print form data in console (for debugging)
+        print(f"Account Type: {account_type}")
+        print(f"Name: {name}")
+        print(f"Booking Deposit: {booking_deposit}")
+        print(f"First Name: {first_name}")
+        print(f"Last Name: {last_name}")
+        print(f"Email: {email}")
+        print(f"Mobile No: {mobile_no}")
+        print(f"Date of Birth: {dob}")
+        print(f"Occupation: {occupation}")
+        print(f"PAN Card: {pan_card}")
+        print(f"Relation: {relation}")
+        print(f"Minor: {minor}")
+
+        # Optionally, add a success message
+        messages.success(request, "Nominee details submitted successfully!")
+
+    return render(request, 'gold/user_nominee_details.html')
 
 
 ###################################### Feedback #############################################
