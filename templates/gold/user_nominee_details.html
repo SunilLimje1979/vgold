@@ -149,101 +149,7 @@
     </nav>
 
     <!-- Multiline text description box -->
-    <div class="container mt-3">
-        <h6 class="text-center">For Your Booking Specify Nominee</h6>
-        <form method="post">
-          {% csrf_token %}
-
-          <div class="mb-3">
-            <label for="accountType" class="form-label">Account Type</label>
-            <select class="form-control" id="accountType" name="accountType" required>
-              <option value="">Select Account Type</option>
-              <option value="Savings">Savings</option>
-              <option value="Current">Current</option>
-            </select>
-          </div>
-
-                    
-          <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="bookingDeposit" class="form-label">Booking Deposit</label>
-            <input type="number" class="form-control" id="bookingDeposit" name="bookingDeposit" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="firstName" class="form-label">First Name</label>
-            <input type="text" class="form-control" id="firstName" name="firstName" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
-            <input type="text" class="form-control" id="lastName" name="lastName" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="mobileNo" class="form-label">Mobile No</label>
-            <input type="tel" class="form-control" id="mobileNo" name="mobileNo" pattern="[0-9]{10}" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="dob" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" id="dob" name="dob" required>
-        </div>
-      
-          <div class="mb-3">
-            <label for="occupation" class="form-label">Occupation</label>
-            <input type="text" class="form-control" id="occupation" name="occupation" required>
-          </div>
-      
-          <div class="mb-3">
-            <label for="panCard" class="form-label">PAN Card</label>
-            <input type="text" class="form-control" id="panCard" name="panCard" required>
-          </div>
-          <div class="mb-3">
-            <label for="relation" class="form-label">Relation</label>
-            <select class="form-control" id="relation" name="relation" required>
-                <option value="">Select Relation</option>
-                <option value="Wife">Wife</option>
-                <option value="Mother">Mother</option>
-                <option value="Father">Father</option>
-                <option value="Daughter">Daughter</option>
-                <option value="Son">Son</option>
-                <option value="Brother">Brother</option>
-                <option value="Sister">Sister</option>
-                <option value="Friend">Friend</option>
-                <option value="SecondRelative">Second Relative</option>
-                <option value="Other">Other</option>
-                <option value="Husband">Husband</option>
-            </select>
-        </div>
-        
-          <div class="mb-3">
-            <label for="minor" class="form-label">Minor</label>
-            <select class="form-control" id="minor" name="minor" required>
-              <option value="">Select</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-      
-          <!-- Submit button -->
-          <div id="submitButtonContainer" class="text-center mt-3">
-            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
-          </div>
-        </form>
-      </div>
-      
-
-
+    <div class="container" style="margin-top: 40px;">
       <!-- Display submitted complaint -->
       {% if messages %}
       <div class="row justify-content-center mt-3">
@@ -255,7 +161,92 @@
           {% endfor %}
       </div>
       {% endif %}
+
+        <h6 class="text-center">For Your Booking Specify Nominee</h6>
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label for="accountType" class="form-label">Account Type</label>
+            <select class="form-control" id="accountType" name="accountType" required>
+              <option value="">Select Account Type</option>
+              <option value="1">Booking</option>
+              <option value="2">Deposite</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="firstName" name="firstName" required>
+          </div>
       
+          <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input type="text" class="form-control" id="lastName" name="lastName" required>
+          </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <small id="emailError" class="text-danger" style="display: none;">Invalid email format.</small>
+        </div>
+        
+        <div class="mb-3">
+            <label for="mobileNo" class="form-label">Mobile No</label>
+            <input type="tel" class="form-control" id="mobileNo" name="mobileNo" required>
+            <small id="mobileError" class="text-danger" style="display: none;">Mobile No should be 10 digits.</small>
+        </div>
+
+        <div class="mb-3">
+          <label for="dob" class="form-label">Date of Birth</label>
+          <input type="date" class="form-control" id="dob" name="dob" required>
+        </div>
+
+          <div class="mb-3">
+            <label for="occupation" class="form-label">Occupation</label>
+            <input type="text" class="form-control" id="occupation" name="occupation" required>
+          </div>
+      
+          <div class="mb-3">
+            <label for="panCard" class="form-label">PAN Card</label>
+            <input type="text" class="form-control" id="panCard" name="panCard" required>
+            <small id="panError" class="text-danger" style="display: none;">Format should be AAAAA1234A.</small>
+         </div>
+
+          <div class="mb-3">
+            <label for="relation" class="form-label">Relation</label>
+            <select class="form-control" id="relation" name="relation" required>
+              <option value="">Select Relation</option>
+              <option value="1">Wife</option>
+              <option value="2">Mother</option>
+              <option value="3">Father</option>
+              <option value="4">Daughter</option>
+              <option value="5">Son</option>
+              <option value="6">Brother</option>
+              <option value="7">Sister</option>
+              <option value="8">Friend</option>
+              <option value="9">Second Relative</option>
+              <option value="10">Other</option>
+              <option value="11">Husband</option>
+          </select>          
+        </div>
+        
+          <div class="mb-3">
+            <label for="minor" class="form-label">Minor</label>
+            <select class="form-control" id="minor" name="minor" required>
+              <option value="">Select</option>
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+      
+          <!-- Submit button -->
+          <div id="submitButtonContainer" class="text-center mt-3">
+            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+
     </div>
 
 
@@ -265,7 +256,6 @@
   </body>
 
   <script>
-
     function closeAlert(alert) {
         alert.classList.add("fade");
         setTimeout(function () {
@@ -288,4 +278,42 @@
         });
     });
 </script>
+<script>
+  document.getElementById("panCard").addEventListener("input", function () {
+      var panInput = this.value.toUpperCase(); // Convert input to uppercase
+      this.value = panInput; // Maintain uppercase format
+      var panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // PAN format pattern
+      var errorElement = document.getElementById("panError");
+  
+      if (!panPattern.test(panInput)) {
+          errorElement.style.display = "block"; // Show error message
+      } else {
+          errorElement.style.display = "none"; // Hide error message
+      }
+  });
+
+  document.getElementById("email").addEventListener("input", function () {
+    var emailInput = this.value;
+    var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/; // Standard email pattern
+    var emailError = document.getElementById("emailError");
+
+    if (!emailPattern.test(emailInput)) {
+        emailError.style.display = "block"; // Show error message
+    } else {
+        emailError.style.display = "none"; // Hide error message
+    }
+});
+
+document.getElementById("mobileNo").addEventListener("input", function () {
+    var mobileInput = this.value;
+    var mobilePattern = /^[0-9]{10}$/; // Only 10-digit numbers allowed
+    var mobileError = document.getElementById("mobileError");
+
+    if (!mobilePattern.test(mobileInput)) {
+        mobileError.style.display = "block"; // Show error message
+    } else {
+        mobileError.style.display = "none"; // Hide error message
+    }
+});
+  </script>
 </html>

@@ -97,6 +97,34 @@
             font-size: 11px;
             margin-bottom: 1px;
         }
+
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%; /* Ensures the wrapper is circular */
+            overflow: hidden; /* Prevents overlay from exceeding the circle */
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 50%; /* Ensures the image stays circular */
+        }
+        
+        .gold-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            {% comment %} width: 80%; /* Cover full image */ {% endcomment %}
+            height: 100%;
+            background: rgb(243, 200, 10); /* Golden color */
+            opacity: 0.9; /* Transparency */
+            mix-blend-mode: multiply; /* Blends effect with image */
+            pointer-events: none; /* Allows interaction with the image */
+            {% comment %} border-radius: 50%; /* Ensures the overlay follows circular shape */ {% endcomment %}
+        }
+        
     </style>
 </head>
 <body>
@@ -154,7 +182,16 @@
         <div class="row">
             <div class="col">
                 <a href="{% url 'transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
-                    <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" style="height: 120px; width: auto; margin-bottom: 10px" /><br>
+                    <div class="image-container">
+                        <a href="{% url 'transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                            <div class="image-wrapper">
+                                <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" />
+                                <div class="gold-overlay" style="width: {{ data.booking_percentage }}%;"></div>
+                            </div>                            
+                        </a>
+                    </div>
+                    {% comment %} <div class="gold-overlay" style="width: {{ data.booking_percentage }}%;"></div> {% endcomment %}
+
                     <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
                     <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
                     <p class="custom-p">EMI Amt: {{ data.monthly_installment }}</p>

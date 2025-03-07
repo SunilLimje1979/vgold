@@ -964,6 +964,7 @@ def Certificate(request):
 ###################################### Gold Booking History #############################################
 def Gbooking_history(request):
     # API URL for local gold booking history endpoint
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/gold_booking_history/"
     api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
     
     # Retrieve user data from session
@@ -1015,6 +1016,7 @@ def Gbooking_history(request):
         booking['booking_charge'] = booking.get('booking_charge', "0")
         booking['balance_amount'] = booking.get('down_payment', "0")
         booking['closing_date'] = booking.get('closing_date', "N/A")
+        booking['booking_percentage'] = booking.get('percentage_paid', "60")
 
     # Render the template and pass the processed bookings data
     return render(request, 'gold/gbooking_history.html', {'bookings': bookings})
@@ -2551,42 +2553,71 @@ def handle_deal_action(request):
     return JsonResponse({"success": False, "message": "Invalid request method."})
 
 ###################################### Nominee Details Form #############################################
-
+import time
+from datetime import datetime
 def user_nominee_details(request):
+    user_data = request.session.get('user_data', {})
+    NomieeForUserId = user_data.get('User_Id')
+
+    if not NomieeForUserId:
+        return redirect('login')
+
     if request.method == "POST":
         # Retrieve form data
-        account_type = request.POST.get("accountType")
-        name = request.POST.get("name")
-        booking_deposit = request.POST.get("bookingDeposit")
-        first_name = request.POST.get("firstName")
-        last_name = request.POST.get("lastName")
-        email = request.POST.get("email")
-        mobile_no = request.POST.get("mobileNo")
-        dob = request.POST.get("dob")
-        occupation = request.POST.get("occupation")
-        pan_card = request.POST.get("panCard")
-        relation = request.POST.get("relation")
-        minor = request.POST.get("minor")
+        NomieeForAccountType = request.POST.get("accountType")
+        NomineeFirstName = request.POST.get("firstName")
+        NomieeLastname = request.POST.get("lastName")
+        NomieeEmail = request.POST.get("email")
+        NomieeMobileNo = request.POST.get("mobileNo")
+        NomieeDateofBirth = request.POST.get("dob")  # Already in "YYYY-MM-DD" format
+        NomieeOccupation = request.POST.get("occupation")
+        NomieePanNo = request.POST.get("panCard")
+        NomieeRelation = request.POST.get("relation")
+        NomieeIsMinorYN = request.POST.get("minor")
 
-        # Print form data in console (for debugging)
-        print(f"Account Type: {account_type}")
-        print(f"Name: {name}")
-        print(f"Booking Deposit: {booking_deposit}")
-        print(f"First Name: {first_name}")
-        print(f"Last Name: {last_name}")
-        print(f"Email: {email}")
-        print(f"Mobile No: {mobile_no}")
-        print(f"Date of Birth: {dob}")
-        print(f"Occupation: {occupation}")
-        print(f"PAN Card: {pan_card}")
-        print(f"Relation: {relation}")
-        print(f"Minor: {minor}")
+        print(NomieeDateofBirth)  # Ensure it's correctly formatted
 
-        # Optionally, add a success message
-        messages.success(request, "Nominee details submitted successfully!")
+        # Validate date format
+        try:
+            datetime.strptime(NomieeDateofBirth, "%Y-%m-%d")
+        except ValueError:
+            messages.error(request, "Invalid date format. Please use YYYY-MM-DD.")
+            return render(request, 'gold/user_nominee_details.html')
+
+        # Prepare data for API request
+        # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/user_nominee_insert/"
+        api_url = "https://vgold.app/vgold_admin/m_api/user_nominee_insert/"
+        
+        post_data = {
+            "NomieeForUserId": NomieeForUserId,
+            "NomineeForAccountId": 10,  # Change dynamically if needed
+            "NomieeForAccountType": NomieeForAccountType,
+            "NomineeFirstName": NomineeFirstName,
+            "NomieeLastname": NomieeLastname,
+            "NomieeOccupation": NomieeOccupation,
+            "NomieeMobileNo": NomieeMobileNo,
+            "NomieePanNo": NomieePanNo,
+            "NomieeEmail": NomieeEmail,
+            "NomieeRelation": NomieeRelation,
+            "NomieeDateofBirth": NomieeDateofBirth,  # Send as "YYYY-MM-DD"
+            "NomieeIsMinorYN": NomieeIsMinorYN,
+            "NomieeStatus": 0
+        }
+
+        try:
+            response = requests.post(api_url, json=post_data)
+            response_data = response.json()
+            print(response_data)
+
+            if response_data.get("message_code") == 1000:
+                messages.success(request, "Nominee added successfully!")
+            else:
+                messages.error(request, response_data.get("message_text", "Failed to add nominee."))
+
+        except requests.exceptions.RequestException as e:
+            messages.error(request, f"Error communicating with API: {str(e)}")
 
     return render(request, 'gold/user_nominee_details.html')
-
 
 ###################################### Feedback #############################################
 def chatbot(request):
