@@ -116,13 +116,23 @@
   <div class="container mt-3">
     <div class="row">
       <div class="col">
-        <ul id="listContainer" class="list-unstyled">
+        {% comment %} <ul id="listContainer" class="list-unstyled">
           {% for item in data %}
             <li data-uname="{{ item.FullName }}" data-uid="{{ item.UserCRNno }}" data-umobile="{{ item.UserMobileNo }}" data-uemail="{{ item.UserEmail }}" data-commission="{{ item.Commission }}" data-gold="{{ item.TotalGBWeight }}">
               {{ item.FullName }} - {{ item.TotalGBWeight }} gm
             </li>
           {% endfor %}
-        </ul>
+        </ul> {% endcomment %}
+
+        <ul id="listContainer" class="list-unstyled">
+          {% for item in data %}
+            <li data-uname="{{ item.FullName }}" data-uid="{{ item.UserCRNno }}" data-umobile="{{ item.UserMobileNo }}" data-uemail="{{ item.UserEmail }}" data-commission="{{ item.Commission }}" data-gold="{{ item.TotalGBWeight }}">
+              <a href="{% url 'check_account_status' item.UserCRNno %}" class="text-dark text-decoration-none">
+                {{ item.FullName }} - {{ item.TotalGBWeight }} gm
+              </a>
+            </li>
+          {% endfor %}
+        </ul>        
       </div>
     </div>
   </div>

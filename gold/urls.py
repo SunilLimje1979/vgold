@@ -99,6 +99,8 @@ urlpatterns = [
     path('nc_vendors/', views.nc_vendors, name='nc_vendors'),
     
     path('user_nominee_details/', views.user_nominee_details, name='user_nominee_details'),
+    
+    path('check-account-status/<str:crn_no>/', views.check_account_status, name='check_account_status'),
 
     ######################ShowDeals#########################
     path('showDeals/',views.showDeals,name='showDeals'),

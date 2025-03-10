@@ -2623,3 +2623,24 @@ def user_nominee_details(request):
 def chatbot(request):
     
     return render(request, 'gold/chatbot.html')
+
+###################################################################################
+def check_account_status(request, crn_no):
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/check_account_status_mobile/"
+    api_url = "https://vgold.app/vgold_admin/m_api/check_account_status_mobile/"
+    payload = {"crn_no": crn_no}
+    
+    try:
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()
+        
+        if response_data.get("message_code") == 1000:
+            account_details = response_data.get("message_data", [])
+        else:
+            account_details = []
+
+    except requests.exceptions.RequestException as e:
+        account_details = []
+        print("Error fetching data:", e)
+
+    return render(request, 'gold/check_account_status.html', {'crn_no': crn_no, 'account_details': account_details})
