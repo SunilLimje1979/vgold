@@ -2622,7 +2622,7 @@ def user_nominee_details(request):
 ###################################### Feedback #############################################
 def chatbot(request):
     
-    return render(request, 'gold/chatbots.html')
+    return render(request, 'gold/chatbot.html')
 
 ###################################################################################
 def check_account_status(request, crn_no):
