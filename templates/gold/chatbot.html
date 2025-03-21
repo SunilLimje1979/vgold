@@ -593,9 +593,7 @@ function setLanguageselection(language)
             Script_Action_Input: lastScript_Action_Input,
             Script_Option_Value: lastScript_Option_Value
           }),
-          headers: {
-            "Content-type": "application/json; charset=UTF-8"
-          }
+        
     }).then(response => response.json())
     .then(resData => 
     {
