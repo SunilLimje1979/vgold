@@ -451,7 +451,6 @@ function botResponse() {
     
     fetch("https://vgold.app/vgold_admin/api/chataction/", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
           body: JSON.stringify({
                 App_Id: APP_ID,
                 User_Id: USER_ID,
@@ -583,7 +582,6 @@ function setLanguageselection(language)
     //https://www.gyaagl.app/apis/chatbot/chataction
     fetch("https://vgold.app/vgold_admin/api/chataction/", {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-CSRFToken": "{{ csrf_token }}" },
           mode: 'cors',
           body: JSON.stringify({
             App_Id: APP_ID,
@@ -593,7 +591,9 @@ function setLanguageselection(language)
             Script_Action_Input: lastScript_Action_Input,
             Script_Option_Value: lastScript_Option_Value
           }),
-        
+          headers: {
+            "Content-type": "application/json; charset=UTF-8"
+          }
     }).then(response => response.json())
     .then(resData => 
     {
