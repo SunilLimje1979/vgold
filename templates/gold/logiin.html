@@ -199,21 +199,21 @@
                         </p>
                     </div>                    
                 {% comment %} </form> {% endcomment %}
+                {% if source != "webview" %}
                 <div style="display: flex; justify-content: center;">
                     <button class="btn btn-success custom-btn" style="font-size: 14px; padding: 9px 18px; margin-top: 10px; background-color: rgb(41, 39, 122); text-decoration: none; color: white;" id="install" hidden>
                         <i class="fas fa-download" style="margin-right: 8px;"></i>
                         Download as Mobile App
                     </button>
                 </div>
-
-                <!-- Button to trigger iOS install modal -->
+            
                 <div style="display: flex; justify-content: center;">
-                <button id="show-ios-install-modal" class="btn btn-success" style="display: none; font-size: 14px; padding: 9px 18px; margin-top: 10px; background-color: rgb(41, 39, 122); color: white;">
-                    <i class="fas fa-download" style="margin-right: 8px;"></i>
-                    Instruction For Install in IOS
-                </button> </div>
-                
-                <!-- iOS Install Modal -->
+                    <button id="show-ios-install-modal" class="btn btn-success" style="display: none; font-size: 14px; padding: 9px 18px; margin-top: 10px; background-color: rgb(41, 39, 122); color: white;">
+                        <i class="fas fa-download" style="margin-right: 8px;"></i>
+                        Instruction For Install in IOS
+                    </button>
+                </div>
+            
                 <div id="ios-install-modal" class="modal" style="display: none;">
                     <div class="modal-content">
                         <span class="close-btn">&times;</span>
@@ -227,7 +227,8 @@
                         <p>Please contact on +91 7448200440 for more information.</p>
                     </div>
                 </div>
-                
+            {% endif %}
+            
 
             </div>
         </div>
