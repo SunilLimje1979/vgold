@@ -4,7 +4,9 @@ progressive_web_app_meta %} {% endcomment %}
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Loan</title>
     <!-- Bootstrap CSS -->

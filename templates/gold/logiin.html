@@ -7,7 +7,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <link rel="manifest" href="{% static "assets/manifest.json" %}">
+    {% if request.session.source != "webview" %}
+        <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Login Page</title>
@@ -294,6 +296,8 @@
         });
         
     </script>
+
+    {% if source != "webview" %}
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const iosModal = document.getElementById("ios-install-modal");
@@ -360,7 +364,7 @@
             }
         });
         
-        </script> 
+        </script> {% endif %}
     
     
         <script>
