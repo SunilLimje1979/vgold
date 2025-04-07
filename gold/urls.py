@@ -109,4 +109,8 @@ urlpatterns = [
     
     path('chatbot/', views.chatbot, name='chatbot'),
     
+    path('termcondition/', views.termcondition, name='termcondition'),
+    
+    path('privacypolicy/', views.privacypolicy, name='privacypolicy'),
+    
 ]

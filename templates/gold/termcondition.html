@@ -1,0 +1,118 @@
+{% load i18n %}
+{% load static %}
+{% load pwa %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <title>Terms and Conditions</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+        }
+        body {
+            padding-top: 50px; /* Adjust as needed */
+        }        
+        .navbar-toggler-icon {
+            color: white;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 20px;
+            color: white;
+        }
+        .fa-arrow-left {
+            color: white;
+        }
+        .terms-box {
+            padding: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            color: #333;
+        }        
+        h6 {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .services-text {
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+   <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <div>
+                <button class="navbar-toggler" type="button" id="menuBtn">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </a>
+                </button>
+                <a class="navbar-brand">Terms and Conditions</a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Terms and Conditions Content -->
+    <div class="container">
+        <div class="terms-box">
+            <p class="services-text"><strong>Vighnaharta Gold (“VGOLD”)</strong> is the licensed owner of the brand Vighnaharta Gold ltd. and the website VGOLD.co.in (”The Site/App”). VGOLD respects your privacy. The “Terms and Conditions” & “Privacy Policy” provides succinctly the manner your data is collected and used by VGOLD on the Site/app. As a visitor to the Site/app, you are advised to please read the “Terms and Conditions” & “Privacy Policy” carefully. By accessing the services provided by the Site/app you agree to the collection and use of your data by VGOLD in the manner provided in the “Privacy Policy” and you agree upon the “Terms and Conditions”.</p>
+    
+            <h6>Services Overview</h6>
+            <p class="services-text">As part of the registration process in the app, VGOLD may collect the following personally identifiable information about you: Name including first and last name, alternate email address, mobile phone number and contact details, Postal code, Demographic profile (like your age, gender, occupation, education, address etc.) and information about the pages on the site/app you visit/access, the links you click on the site/app, the number of times you access the page and any such browsing information.</p>
+    
+            <h6>Eligibility</h6>
+            <p class="services-text">Services of the Site/app would be available to only select geographic in India. Persons who are “incompetent to contract” within the meaning of the Indian Contract Act, 1872 including un-discharged insolvents etc. are not eligible to use the app/site. If you are a minor i.e. under the age of 18 years but at least 13 years of age you may use the Site/app only under the supervision of a parent or legal guardian who agrees to be bound by these Terms of Use. If your age is below 18 years your parents or legal guardians can transact on behalf of you if they are registered users.</p>
+    
+            <h6>License & Site Access</h6>
+            <p class="services-text">VGOLD grants you a limited sub-license to access and make personal use of this site/app and not to download (other than page caching) or modify it, or any portion of it, except with express written consent of VGOLD. This license does not include any resale or commercial use of this site/app or its contents; any collection and use of any listings, descriptions or videos; any derivative use of this site/app or its contents; any downloading or copying of account information for the benefit of another merchant; or any use of data mining, robots, or similar data gathering and extraction tools. This site/app or any portion of this site/app may not be reproduced, duplicated, copied, sold, resold, visited, or otherwise exploited for any commercial purpose without express written consent of VGOLD. You may not frame or utilize framing techniques to enclose any trademark, logo, or other proprietary information (including images, text, page layout, or form) of the Site/app or of VGOLD and its affiliates without express written consent. You may not use any meta tags or any other “hidden text” utilizing the Site’s or VGOLD’s name or trademarks without the express written consent of Site/app. Any unauthorized use terminates the permission or license granted by PE.</p>
+    
+            <h6>Modification of Terms & Conditions of Service</h6>
+            <p class="services-text">VGOLD may at any time modify the Terms & Conditions of Use of the Website without any prior notification to you. You can access the latest version of these Terms & Conditions at any given time on the Site. You should regularly review the Terms & Conditions on the Site. In the event the modified Terms & Conditions is not acceptable to you, you should discontinue using the Service. However, if you continue to use the Service you shall be deemed to have agreed to accept and abide by the modified Terms & Conditions of Use of this Site.</p>
+    
+            <h6>Governing Law and Jurisdiction</h6>
+            <p class="services-text">This User Agreement/Terms and Conditions shall be construed in accordance with the applicable laws of India. The Courts at Pune shall have exclusive jurisdiction in any proceedings arising out of this agreement. Any dispute or difference either in interpretation or otherwise, of any terms of this User Agreement between the parties hereto, the same shall be referred to an independent arbitrator who will be appointed by FlipIt and his decision shall be final and binding on the parties hereto. The above arbitration shall be in accordance with the Arbitration and Conciliation Act, 1996 as amended from time to time. The arbitration shall be held in Pune. The High Court of Judicature at Pune alone shall have the jurisdiction and the Laws of India shall apply.</p>
+    
+            <h6>Reviews, Feedback, Submissions</h6>
+           <p class="services-text">All reviews, comments, feedback, postcards, suggestions, ideas, and other submissions disclosed, submitted or offered to the Site/App on or by this Site/App or otherwise disclosed, submitted or offered in connection with your use of this Site/App (collectively, the “Comments”) shall be and remain the property of VGOLD. Such disclosure, submission or offer of any Comments shall constitute an assignment to VGOLD of all worldwide rights, titles, and interests in all copyrights and other intellectual properties in the Comments. Thus, VGOLD owns exclusively all such rights, titles, and interests and shall not be limited in any way in its use, commercial or otherwise, of any Comments. VGOLD will be entitled to use, reproduce, disclose, modify, adapt, create derivative works from, publish, display and distribute any Comments you submit for any purpose whatsoever, without restriction and without compensating you in any way. VGOLD is and shall be under no obligation (1) to maintain any Comments in confidence; (2) to pay you any compensation for any Comments; or (3) to respond to any Comments. You agree that any Comments submitted by you to the Site/App will not violate this policy or any right of any third party, including copyright, trademark, privacy or other personal or proprietary right(s), and will not cause injury to any person or entity. You further agree that no Comments submitted by you to the Website will be or contain libelous or otherwise unlawful, threatening, abusive or obscene material, or contain software viruses, political campaigning, commercial solicitation, chain letters, mass mailings or any form of “spam”. VGOLD does not regularly review posted Comments but does reserve the right (but not the obligation) to monitor and edit or remove any Comments submitted to the Site/App. You grant VGOLD the right to use the name that you submit in connection with any Comments. You agree not to use a false email address, impersonate any person or entity, or otherwise mislead as to the origin of any Comments you submit. You are and shall remain solely responsible for the content of any Comments you make and you agree to indemnify VGOLD and its affiliates for all claims resulting from any Comments you submit. VGOLD and its affiliates take no responsibility and assume no liability for any Comments submitted by you or any third party.</p>
+    
+            <h6>Copyright & Trademark</h6>
+           <p class="services-text">VGOLD’s suppliers and licensors expressly reserve all intellectual property rights in all text, programs, products, processes, technology, content and other materials, which appear on this Site/App. Access to this Website does not confer and shall not be considered as conferring upon anyone any license under any of VGOLD or any third party’s intellectual property rights. All rights, including copyright, in this website, are owned by or licensed to VGOLD. Any use of this website or its contents, including copying or storing it or them in whole or part, other than for your own personal, non-commercial use is prohibited without the permission of VGOLD. You may not modify, distribute or re-post anything on this website for any purpose. The names and logos and all related product and service names, design marks and slogans are the trademarks or service marks of VGOLD, its affiliates, its partners or its suppliers. All other marks are the property of their respective companies. No trademark or service mark license is granted in connection with the materials contained on this Site/App. Access to this Site/App does not authorize anyone to use any name, logo or mark in any manner. References on this Site/App to any names, marks, products or services of third parties or hypertext links to third party sites or information are provided solely as a convenience to you and do not in any way constitute or imply VGOLD endorsement, sponsorship or recommendation of the third party, information, product or service. VGOLD is not responsible for the content of any third party sites and does not make any representations regarding the content or accuracy of material on such sites. If you decide to link to any such third party websites, you do so entirely at your own risk. All materials, including images, text, illustrations, designs, icons, photographs, programs, music clips or downloads, video clips and written and other materials that are part of this Website (collectively, the “Contents”) are intended solely for personal, non-commercial use. You may download or copy the Contents and other downloadable materials displayed on the Website for your personal use only. No right, title or interest in any downloaded materials or software is transferred to you as a result of any such downloading or copying. You may not reproduce (except as noted above), publish, transmit, distribute, display, modify, create derivative works from, sell or participate in any sale of or exploit in any way, in whole or in part, any of the Contents, the Website or any related software. All software used on this Website is the property of PE or its licensees and suppliers and protected by Indian and international copyright laws. Unless otherwise noted, all Contents are copyrights, trademarks, trade dress and/or other intellectual property owned, controlled or licensed by VGOLD, one of its affiliates or by third parties who have licensed their materials to VGOLD and are protected by Indian and international copyright laws. The compilation (meaning the collection, arrangement, and assembly) of all Contents on this Website is the exclusive property of VGOLD and is also protected by Indian and international copyright laws.</p>
+    
+            <h6>Objectionable Material</h6>
+            <p class="services-text">You understand that by using this Site/App or any services provided on the Site/App, you may encounter Content that may be deemed by some to be offensive, indecent, or objectionable, which Content may or may not be identified as such. You agree to use the Site and any service at your sole risk and that to the fullest extent permitted under applicable law, VGOLD and its affiliates shall have no liability to you for Content that may be deemed offensive, indecent, or objectionable to you.</p>
+    
+            <h6>Indemnity</h6>
+            <p class="services-text">You agree to defend, indemnify and hold harmless VGOLD and its employees, directors, officers, agents and their successors and assigns from and against any and all claims, liabilities, damages, losses, costs and expenses, including attorney’s fees, caused by or arising out of claims based upon your actions or inactions, which may result in any loss or liability to VGOLD or any third party including but not limited to breach of any warranties, representations or undertakings or in relation to the non-fulfilment of any of your obligations under this User Agreement or arising out of the your violation of any applicable laws, regulations including but not limited to Intellectual Property Rights, payment of statutory dues and taxes, claim of libel, defamation, violation of rights of privacy or publicity, loss of service by other subscribers and infringement of intellectual property or other rights. This clause shall survive the expiry or termination of this User Agreement.</p>
+    
+            <h6>Termination</h6>
+            <p class="services-text">This User Agreement is effective unless and until terminated by either you or VGOLD. You may terminate this User Agreement at any time, provided that you discontinue any further use of this Site/App. VGOLD may terminate this User Agreement at any time and may do so immediately without notice, and accordingly deny you access to the Site/App, Such termination will be without any liability to VGOLD. Upon any termination of the User Agreement by either you or VGOLD, you must promptly destroy all materials downloaded or otherwise obtained from this Site/App, as well as all copies of such materials, whether made under the User Agreement or otherwise. VGOLD’s right to any Comments shall survive any termination of this User Agreement. Any such termination of the User Agreement shall not cancel your obligation to pay for the product already ordered from the Website or App affect any liability that may have arisen under the User Agreement.</p>
+        </div>
+    </div>
+    
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

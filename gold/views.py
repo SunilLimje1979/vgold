@@ -2742,3 +2742,13 @@ def check_account_status(request, crn_no):
         print("Error fetching data:", e)
 
     return render(request, 'gold/check_account_status.html', {'crn_no': crn_no, 'account_details': account_details})
+
+###################################### Feedback #############################################
+def termcondition(request):
+    
+    return render(request, 'gold/termcondition.html')
+
+###################################### privacypolicy #############################################
+def privacypolicy(request):
+    
+    return render(request, 'gold/privacypolicy.html')
