@@ -197,7 +197,7 @@ def Login(request):
         if step == 'send_otp':
             mobile_number = request.POST.get('mobileNumber')
             
-            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949']:
+            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949','9850180648','8600672101']:
                 request.session['otp_data'] = {'otp': 9999, 'mobile_no': mobile_number}
                 return render(request, 'gold/logiin.html', {
                     'show_otp_form': True,'mobile_number': mobile_number,'step': 'verify_otp','serverappversion': serverappversion,'source': source
