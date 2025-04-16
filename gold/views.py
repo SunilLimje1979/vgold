@@ -2752,3 +2752,76 @@ def termcondition(request):
 def privacypolicy(request):
     
     return render(request, 'gold/privacypolicy.html')
+
+
+import hashlib
+from cryptography.fernet import Fernet
+import base64
+from django.shortcuts import render, redirect
+
+# Convert the given key to a valid Fernet key
+key_val = "k2hLr4X0ozNyZByj5DT66edtCEee1x+6"
+key_bytes = base64.urlsafe_b64encode(key_val.encode()[:32])
+cipher = Fernet(key_bytes)
+
+# Function to encrypt data
+def encrypt_data(data):
+    return cipher.encrypt(data.encode()).decode()
+
+# Function to decrypt data
+def decrypt_data(encrypted_data):
+    return cipher.decrypt(encrypted_data.encode()).decode()
+
+# Function to generate SHA256 CheckSumVal
+def generate_checksum(data_list):
+    combined_data = ''.join(data_list)
+    checksum = hashlib.sha256(combined_data.encode()).hexdigest()
+    return checksum
+
+def nominee_mandiates(request):
+    user_data = request.session.get('user_data', {})
+    # NomieeForUserId = user_data.get('User_Id')
+
+    # if not NomieeForUserId:
+    #     return redirect('login')
+    
+    if request.method == "POST":
+        fields_to_encrypt = [
+            "UtilCode", "Short_Code", "Customer_Name", "Customer_TelphoneNo", 
+            "Customer_EmailId", "Customer_Mobile", "Customer_AccountNo", 
+            "Customer_Reference1", "Customer_Reference2"
+        ]
+
+        # Fields to include in CheckSumVal (only subset of encrypted fields)
+        checksum_fields = [
+            "UtilCode", "Short_Code", "Customer_Name", 
+            "Customer_TelphoneNo", "Customer_EmailId"
+        ]
+
+        form_data = request.POST.dict()
+
+        # Encrypt data
+        encrypted_data = {
+            key: encrypt_data(value) if key in fields_to_encrypt else value
+            for key, value in form_data.items()
+        }
+
+        # Generate CheckSumVal
+        checksum_values = [encrypted_data[key] for key in checksum_fields if key in encrypted_data]
+        encrypted_data["CheckSumVal"] = generate_checksum(checksum_values)
+
+        # Optional: Decrypt to verify
+        decrypted_data = {
+            key: decrypt_data(value) if key in fields_to_encrypt else value
+            for key, value in encrypted_data.items()
+            if key != "CheckSumVal"  # Skip CheckSumVal for decryption
+        }
+
+        # Debug prints
+        print("Encrypted Data:", encrypted_data)
+        print("Decrypted Data:", decrypted_data)
+        print("CheckSumVal:", encrypted_data["CheckSumVal"])
+
+        return redirect("nominee_mandiates")
+
+    return render(request, 'gold/nominee_mandiates.html')

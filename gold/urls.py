@@ -113,4 +113,6 @@ urlpatterns = [
     
     path('privacypolicy/', views.privacypolicy, name='privacypolicy'),
     
+    path('nominee_mandiates/', views.nominee_mandiates, name='nominee_mandiates'),
+    
 ]
