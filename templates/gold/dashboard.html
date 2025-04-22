@@ -390,7 +390,7 @@
               </div>
           </a> {% endcomment %}
 
-          <a href=" " style="color: black; text-decoration: none;">
+          <a href="{% url 'gold_wallet' %}" style="color: black; text-decoration: none;">
             <div>
               <img src="{% static 'assets/img/goldwallet.png' %}" alt="Sell" style="width: 34px; height: 34px;margin-bottom: 6px; margin-right: 8px;">
               <p>eGold Wallet</p>
@@ -402,7 +402,7 @@
                 <p>Add Gold</p>
             </div>
         </a>
-        <a href=" " style="color: black; text-decoration: none;">
+        <a href="{% url 'sell_gold' %}" style="color: black; text-decoration: none;">
           <div >
               <img src="{% static 'assets/img/goldsell.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
               <p>Sell</p>
@@ -434,7 +434,7 @@
         </a> {% endcomment %}
 
         <div class="logo-container">
-          <a href=" " style="color: black; text-decoration: none;">
+          <a href="{% url 'money_wallet' %}" style="color: black; text-decoration: none;">
             <div>
               <img src="{% static 'assets/img/moneywallet.png' %}" alt="Sell" style="width: 34px; height: 34px; margin-bottom: 6px; margin-right: 8px;">
               <p>Money Wallet</p>

@@ -247,6 +247,19 @@ def Login(request):
                         request.session['user_data'] = user_data
                         request.session['user_mobile'] = user_data.get('UserMobileNo')
                         request.session['flag'] = True
+
+                        # 🔻 Fetch gold rate and store in session
+                        try:
+                            gold_rate_response = requests.post("https://vgold.app/vgold_admin/m_api/get_gold_rate/")
+                            gold_rate_response.raise_for_status()
+                            gold_rate_data = gold_rate_response.json()
+
+                            if gold_rate_data.get('message_code') == 1000:
+                                request.session['gold_rate_data'] = gold_rate_data.get('message_data', {})
+                        except requests.exceptions.RequestException as e:
+                            messages.warning(request, f"Gold rate fetch failed: {str(e)}")
+                            request.session['gold_rate_data'] = {}
+
                         return redirect('dashboard')
                     else:
                         messages.error(request, "Incorrect OTP. Please try again.")
@@ -257,6 +270,7 @@ def Login(request):
             else:
                 messages.error(request, "Invalid OTP. Please try again.")
                 return redirect('login')
+
     
     return render(request, 'gold/logiin.html', {'serverappversion': serverappversion,'source': source})
 
@@ -594,33 +608,34 @@ def Withdraw(request):
     if request.method == 'GET':
         # Retrieve user data from session
         user_data = request.session.get('user_data', {})
-        # user_id = user_data.get('data', [{}])[0].get('User_ID')
-        user_id = user_data.get('User_Id')  
+        user_id = user_data.get('User_Id')
 
         if not user_id:
             return redirect('login') 
 
-        # API URL and data
-        api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
-        post_data = {'user_id': user_id}
-        
-        # Headers for the request
+        # API URL and data for wallet balance
+        # wallet_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_wallet_balances/"
+        wallet_api_url = "https://vgold.app/vgold_admin/m_api/get_wallet_balances/"
         headers = {
+            'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
+        wallet_payload = {
+            "user_id": user_id
+        }
 
-        # Make a POST request to the API
-        response = requests.post(api_url, data=post_data, headers=headers)
+        try:
+            # Make a POST request to get wallet balance
+            wallet_response = requests.post(wallet_api_url, json=wallet_payload, headers=headers)
+            wallet_response_data = wallet_response.json()
 
-        if response.status_code == 200:
-            api_response = response.json()
-            if api_response.get("status") == "200":
-                wallet_balance = api_response.get("Wallet_Balance")
+            if wallet_response_data['message_code'] == 1000:
+                wallet_balance = wallet_response_data['message_data'].get('GoldWalletBalance', 0.0)
                 return render(request, 'gold/withdraw.html', {'wallet_balance': wallet_balance})
             else:
-                return HttpResponse("API Error: " + api_response.get("Message", "Unknown error"))
-        else:
-            return HttpResponse("Failed to connect to the API")
+                return HttpResponse(f"API Error: {wallet_response_data.get('message_text', 'Unknown error')}")
+        except requests.exceptions.RequestException as e:
+            return HttpResponse(f"Failed to connect to the API: {e}")
     
     elif request.method == 'POST':
         # Retrieve user data from session
@@ -681,36 +696,31 @@ def Sell_gold(request):
         if not user_id:
             return redirect('login') 
 
-        # First API endpoint and headers for gold wallet transactions
-        wallet_url = 'https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php'
+        # First API endpoint and headers for getting gold wallet balance
+        # wallet_url = 'http://127.0.0.1:8000/vgold_admin/m_api/get_wallet_balances/'
+        wallet_url = 'https://vgold.app/vgold_admin/m_api/get_wallet_balances/'
         headers = {
+            'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
-        wallet_data = {'user_id': user_id}
+        wallet_data = {'user_id':994 }
 
-        # Second API endpoint and headers for getting gold sale rate
-        rate_url = 'https://www.vgold.co.in/dashboard/webservices/get_sale_rate.php'
-        rate_data = {'user_id': user_id}
+        # Fetch gold sale rate from session
+        gold_rate_data = request.session.get('gold_rate_data', {})
+        gold_sale_rate = gold_rate_data.get('Gold_sale_rate', 'N/A')
 
         try:
-            # Fetch gold wallet transactions data
-            response_wallet = requests.post(wallet_url, data=wallet_data, headers=headers)
-            wallet_data = response_wallet.json()
+            # Fetch gold wallet balance data
+            response_wallet = requests.post(wallet_url, json=wallet_data, headers=headers)
+            wallet_response_data = response_wallet.json()
 
-            # Fetch gold sale rate data
-            response_rate = requests.post(rate_url, data=rate_data, headers=headers)
-            rate_data = response_rate.json()
-
-            # Check if both API requests were successful
-            if wallet_data.get('status') == '200' and rate_data.get('status') == '200':
-                gold_balance = wallet_data.get('gold_Balance', 'N/A')
-                gold_sale_rate = rate_data.get('Gold_sale_rate', 'N/A')
-                # print(f"Gold Balance: {gold_balance}")
-                # print(f"Gold Sale Rate: {gold_sale_rate}")
+            # Check if API request was successful
+            if wallet_response_data.get('message_code') == 1000:
+                gold_balance = wallet_response_data['message_data'].get('GoldWalletBalance', 'N/A')
                 # Render your template with the retrieved data
                 return render(request, 'gold/sell_gold.html', {'gold_balance': gold_balance, 'gold_sale_rate': gold_sale_rate})
             else:
-                return HttpResponse("Failed to fetch data from API.")
+                return HttpResponse(f"Failed to fetch data: {wallet_response_data.get('message_text', 'Unknown error')}")
 
         except requests.exceptions.RequestException as e:
             return HttpResponse(f"Error: {str(e)}")
@@ -884,37 +894,61 @@ def Imagespecific(request):
 ###################################### Gold Wallet #############################################
 
 def Gold_wallet(request):
-    # Retrieve purchase rate data from session
-    purchase_rate_data = request.session.get('purchase_rate_data', {})
-    gold_purchase_rate = purchase_rate_data.get('Gold_purchase_rate', 'N/A')
-    # gold_purchase_rate = purchase_rate_data.get('Gold_sale_rate', 'N/A')
+    # Retrieve gold rate data from session
+    gold_rate_data = request.session.get('gold_rate_data', {})
+    gold_purchase_rate = gold_rate_data.get('Gold_purchase_rate', 'N/A')
+    
+    print(gold_purchase_rate)
 
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
-    # user_id = user_data.get('data', [{}])[0].get('User_ID')
-    user_id = user_data.get('User_Id') 
+    user_id = user_data.get('User_Id')
 
     if not user_id:
-            return redirect('login') 
+        return redirect('login')
 
-    # API endpoint and headers
-    api_url = "https://www.vgold.co.in/dashboard/webservices/gold_wallet_transactions.php"
+    # API endpoint for wallet balance
+    # wallet_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_wallet_balances/"
+    wallet_api_url = "https://vgold.app/vgold_admin/m_api/get_wallet_balances/"
     headers = {
+        'Content-Type': 'application/json',
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
-    payload = {'user_id': user_id}
+    wallet_payload = {
+        "user_id": user_id
+    }
 
     try:
-        response = requests.post(api_url, headers=headers, data=payload)
-        response_data = response.json()
-        # print(response_data)
+        # API request to get wallet balance
+        wallet_response = requests.post(wallet_api_url, json=wallet_payload, headers=headers)
+        wallet_response_data = wallet_response.json()
 
-        if response_data['status'] == "200":
-            gold_balance = response_data.get('gold_Balance')
-            transactions = response_data.get('Data', [])
+        if wallet_response_data['message_code'] == 1000:
+            gold_balance = wallet_response_data['message_data'].get('GoldWalletBalance', 0.0)
         else:
-            return HttpResponse(f"Error: {response_data.get('Message', 'Unknown error')}")
+            return HttpResponse(f"Error: {wallet_response_data.get('message_text', 'Unknown error')}")
+    except requests.exceptions.RequestException as e:
+        return HttpResponse(f"API request failed: {e}")
 
+    # API endpoint for transactions
+    transactions_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_gw_transection/"
+    transactions_payload = {
+        "user_id": user_id
+    }
+    # transactions_payload = {
+    #     "user_id": 491
+    # }
+
+
+    try:
+        # API request to get transaction data
+        transactions_response = requests.post(transactions_api_url, json=transactions_payload, headers=headers)
+        transactions_response_data = transactions_response.json()
+
+        if transactions_response_data['message_code'] == 1000:
+            transactions = transactions_response_data['message_data']
+        else:
+            return HttpResponse(f"Error: {transactions_response_data.get('message_text', 'Unknown error')}")
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"API request failed: {e}")
 
@@ -925,7 +959,6 @@ def Gold_wallet(request):
     }
 
     return render(request, 'gold/gold_wallet.html', context)
-
 ###################################### Profile #############################################
 
 def Profile(request):
@@ -1826,32 +1859,84 @@ def cgold_mature_weight(request):
 def Membership(request):
     return render(request, 'gold/membership.html')
 ###################################### Money Wallet #############################################
+# def Money_wallet(request):
+#     # Retrieve user data from session
+#     user_data = request.session.get('user_data', {})
+#     # user_id = user_data.get('data', [{}])[0].get('User_ID')
+#     user_id = user_data.get('User_Id') 
+
+#     if not user_id:
+#         return redirect('login') 
+
+#     # API endpoint and headers
+#     api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
+#     headers = {
+#         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+#     }
+#     payload = {'user_id': user_id}
+
+#     try:
+#         response = requests.post(api_url, headers=headers, data=payload)
+#         response_data = response.json()
+#         # print(response_data)
+
+#         if response_data['status'] == "200":
+#             Wallet_Balance = response_data.get('Wallet_Balance')
+#             transactions = response_data.get('Data', [])
+#         else:
+#             return HttpResponse(f"Error: {response_data.get('Message', 'Unknown error')}")
+
+#     except requests.exceptions.RequestException as e:
+#         return HttpResponse(f"API request failed: {e}")
+
+#     context = {
+#         'Wallet_Balance': Wallet_Balance,
+#         'transactions': transactions,
+#     }
+#     print(context)
+#     return render(request, 'gold/money_wallet.html' , context)
 def Money_wallet(request):
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
-    # user_id = user_data.get('data', [{}])[0].get('User_ID')
     user_id = user_data.get('User_Id') 
+    print(user_id)
 
     if not user_id:
         return redirect('login') 
 
-    # API endpoint and headers
-    api_url = "https://www.vgold.co.in/dashboard/webservices/money_wallet_transactions.php"
+    # API endpoints
+    # balance_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_wallet_balances/"
+    # transactions_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_mw_transection/"
+    
+    balance_api_url = "https://vgold.app/vgold_admin/m_api/get_wallet_balances/"
+    transactions_api_url = "https://vgold.app/vgold_admin/m_api/get_mw_transection/"
+
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0',
+        'Content-Type': 'application/json'
     }
+
     payload = {'user_id': user_id}
+    # payload = {'user_id': 491}
 
     try:
-        response = requests.post(api_url, headers=headers, data=payload)
-        response_data = response.json()
-        # print(response_data)
+        # Wallet balance request
+        balance_response = requests.post(balance_api_url, headers=headers, json=payload)
+        balance_data = balance_response.json()
 
-        if response_data['status'] == "200":
-            Wallet_Balance = response_data.get('Wallet_Balance')
-            transactions = response_data.get('Data', [])
+        if balance_data['message_code'] != 1000:
+            return HttpResponse(f"Balance API Error: {balance_data.get('message_text', 'Unknown error')}")
+
+        Wallet_Balance = balance_data['message_data'].get('MoneyWalletBalance', 0)
+
+        # Transactions request
+        transaction_response = requests.post(transactions_api_url, headers=headers, json=payload)
+        transaction_data = transaction_response.json()
+
+        if transaction_data['message_code'] == 1000:
+            transactions = transaction_data.get('message_data', [])
         else:
-            return HttpResponse(f"Error: {response_data.get('Message', 'Unknown error')}")
+            transactions = []  # fallback to empty list if error in transactions API
 
     except requests.exceptions.RequestException as e:
         return HttpResponse(f"API request failed: {e}")
@@ -1861,7 +1946,7 @@ def Money_wallet(request):
         'transactions': transactions,
     }
     print(context)
-    return render(request, 'gold/money_wallet.html' , context)
+    return render(request, 'gold/money_wallet.html', context)
 
 ###################################### Pay Installment #############################################
 from django.http import JsonResponse, HttpResponse

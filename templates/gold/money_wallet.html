@@ -117,13 +117,15 @@
                         <div style="display:flex; justify-content: space-between;">
                            
                                <div class="small-text">
-                                <strong>Transaction ID:</strong> <br>{{ transaction.transaction_id }}<br>
-                                <strong>Date:</strong> {{ transaction.transaction_date }}<br>
-                                 {{ transaction.received_from }}<br>
+                                <strong>Discription:</strong> <br>{{ transaction.GWTDescription }}<br>
+
+                                {% comment %} <strong>Transaction ID:</strong> <br>{{ transaction.GWTDescription }}<br> {% endcomment %}
+                                <strong>Date:</strong> {{ transaction.Date }}<br>
+                                 {% comment %} {{ transaction.received_from }}<br> {% endcomment %}
                             </div>
                             <div class="small-text">
-                                <strong></strong> ₹. {{ transaction.amount }}<br><br>
-                                <strong></strong> {{ transaction.status|capfirst }}
+                                <strong></strong> ₹. {{ transaction.GWTAmount }}<br><br>
+                                <strong></strong> {{ transaction.GWTType|capfirst }}
                             </div>
                         </div>
                     </li>
