@@ -3,6 +3,7 @@ import requests
 from django.shortcuts import render,redirect
 from django.http import JsonResponse
 from django.contrib import messages
+from rest_framework.decorators import api_view
 
 ###################################### Log in #############################################
 # def Login(request):
@@ -1895,6 +1896,7 @@ def Membership(request):
 #     }
 #     print(context)
 #     return render(request, 'gold/money_wallet.html' , context)
+
 def Money_wallet(request):
     # Retrieve user data from session
     user_data = request.session.get('user_data', {})
@@ -2042,36 +2044,32 @@ def Pay_installment(request):
     purchase_rate_data = request.session.get('purchase_rate_data', {})
     gold_purchase_rate = purchase_rate_data.get('Gold_purchase_rate', 'N/A')
     
+    # Fetch user data from session
     user_data = request.session.get('user_data', {})
-    # user_id = user_data.get('data', [{}])[0].get('User_ID')
-    user_id = user_data.get('User_Id') 
-
-    # Check if user ID is available
+    user_id = user_data.get('User_Id')
+    
     if not user_id:
-        return HttpResponse("User ID not found in session data.")
+        return redirect('login')
+
+    # New API endpoint
+    api_url = "http://127.0.0.1:8000/vgold_admin/m_api/installment_booking_id/"
     
-    # API endpoint and headers
-    api_url = "https://www.vgold.co.in/dashboard/webservices/installment_booking_id.php"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    }
-    
-    # Prepare data for the POST request to get installment booking ID
+    # JSON payload for the API
     post_data = {'user_id': user_id}
     
     try:
-        # Make the POST request to the API
-        response = requests.post(api_url, data=post_data, headers=headers)
-        response.raise_for_status()  # Raise HTTPError for bad responses
+        # Make the POST request to the local API
+        response = requests.post(api_url, json=post_data)
+        response.raise_for_status()
         response_data = response.json()
     except requests.exceptions.RequestException as e:
-        return HttpResponse(f"An error occurred: {e}")
+        return HttpResponse(f"An error occurred while calling the API: {e}")
 
-    # Verify the API response status and message
-    if response_data.get('status') == '200' and response_data.get('Message') == 'success':
-        installment_data = response_data.get('Data', [])
+    # Check the response code and message
+    if response_data.get('message_code') == 1000 and response_data.get('message_text') == 'success':
+        installment_data = response_data.get('message_data', [])
     else:
-        return HttpResponse("Failed to retrieve installment data.")
+        return HttpResponse("Failed to retrieve installment data from the new API.")
     
     # Handle form submission
     if request.method == 'POST':
@@ -2143,6 +2141,7 @@ def Pay_installment(request):
         return redirect(Pay_installment)  # Redirect back to Pay_installment view after form submission
     
     # Render the template with installment data in context
+    # context = {'gold_purchase_rate': gold_purchase_rate}
     context = {'installment_data': installment_data, 'gold_purchase_rate': gold_purchase_rate}
     return render(request, 'gold/pay_installment.html', context)
 
@@ -2910,3 +2909,43 @@ def nominee_mandiates(request):
         return redirect("nominee_mandiates")
 
     return render(request, 'gold/nominee_mandiates.html')
+
+
+###################################### Feedback #############################################
+def deactivate(request):
+    user_data = request.session.get('user_data', {})
+    User_Id = user_data.get('User_Id')
+
+    if not User_Id:
+        return redirect('login')
+
+    try:
+        response = requests.post(
+            # 'http://127.0.0.1:8000/vgold_admin/m_api/deactivate_account/',
+            'https://vgold.app/vgold_admin/m_api/deactivate_account/',
+            json={"user_id": User_Id}
+        )
+        data = response.json()
+        if data.get("message_code") == 1000:
+            request.session.clear()
+            return redirect('login')
+        else:
+            return redirect('dashboard')
+    except Exception as e:
+        print("Error calling deactivate API:", e)
+        return redirect('dashboard')
+    
+    
+
+# @api_view(["POST"])
+@csrf_exempt
+def nach_response(request):
+    if request.method=="POST":
+        # print(request.data)
+        print(request.POST)
+        post_data = request.POST
+        
+        
+        # return redirect('dashboard')
+        return render(request, 'gold/nach_response.html', {'post_data': post_data})
+        

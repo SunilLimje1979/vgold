@@ -312,8 +312,8 @@
         </li> {% endcomment %}
         <li>
           <a href="javascript:void(0);" onclick="shareFunction()"><i class="bi bi-share"></i> Share V-Gold App</a>
-      </li>
-      
+       </li>
+
         <li>
           <a href="{% url 'refer' %}"><i class="bi bi-share"></i> Refer</a>
         </li>
@@ -322,10 +322,15 @@
         </li>
         <li>
           <a href="{% url 'termcondition' %}"><i class="bi bi-file-earmark-text"></i> Term & Condition</a>
+        </li>  
+        
+        <li>
+          <a href="{% url 'deactivate' %}"><i class="bi bi-person-dash" ></i>Deactivate Account</a>
         </li>        
+
         <li>
           <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
-      </li>
+        </li>
 
       </ul>
     </div>
@@ -494,7 +499,7 @@
             <p>My Booking</p></a>
           </div>
 
-          <div><a href=" " style="color: black; text-decoration: none;">
+          <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
             <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p >Pay Installment</p></a>
           </div>
