@@ -94,13 +94,15 @@
       {% comment %} <p id="vgoldID">Registration Form </p> {% endcomment %}
 
       {% if messages %}
-      <div class="row justify-content-center mt-3">
-          {% for message in messages %}
-          <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button type="button" class="btn-close" aria-label="Close"></button>
-          </div>
-          {% endfor %}
+      <div id="messages-container" class="messages">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% endif %} alert-dismissible fade show" role="alert" style="margin-left: 4px; margin-right: 4px;">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
       </div>
       {% endif %}
 
@@ -117,7 +119,7 @@
 
       <div class="relative h-11 w-full min-w-[200px] mb-3">
         <i class="fas fa-user absolute left-0 top-4 text-black"></i>
-        <input name="middle_name" placeholder=""
+        <input name="middle_name" placeholder="" required
           class="peer pl-8 h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-gray-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50 placeholder:opacity-0 focus:placeholder:opacity-100" />
         <label
           class="after:content[''] pointer-events-none absolute left-8 -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[14px] font-normal leading-tight text-black transition-all label-clickable after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-gray-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:after:scale-x-100 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
@@ -125,7 +127,6 @@
         </label>
       </div>
       
-
       <div class="relative h-11 w-full min-w-[200px] mb-3">
         <i class="fas fa-user absolute left-0 top-4 text-black"></i>
         <input name="last_name" placeholder=""
@@ -161,15 +162,19 @@
    
       <div class="relative h-11 w-full min-w-[200px] mb-3">
         <i class="fas fa-envelope absolute left-0 top-4 text-black"></i>
-        <input name="email" placeholder=""
-          class="peer pl-8 h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-gray-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50 placeholder:opacity-0 focus:placeholder:opacity-100" />
+        <input 
+          name="email" 
+          placeholder="" 
+          required 
+          class="peer pl-8 h-full w-full border-b border-blue-gray-200 bg-transparent pt-4 pb-1.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border-blue-gray-200 focus:border-gray-500 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50 placeholder:opacity-0 focus:placeholder:opacity-100" 
+        />
         <label
           class="after:content[''] pointer-events-none absolute left-8  -top-1.5 flex h-full w-full select-none !overflow-visible truncate text-[11px] font-normal leading-tight text-black transition-all after:absolute after:-bottom-1.5 after:block after:w-full after:scale-x-0 after:border-b-2 after:border-gray-500 after:transition-transform after:duration-300 peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[4.25] peer-placeholder-shown:text-blue-gray-500 peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:after:scale-x-100 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">
           Email
         </label>
       </div>
       
-
+      
       <!-- Mobile number input box -->
       <div class="relative h-11 w-full min-w-[200px] mb-3">
         <i class="fas fa-phone-alt absolute left-0 top-4 text-black"></i>

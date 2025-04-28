@@ -205,6 +205,8 @@ def Login(request):
                 })
             else:
                 api_url = "https://vgold.app/vgold_admin/m_api/login_verify/"
+                # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/login_verify/"
+                
                 payload = {"mobileno": mobile_number}
                 
                 try:
@@ -347,46 +349,43 @@ def Registration(request):
         refer_code = request.POST.get('refer_code')
         dob = request.POST.get('dob')
         
-        payload={
-            "first":first_name,
-            "middle":middle_name,
-            "last": last_name,
-            "email": email,
-            "no": mobile_no,
-            "pancard": pancard_number,
-            "aadhar_number": aadhar_number,
-            "refer_code":refer_code,
-            "address":address,
-            "dob":dob
+        payload = {
+            "first": encrypt_data(first_name),
+            "middle": encrypt_data(middle_name),
+            "last": encrypt_data(last_name),
+            "email": encrypt_data(email),
+            "no": encrypt_data(mobile_no),
+            "pancard": encrypt_data(pancard_number),
+            "aadhar_number": encrypt_data(aadhar_number),
+            "refer_code": encrypt_data(refer_code),
+            "address": encrypt_data(address),
+            "dob": encrypt_data(dob),
         }
-        # print(payload)
+        print(payload)
         
 
         api_url="https://vgold.app/vgold_admin/m_api/register_user/"
+        # api_url="http://127.0.0.1:8000/vgold_admin/m_api/register_user/"
         
         try:
             response = requests.post(api_url, json=payload)  # Use params parameter
-            # print(response.text)
-            # Ensure response content is not empty
             if response.content:
                 try:
                     response_data = response.json()
-                    # print(response_data)
                     
                     if response_data.get('message_code') == 1000:
                         messages.success(request, "User registration successful")
                     else:
-                        messages.error(request, response_data.get('Message', response_data.get('Message')))
-                    
-                    return redirect(Registration)  # Assuming 'complaint' is the URL name for the complaint view
+                        messages.error(request, response_data.get('Message', 'Something went wrong or filed missing.'))
+                        
+                    return redirect(Registration)  # Assuming 'Registration' is the URL name
                 except ValueError:
-                    message = "Received invalid JSON response."
+                    messages.error(request, "Received invalid JSON response.")
             else:
-                message = "Received empty response from the API."
+                messages.error(request, "Received empty response from the API.")
         except requests.exceptions.RequestException as e:
-            message = f"An error occurred while making the request: {e}"
-        
- 
+            messages.error(request, f"An error occurred while making the request: {e}")
+
         return redirect(Registration)
     
     return render(request, 'gold/registration.html')
@@ -2052,7 +2051,9 @@ def Pay_installment(request):
         return redirect('login')
 
     # New API endpoint
-    api_url = "http://127.0.0.1:8000/vgold_admin/m_api/installment_booking_id/"
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/installment_booking_id/"
+    
+    api_url = "https://vgold.app/vgold_admin/m_api/installment_booking_id/"
     
     # JSON payload for the API
     post_data = {'user_id': user_id}
