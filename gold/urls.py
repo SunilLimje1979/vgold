@@ -119,5 +119,7 @@ urlpatterns = [
     
     path('nach_response/', views.nach_response, name='nach_response'),
     
+    path('deactivates/<str:id>/', views.deactivates, name='deactivates'),
+    
     
 ]

@@ -2936,8 +2936,32 @@ def deactivate(request):
         print("Error calling deactivate API:", e)
         return redirect('dashboard')
     
+#####################################################################################  
+def deactivates(request, id):
+    # api_url = f'http://127.0.0.1:8000/vgold_admin/m_api/deactivate_user/{id}/'
+    api_url = f'https://vgold.app/vgold_admin/m_api/deactivate_user/{id}/'
     
+    try:
+        response = requests.get(api_url)
+        data = response.json()
 
+        context = {}
+        if data.get("message_code") == 1000:
+            context["user_info"] = data.get("message_data", {})
+            context["message_text"] = data.get("message_text", "")
+        else:
+            context["error_message"] = f"Deactivation failed: {data.get('message_text', 'Unknown error')}"
+
+        return render(request, "gold/deactivate.html", context)
+
+    except Exception as e:
+        print("Error calling deactivate API:", e)
+        return render(request, "gold/deactivate.html", {
+            "error_message": "An error occurred while trying to deactivate the account."
+        })
+        
+#######################################################################       
+    
 # @api_view(["POST"])
 @csrf_exempt
 def nach_response(request):
