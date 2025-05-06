@@ -323,10 +323,11 @@
         <li>
           <a href="{% url 'termcondition' %}"><i class="bi bi-file-earmark-text"></i> Term & Condition</a>
         </li>  
-        
+        {% comment %}         
         <li>
           <a href="{% url 'deactivate' %}"><i class="bi bi-person-dash" ></i>Deactivate Account</a>
-        </li>        
+        </li>
+        {% endcomment %}
 
         <li>
           <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>

@@ -2851,7 +2851,10 @@ cipher = Fernet(key_bytes)
 
 # Function to encrypt data
 def encrypt_data(data):
+    if data is None:
+        return ''
     return cipher.encrypt(data.encode()).decode()
+
 
 # Function to decrypt data
 def decrypt_data(encrypted_data):
@@ -2863,53 +2866,198 @@ def generate_checksum(data_list):
     checksum = hashlib.sha256(combined_data.encode()).hexdigest()
     return checksum
 
+import requests
+
+# def nominee_mandiates(request):
+#     user_data = request.session.get('user_data', {})
+#     NomieeForUserId = user_data.get('User_Id')
+
+#     if not NomieeForUserId:
+#         return redirect('login')
+
+#     # Call API and get user data
+#     api_url = f'https://vgold.app/vgold_admin/m_api/deactivate_user/{NomieeForUserId}/'
+#     try:
+#         response = requests.get(api_url)
+#         response_data = response.json()
+#         nominee_data = response_data.get('message_data', {})
+#         print(nominee_data)
+#     except Exception as e:
+#         nominee_data = {}
+#         print("Error fetching nominee data:", e)
+
+#     if request.method == "POST":
+#         fields_to_encrypt = [
+#             "UtilCode", "Short_Code", "Customer_Name", "Customer_TelphoneNo", 
+#             "Customer_EmailId", "Customer_Mobile", "Customer_AccountNo", 
+#             "Customer_Reference1", "Customer_Reference2"
+#         ]
+
+#         checksum_fields = [
+#             "UtilCode", "Short_Code", "Customer_Name", 
+#             "Customer_TelphoneNo", "Customer_EmailId"
+#         ]
+
+#         form_data = request.POST.dict()
+#         print(form_data)
+
+#         encrypted_data = {
+#             key: encrypt_data(value) if key in fields_to_encrypt else value
+#             for key, value in form_data.items()
+#         }
+
+#         checksum_values = [encrypted_data[key] for key in checksum_fields if key in encrypted_data]
+#         encrypted_data["CheckSumVal"] = generate_checksum(checksum_values)
+
+#         decrypted_data = {
+#             key: decrypt_data(value) if key in fields_to_encrypt else value
+#             for key, value in encrypted_data.items()
+#             if key != "CheckSumVal"
+#         }
+
+#         print("Encrypted Data:", encrypted_data)
+#         print("Decrypted Data:", decrypted_data)
+#         print("CheckSumVal:", encrypted_data["CheckSumVal"])
+
+#         return redirect("nominee_mandiates")
+
+#     return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data})
+
+from decimal import Decimal, ROUND_DOWN, InvalidOperation
 def nominee_mandiates(request):
     user_data = request.session.get('user_data', {})
-    # NomieeForUserId = user_data.get('User_Id')
+    NomieeForUserId = user_data.get('User_Id')
 
-    # if not NomieeForUserId:
-    #     return redirect('login')
-    
+    if not NomieeForUserId:
+        return redirect('login')
+
+    # Call API and get user data
+    api_url = f'https://vgold.app/vgold_admin/m_api/deactivate_user/{NomieeForUserId}/'
+    try:
+        response = requests.get(api_url)
+        response_data = response.json()
+        nominee_data = response_data.get('message_data', {})
+        # print(nominee_data)
+    except Exception as e:
+        nominee_data = {}
+        # print("Error fetching nominee data:", e)
+
     if request.method == "POST":
-        fields_to_encrypt = [
-            "UtilCode", "Short_Code", "Customer_Name", "Customer_TelphoneNo", 
-            "Customer_EmailId", "Customer_Mobile", "Customer_AccountNo", 
-            "Customer_Reference1", "Customer_Reference2"
-        ]
+        MsgId = request.POST.get("MsgId")
+        Customer_Name = request.POST.get("Customer_Name")
+        Customer_Mobile = request.POST.get("Customer_Mobile")
+        Customer_EmailId = request.POST.get("Customer_EmailId")
+        Customer_AccountNo = request.POST.get("Customer_AccountNo")
+        Customer_StartDate = request.POST.get("Customer_StartDate")
+        Customer_ExpiryDate = request.POST.get("Customer_ExpiryDate")
+        Customer_DebitAmount = request.POST.get("Customer_DebitAmount")
+        Customer_MaxAmount = request.POST.get("Customer_MaxAmount")
+        Customer_DebitFrequency = request.POST.get("Customer_DebitFrequency")
+        Customer_InstructedMemberId = request.POST.get("Customer_InstructedMemberId")
+        Short_Code = request.POST.get("Short_Code")
+        Customer_SequenceType = request.POST.get("Customer_SequenceType")
+        Merchant_Category_Code = request.POST.get("Merchant_Category_Code")
+        Customer_Reference1 = request.POST.get("Customer_Reference1")
+        Customer_Reference2 = request.POST.get("Customer_Reference2")
+        Channel = request.POST.get("Channel")
+        UtilCode = request.POST.get("UtilCode")
+        Filler1 = request.POST.get("Filler1")
+        Filler2 = request.POST.get("Filler2")
+        Filler3 = request.POST.get("Filler3")
+        Filler4 = request.POST.get("Filler4")
+        Filler5 = request.POST.get("Filler5")
+        Filler6 = request.POST.get("Filler6")
+        Filler7 = request.POST.get("Filler7")
+        Filler8 = request.POST.get("Filler8")
+        Filler9 = request.POST.get("Filler9")
+        Filler10 = request.POST.get("Filler10")
+        
+        # Concatenate the required fields with the delimiter "|"
+        data_to_hash = f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}"
 
-        # Fields to include in CheckSumVal (only subset of encrypted fields)
-        checksum_fields = [
-            "UtilCode", "Short_Code", "Customer_Name", 
-            "Customer_TelphoneNo", "Customer_EmailId"
-        ]
+        # Generate the SHA-2 checksum (SHA-256 is commonly used)
+        checksum = hashlib.sha256(data_to_hash.encode('utf-8')).hexdigest()
 
-        form_data = request.POST.dict()
+        # Now the checksum is ready to be used
+        print("Generated Checksum:", checksum)
+        
+        # Encrypt the specified fields
+        # Customer_Name = encrypt_data(Customer_Name)
+        # Customer_Mobile = encrypt_data(Customer_Mobile)
+        # Customer_EmailId = encrypt_data(Customer_EmailId)
+        # Customer_AccountNo = encrypt_data(Customer_AccountNo)
+        # Customer_Reference1 = encrypt_data(Customer_Reference1)
+        # Customer_Reference2 = encrypt_data(Customer_Reference2)
+        # UtilCode = encrypt_data(UtilCode)
+        
+        # Convert to Decimal with 2 decimal places
+        
+        def to_decimal(value):
+            try:
+                return Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN)
+            except (InvalidOperation, TypeError):
+                return Decimal('0.00')  # or handle as needed
 
-        # Encrypt data
-        encrypted_data = {
-            key: encrypt_data(value) if key in fields_to_encrypt else value
-            for key, value in form_data.items()
+        Customer_DebitAmount = to_decimal(Customer_DebitAmount)
+        Customer_MaxAmount = to_decimal(Customer_MaxAmount)
+
+        # Construct final payload
+        payload = {
+            "MsgId": MsgId,
+            "Customer_Name": Customer_Name,
+            "Customer_Mobile": Customer_Mobile,
+            "Customer_EmailId": Customer_EmailId,
+            "Customer_AccountNo": Customer_AccountNo,
+            "Customer_StartDate": Customer_StartDate,
+            "Customer_ExpiryDate": Customer_ExpiryDate,
+            "Customer_DebitAmount": Customer_DebitAmount,
+            "Customer_MaxAmount": Customer_MaxAmount,
+            "Customer_DebitFrequency": Customer_DebitFrequency,
+            "Customer_InstructedMemberId": Customer_InstructedMemberId,
+            "Short_Code": Short_Code,
+            "Customer_SequenceType": Customer_SequenceType,
+            "Merchant_Category_Code": Merchant_Category_Code,
+            "Customer_Reference1": Customer_Reference1,
+            "Customer_Reference2": Customer_Reference2,
+            "Channel": Channel,
+            "UtilCode": UtilCode,
+            "Filler1": Filler1,
+            "Filler2": Filler2,
+            "Filler3": Filler3,
+            "Filler4": Filler4,
+            "Filler5": Filler5,
+            "Filler6": Filler6,
+            "Filler7": Filler7,
+            "Filler8": Filler8,
+            "Filler9": Filler9,
+            "Filler10": Filler10,
+            "checksum": checksum  # Include the checksum in the payload
         }
+        
+        print(payload)
+        
+        # Send the payload to the external API
+        try:
+            response = requests.post("https://emandateut.hdfcbank.com/Emandate.aspx", data=payload)
 
-        # Generate CheckSumVal
-        checksum_values = [encrypted_data[key] for key in checksum_fields if key in encrypted_data]
-        encrypted_data["CheckSumVal"] = generate_checksum(checksum_values)
+            # Log the response for debugging
+            print("Response Status Code:", response.status_code)
+            print("Response Text:", response.text)
 
-        # Optional: Decrypt to verify
-        decrypted_data = {
-            key: decrypt_data(value) if key in fields_to_encrypt else value
-            for key, value in encrypted_data.items()
-            if key != "CheckSumVal"  # Skip CheckSumVal for decryption
-        }
+            # You can add error handling or status check if needed
+            if response.status_code == 200:
+                # success logic, if needed
+                pass
+            else:
+                # failure logic, log error or show message
+                print("Failed to post data to HDFC eMandate API")
 
-        # Debug prints
-        print("Encrypted Data:", encrypted_data)
-        print("Decrypted Data:", decrypted_data)
-        print("CheckSumVal:", encrypted_data["CheckSumVal"])
+        except Exception as e:
+            print("Exception occurred while sending data:", str(e))
 
         return redirect("nominee_mandiates")
 
-    return render(request, 'gold/nominee_mandiates.html')
+    return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data})
 
 
 ###################################### Feedback #############################################
