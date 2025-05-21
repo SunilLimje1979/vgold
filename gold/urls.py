@@ -104,8 +104,8 @@ urlpatterns = [
 
     ######################ShowDeals#########################
     path('showDeals/',views.showDeals,name='showDeals'),
-    path('handle_deal_action/',views.handle_deal_action, name='handle_deal_action'),
     
+    path('handle_deal_action/',views.handle_deal_action, name='handle_deal_action'),
     
     path('chatbot/', views.chatbot, name='chatbot'),
     
@@ -121,5 +121,12 @@ urlpatterns = [
     
     path('deactivates/<str:id>/', views.deactivates, name='deactivates'),
     
+    path('plan/', views.GPlan, name='plan'),
     
+    path('agreement_otp/<str:id>/', views.agreement_otp, name='agreement_otp'),
+    
+    # path('agreement/', views.agreement, name='agreement'),
+    
+    # path('verify_agreement_otp/', views.verify_agreement_otp, name='verify_agreement_otp'),
+      
 ]

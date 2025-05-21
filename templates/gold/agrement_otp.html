@@ -1,0 +1,201 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gold Booking History</title>
+
+    <!-- Bootstrap & Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+    .navbar {
+        background-color: rgb(41, 39, 122);
+        height: 55px;
+        color: white;
+        padding-left: 4px;
+    }
+
+    .navbar-brand, .fa-arrow-left {
+        color: white;
+        font-size: 20px;
+    }
+
+    .custom-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 75px 20px 20px;  /* top margin same, add left/right margin */
+        padding: 20px;
+    }
+
+    .custom-card button img {
+        vertical-align: middle;
+    }
+
+    .pdf-icon-wrapper img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .pdf-label {
+        font-size: 9px;
+        padding-top: 4px;
+        text-align: center;
+    }
+
+    .btn-download-pdf {
+        color: white;
+        background-color: rgb(41, 39, 122);
+        border: none;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .btn-download-pdf img {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        filter: brightness(0) invert(1); /* Make icon white */
+    }
+
+</style>
+
+</head>
+<body>
+    <nav class="navbar fixed-top">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <!-- Left: Back Arrow -->
+            <div class="d-flex align-items-center">
+                <a href=" " class="me-2">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+            </div>
+
+            <!-- Center: Brand Name -->
+            <div class="flex-grow-1 text-center position-absolute w-100">
+                <span class="navbar-brand d-block">OTP Verification</span>
+            </div>
+        </div>
+    </nav>
+
+
+    <div class="custom-card text-center">
+        <div class="mb-2" style="font-size: 1.2rem;">
+            {% comment %} <strong>Account Id:</strong> {{ account_display_id }} {% endcomment %}
+             <strong>Account Id:</strong>{{account_display_id}}
+        </div>
+        <div class="mb-3 status status-active" style="font-size: 1.3rem;">
+            <strong>Name:</strong> {{name}}
+            {% comment %} <strong>Name:</strong> {{ booking.GBUserId.UserFirstname }} {{ booking.GBUserId.UserLastname }} {% endcomment %}
+        </div>
+        <div>
+            <button class="btn-download-pdf" onclick="getAgreementPdf()">
+                <img src="{% static 'assets/img/pdf.png' %}" alt="PDF">
+                Download PDF
+            </button>
+        </div>
+
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal fade" id="otpModal" tabindex="-1" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg">
+                <div class="modal-header" style="background-color: rgb(41, 39, 122); color: white;">
+                    <h5 class="modal-title" id="otpModalLabel">OTP Verification</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3 text-muted text-center">Please enter the OTP sent to your registered number.</p>
+                    <input type="text" id="otpInput" class="form-control text-center" placeholder="Enter OTP" maxlength="6" />
+                    <p class="text-muted mt-2 text-center small">Wait for 1 minute to receive OTP.</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="verifyOtp" class="btn btn-success">Verify OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+   <script>
+    function getAgreementPdf() {
+        const number = "{{ account_display_id }}";
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "agreement" %}',
+            data: {
+                'number': number,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.message === 'OTP verification required') {
+                    $('#otpModal').modal('show');
+                } else if (response.message === 'PDF available') {
+                    window.open(response.pdf_url, '_blank');
+                } else {
+                    alert('Unexpected response. Please try again.');
+                }
+            },
+            error: function() {
+                alert('Agreement not present.');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('#verifyOtp').click(function () {
+            const otp = $('#otpInput').val().trim();
+            const number = "{{ account_display_id }}";
+
+            if (!otp) {
+                alert('Please enter the OTP.');
+                return;
+            }
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "verify_agreement_otp" %}',
+                data: JSON.stringify({
+                    'GBAccountDisplayId': number,
+                    'GBAgreement_Otp': otp
+                }),
+                contentType: 'application/json',
+                dataType: 'json',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    if (response.success) {
+                        window.open(response.pdf_url, '_blank');
+                        $('#otpModal').modal('hide');
+                    } else {
+                        alert(response.message || 'Invalid OTP.');
+                    }
+                },
+                error: function (xhr) {
+                    alert('OTP verification failed. Try again.');
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -119,15 +119,14 @@
         </div>
 
         <!-- Start Date -->
-        <div class="mb-2">
-            <label class="required form-label"> Start Date</label>
-            <input type="date" name="Customer_StartDate" class="form-control" required>
+       <div class="mb-2">
+            <label class="required form-label">Start Date</label>
+            <input type="date" id="start_date" name="Customer_StartDate" class="form-control" required>
         </div>
 
-        <!-- Expiry Date -->
         <div class="mb-2">
             <label class="form-label">Expiry Date</label>
-            <input type="date" name="Customer_ExpiryDate" class="form-control">
+            <input type="date" id="expiry_date" name="Customer_ExpiryDate" class="form-control">
         </div>
 
         <!-- Debit & Max Amount -->
@@ -143,21 +142,22 @@
         </div>
 
         <!-- Debit Frequency -->
-        <div class="mb-2">
+       <div class="mb-2">
             <label class="required form-label">Debit Frequency</label>
-            <select name="Customer_DebitFrequency" id="Customer_DebitFrequency" class="form-select" required>
+            <select name="Customer_DebitFrequency" id="Customer_DebitFrequency" class="form-select" required disabled>
                 <option value="">Select</option>
-                <option>ADHO</option>
-                <option>INDA</option>
-                <option>DAIL</option>
-                <option>WEEK</option>
-                <option>MNTH</option>
-                <option>QURT</option>
-                <option>MIAN</option>
-                <option>YEAR</option>
-                <option>BIMN</option>
+                <option value="ADHO">ADHO</option>
+                <option value="INDA">INDA</option>
+                <option value="DAIL">DAIL</option>
+                <option value="WEEK">WEEK</option>
+                <option value="MNTH" selected>MNTH</option>
+                <option value="QURT">QURT</option>
+                <option value="MIAN">MIAN</option>
+                <option value="YEAR">YEAR</option>
+                <option value="BIMN">BIMN</option>
             </select>
         </div>
+
 
         <!-- Instructed Member ID -->
         <div class="mb-2">
@@ -166,25 +166,46 @@
         </div>
 
         <!-- Short Code -->
-        <div class="mb-2">
+        {% comment %} <div class="mb-2">
             <label class="required form-label">Short Code</label>
             <input type="text" name="Short_Code" maxlength="10" class="form-control" required>
+        </div> {% endcomment %}
+        <div class="mb-2">
+            <label class="required form-label">Short Code</label>
+            <input type="text" name="Short_Code" maxlength="10" class="form-control" value="VGL" readonly style="background-color: #e9ecef;" required>
         </div>
 
+
         <!-- Sequence Type -->
-        <div class="mb-2">
+        {% comment %} <div class="mb-2">
             <label class="required form-label">Sequence Type</label>
             <select name="Customer_SequenceType" id="Customer_SequenceType" class="form-select" required onchange="toggleFrequencyRequirement()">
                 <option value="RCUR">RCUR</option>
                 <option value="OOFF">OOFF</option>
             </select>
+        </div> {% endcomment %}
+
+        <div class="mb-2">
+            <label class="required form-label">Sequence Type</label>
+            <select name="Customer_SequenceType_Display" id="Customer_SequenceType" class="form-select" required disabled>
+                <option value="RCUR" selected>RCUR</option>
+                <option value="OOFF">OOFF</option>
+            </select>
+            <!-- Hidden input to actually submit the selected value -->
+            <input type="hidden" name="Customer_SequenceType" value="RCUR">
         </div>
 
+
         <!-- Merchant Code -->
-        <div class="mb-2">
+        {% comment %} <div class="mb-2">
             <label class="required form-label">Merchant Category Code</label>
             <input type="text" name="Merchant_Category_Code" maxlength="4" class="form-control" required>
+        </div> {% endcomment %}
+        <div class="mb-2">
+            <label class="required form-label">Merchant Category Code</label>
+            <input type="text" name="Merchant_Category_Code" maxlength="4" class="form-control" value="U099" readonly style="background-color: #e9ecef;" required>
         </div>
+
 
         <!-- Channel -->
         <div class="mb-2">
@@ -196,19 +217,30 @@
             </select>
         </div>
 
-        <!-- Util Code -->
+        <!-- Customer Reference 1 -->
         <div class="mb-2">
-            <label class="required form-label">Util Code</label>
-            <input type="text" name="UtilCode" maxlength="18" class="form-control" required>
+            <label class="required form-label">Reference_1 (Consumer_Reference_no)</label>
+            <input type="text" name="Customer_Reference1" maxlength="50" class="form-control" 
+                pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed." required>
         </div>
 
-        <!-- Additional Fillers -->
-        {% for i in "12346789" %}
+        <!-- Customer Reference 2 -->
         <div class="mb-2">
-            <label class="form-label">Filler{{ i }}</label>
-            <input type="text" name="Filler{{ i }}" maxlength="50" class="form-control">
+            <label class="required form-label">Customer Reference 2 (Scheme Name - Corporates Only)</label>
+            <input type="text" name="Customer_Reference2" maxlength="50" class="form-control" 
+                pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed." required>
         </div>
-        {% endfor %}
+
+
+        <!-- Util Code -->
+        {% comment %} <div class="mb-2">
+            <label class="required form-label">Util Code</label>
+            <input type="text" name="UtilCode" maxlength="18" class="form-control" required>
+        </div> {% endcomment %}
+        <div class="mb-2">
+            <label class="required form-label">Util Code</label>
+            <input type="text" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000000020" readonly style="background-color: #e9ecef;" required>
+        </div>
 
         <!-- Account Type -->
         <div class="mb-2">
@@ -220,6 +252,25 @@
             </select>
         </div>
 
+        <div class="mb-2">
+            <label class="required form-label" for="bank_name">Filler6</label>
+            <select id="bank_name" name="Filler6" class="form-control select2">
+                <option value="">-- Select Bank --</option>
+                {% for bank in bank_list %}
+                    <option value="{{ bank.bankId }}">{{ bank.bankName }}</option>
+                {% endfor %}
+            </select> 
+        </div>
+
+        
+        <!-- Additional Fillers -->
+        {% for i in "1234789" %}
+        <div class="mb-2">
+            <label class="form-label">Filler{{ i }}</label>
+            <input type="text" name="Filler{{ i }}" maxlength="50" class="form-control">
+        </div>
+        {% endfor %}
+
         <!-- Submit -->
         <div class="text-center">
             <button type="submit" class="btn btn-primary px-5">Submit</button>
@@ -227,7 +278,66 @@
     </form>
 </div>
 
-<!-- JS Script -->
+<!-- Include jQuery first -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Select2 CSS and JS -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#bank_name').select2({
+            placeholder: "-- Select Bank --",
+            allowClear: true,
+            width: '100%'  // optional to match Bootstrap styling
+        });
+    });
+</script>
+<script>
+    function padZero(num) {
+        return num.toString().padStart(2, '0');
+    }
+
+    function setDefaultDates() {
+        const startDateInput = document.getElementById("start_date");
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        const today = new Date();
+        let nextMonth = today.getMonth() + 1;
+        let year = today.getFullYear();
+
+        if (nextMonth > 11) {
+            nextMonth = 0; // January
+            year += 1;
+        }
+
+        const defaultStartDate = new Date(year, nextMonth, 1); // 1st of next month
+        const defaultStartStr = `${defaultStartDate.getFullYear()}-${padZero(defaultStartDate.getMonth() + 1)}-01`;
+
+        startDateInput.value = defaultStartStr;
+
+        // Set expiry date to 5 years after start date
+        const expiryDate = new Date(defaultStartDate);
+        expiryDate.setFullYear(expiryDate.getFullYear() + 5);
+
+        const expiryDateStr = `${expiryDate.getFullYear()}-${padZero(expiryDate.getMonth() + 1)}-${padZero(expiryDate.getDate())}`;
+        expiryDateInput.value = expiryDateStr;
+    }
+
+    document.addEventListener("DOMContentLoaded", setDefaultDates);
+
+    // Optional: Update expiry date automatically if start date is changed manually
+    document.getElementById("start_date").addEventListener("change", function () {
+        const selectedDate = new Date(this.value);
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        if (!isNaN(selectedDate)) {
+            selectedDate.setFullYear(selectedDate.getFullYear() + 5);
+            const expiryDateStr = `${selectedDate.getFullYear()}-${padZero(selectedDate.getMonth() + 1)}-${padZero(selectedDate.getDate())}`;
+            expiryDateInput.value = expiryDateStr;
+        }
+    });
+</script>
 <script>
     function validateForm() {
         const mobile = document.getElementById("Customer_Mobile").value.trim();
