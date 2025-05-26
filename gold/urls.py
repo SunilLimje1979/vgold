@@ -125,8 +125,11 @@ urlpatterns = [
     
     path('agreement_otp/<str:id>/', views.agreement_otp, name='agreement_otp'),
     
-    # path('agreement/', views.agreement, name='agreement'),
+    path('deposite_agreement/', views.deposite_agreement, name='deposite_agreement'),
     
+    path('verify_deposite_agreement_otp/', views.verify_deposite_agreement_otp, name='verify_deposite_agreement_otp'),
+    
+    path('deposite_agreement_otp/<str:id>/', views.deposite_agreement_otp, name='deposite_agreement_otp'),
     # path('verify_agreement_otp/', views.verify_agreement_otp, name='verify_agreement_otp'),
       
 ]

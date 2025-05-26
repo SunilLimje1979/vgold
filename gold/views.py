@@ -3230,3 +3230,158 @@ def agreement_otp(request, id):
     }
 
     return render(request, 'gold/agrement_otp.html', context)
+
+
+######################################### Deposite Agreement ################################################
+def deposite_agreement(request):
+    if request.method == 'POST':
+        number = request.POST.get('number')
+        print(number,999)
+        
+        # Prepare the data to send to the API
+        payload = {
+            "GDAccountDisplayId": number
+        }
+        
+        # API URL
+        # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_deposite_agreement_copy/"
+        api_url = "https://vgold.app/vgold_admin/m_api/get_deposite_agreement_copy/"
+
+        try:
+            # Send a POST request to the API
+            response = requests.post(api_url, json=payload)
+            response_data = response.json() 
+            print(response_data) # Parse the JSON response
+
+            if response_data.get('message_code') == 1000:  # Check for success
+                agreement_data = response_data.get('message_data', {})
+                gb_agreement_seen = agreement_data.get('DDAgreement_Seen')
+                gb_agreement_url = agreement_data.get('DepositDocumentURL')
+                
+                if gb_agreement_seen == 1:
+                    payloads={
+                        "DepositDocumentAccountId": number
+                    }
+                    otp_api_url = "https://vgold.app/vgold_admin/m_api/send_deposite_agreement_otp/"
+                    # otp_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/send_deposite_agreement_otp/"
+                    otp_response = requests.post(otp_api_url, json=payloads).json()
+
+                    if otp_response.get('message_code') == 1000:
+                        return JsonResponse({
+                            'message': 'OTP verification required',
+                            'otp_required': True,
+                            'GDAccountDisplayId': number
+                        })
+                    return JsonResponse({'error': 'Failed to send OTP'}, status=400)
+                
+                elif gb_agreement_seen == 2:
+                    # Directly show the PDF
+                    return JsonResponse({
+                        'message': 'PDF available',
+                        'pdf_url': gb_agreement_url,
+                        'otp_required': False
+                    })
+                else:
+                    return JsonResponse({'error': 'Unexpected DDAgreement_Seen value'}, status=400)
+            else:
+                return JsonResponse({
+                    'error': 'Failed to fetch agreement details from API',
+                    'message_text': response_data.get('message_text')
+                }, status=400)
+                
+        except requests.exceptions.RequestException as e:
+            # Handle API request exceptions
+            return JsonResponse({'error': 'API request failed', 'details': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+    
+######################################### Verify Deposite Agreement ######################################
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+def verify_deposite_agreement_otp(request):
+    if request.method == 'POST':
+        try:
+            # Parse the request data
+            data = json.loads(request.body)
+            gb_account_display_id = data.get('GBAccountDisplayId')
+            gb_agreement_otp = int(data.get('GBAgreement_Otp'))
+            
+            print(gb_account_display_id)
+            print(gb_agreement_otp)
+            
+            # Ensure the required fields are provided
+            if not gb_account_display_id or not gb_agreement_otp:
+                return JsonResponse({'success': False, 'message': 'Missing required fields.'}, status=400)
+            
+            # Prepare the payload for the external API
+            payload = {
+                "DDAgreement_Otp": gb_agreement_otp,
+                "DepositDocumentAccountId":gb_account_display_id,
+            }
+
+            # Call the external API
+            external_api_url = "https://vgold.app/vgold_admin/m_api/verify_deposit_agreement_otp/"
+            # external_api_url = "http://127.0.0.1:8000/vgold_admin/m_api/verify_deposit_agreement_otp/"
+            response = requests.post(external_api_url, json=payload)
+            response_data = response.json()
+            
+            print(response_data)
+            
+            # Process the response from the API
+            if response_data.get('message_code') == 1000:  # Success case
+                message_data = response_data.get('message_data', {})
+                pdf_url = message_data.get('DepositDocumentURL')
+                
+                return JsonResponse({
+                    'success': True,
+                    'pdf_url': pdf_url,
+                    'message': response_data.get('message_text', 'Success')
+                })
+            else:
+                # Handle error from the API
+                return JsonResponse({
+                    'success': False,
+                    'message': response_data.get('message_text', 'Retry again')
+                }, status=400)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data.'}, status=400)
+        except requests.RequestException as e:
+            return JsonResponse({'success': False, 'message': 'Error connecting to the API.', 'error': str(e)}, status=500)
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': 'An unexpected error occurred.', 'error': str(e)}, status=500)
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request method.'}, status=405)
+
+################################################################################# 
+def deposite_agreement_otp(request, id):
+    print(id)
+    api_url = f"https://vgold.app/vgold_admin/api/account_id_detail/{id}/"
+    # api_url = f"http://127.0.0.1:8000/vgold_admin/api/deposite_account_detail/{id}/"
+    api_response_data = {
+        "name": "",
+        "mobile_no": "",
+        "account_id": ""
+    }
+
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            result = response.json()
+            print(result)
+            if result.get("message_code") == 1000:
+                api_response_data = result.get("message_data", {})
+    except Exception as e:
+        print("API error:", str(e))  # Optional: log error
+
+    context = {
+        'name': api_response_data.get("name", ""),
+        'mobile': api_response_data.get("mobile_no", ""),
+        'account_display_id': api_response_data.get("account_id", ""),
+        'csrf_token': request.META.get("CSRF_COOKIE", ""),  # Optional: for JS
+    }
+
+    return render(request, 'gold/deposite_agrement_otp.html', context)
+
+
+    
