@@ -3356,7 +3356,7 @@ def verify_deposite_agreement_otp(request):
 ################################################################################# 
 def deposite_agreement_otp(request, id):
     print(id)
-    api_url = f"https://vgold.app/vgold_admin/api/account_id_detail/{id}/"
+    api_url = f"https://vgold.app/vgold_admin/api/deposite_account_detail/{id}/"
     # api_url = f"http://127.0.0.1:8000/vgold_admin/api/deposite_account_detail/{id}/"
     api_response_data = {
         "name": "",
