@@ -3649,6 +3649,79 @@ def payment_status(request,id):
 
 ##################################################################################
 
+# def installment_op(request):
+#     if request.method == 'POST':
+#         pay_type = request.POST.get('pay_type')
+
+#         if pay_type == 'total':
+#             booking_nos = request.POST.getlist('booking_no')
+#             booking_amounts = request.POST.getlist('booking_amount')
+
+#             total_info = list(zip(booking_nos, booking_amounts))
+#             print("=== Total Pay Clicked ===")
+#             for b_no, amt in total_info:
+#                 print(f"Booking No: {b_no}, Amount: ₹{amt}")
+
+#             total_amount = sum(float(amt) for amt in booking_amounts)
+#             return redirect('regular_payment', id=total_amount)
+
+#         elif pay_type == 'partial':
+#             partial_amount = request.POST.get('partial_amount')
+#             print("=== Partial Pay Clicked ===")
+#             print("Partial Amount:", partial_amount)
+#             return redirect('regular_payment', id=partial_amount)
+        
+#     # api_url = 'http://127.0.0.1:8000/vgold_admin/m_api/get_installemnt_info/'
+#     api_url = 'https://vgold.app/vgold_admin/m_api/get_installemnt_info/'
+#     user_data = request.session.get('user_data', {})
+    
+#     # Extract user_id from the session data
+#     user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
+#     print(user_id,"3680")
+
+#     # If user_id is not found in the session data, return an error message
+#     if not user_id:
+#         return redirect('login') 
+    
+#     # Prepare the payload for the API call
+#     payload = {'user_id': user_id}
+#     # payload = {"user_id": 40}
+
+#     try:
+#         # Make the API call
+#         response = requests.post(api_url, json=payload)
+#         response_data = response.json()
+#         print(response_data)
+
+#         # Check if the API call was successful
+#         if response.status_code == 200 and response_data.get('message_code') == 1000:
+#             raw_bookings = []
+
+#             for item in response_data.get('message_data', []):
+#                 # Extract the needed data
+#                 booking = {
+#                     'booking_no': item.get('gold_booking_id', ''),
+#                     'installment_amount': float(item.get('current_month_emi_amount', 0.00)),
+#                     'tenure': f"{item.get('tennure', 0)} months",
+#                     'gold': f"{item.get('gold', 0)} Gm",
+#                     'installment_date': item.get('installment_date', '') or item.get('added_date', '') # or item['added_date'] if needed
+#                 }
+#                 raw_bookings.append(booking)
+
+#             # Calculate total
+#             total_installment_amount = sum(b['installment_amount'] for b in raw_bookings)
+
+#             return render(request, 'gold/installment_op.html', {
+#                 'bookings': raw_bookings,
+#                 'total_amount': total_installment_amount
+#             })
+#         else:
+#             return HttpResponse("Failed to fetch data from API", status=500)
+
+#     except Exception as e:
+#         return HttpResponse(f"An error occurred: {str(e)}", status=500)
+
+
 def installment_op(request):
     if request.method == 'POST':
         pay_type = request.POST.get('pay_type')
@@ -3670,52 +3743,47 @@ def installment_op(request):
             print("=== Partial Pay Clicked ===")
             print("Partial Amount:", partial_amount)
             return redirect('regular_payment', id=partial_amount)
-        
-    # api_url = 'http://127.0.0.1:8000/vgold_admin/m_api/get_installemnt_info/'
+
     api_url = 'https://vgold.app/vgold_admin/m_api/get_installemnt_info/'
     user_data = request.session.get('user_data', {})
-    
-    # Extract user_id from the session data
-    user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
-    print(user_id)
+    user_id = user_data.get('User_Id')
 
-    # If user_id is not found in the session data, return an error message
     if not user_id:
-        return redirect('login') 
-    
-    # Prepare the payload for the API call
+        return redirect('login')
+
     payload = {'user_id': user_id}
-    # payload = {"user_id": 40}
 
     try:
-        # Make the API call
         response = requests.post(api_url, json=payload)
         response_data = response.json()
+        print(response_data)
 
-        # Check if the API call was successful
+        raw_bookings = []
+        total_installment_amount = 0
+        no_bookings_message = None
+
         if response.status_code == 200 and response_data.get('message_code') == 1000:
-            raw_bookings = []
-
             for item in response_data.get('message_data', []):
-                # Extract the needed data
                 booking = {
                     'booking_no': item.get('gold_booking_id', ''),
                     'installment_amount': float(item.get('current_month_emi_amount', 0.00)),
                     'tenure': f"{item.get('tennure', 0)} months",
                     'gold': f"{item.get('gold', 0)} Gm",
-                    'installment_date': item.get('installment_date', '') or item.get('added_date', '') # or item['added_date'] if needed
+                    'installment_date': item.get('installment_date', '') or item.get('added_date', '')
                 }
                 raw_bookings.append(booking)
 
-            # Calculate total
             total_installment_amount = sum(b['installment_amount'] for b in raw_bookings)
 
-            return render(request, 'gold/installment_op.html', {
-                'bookings': raw_bookings,
-                'total_amount': total_installment_amount
-            })
         else:
-            return HttpResponse("Failed to fetch data from API", status=500)
+            # If message_code is not 1000 (e.g., 999), show message and empty booking list
+            no_bookings_message = "No active bookings available."
+
+        return render(request, 'gold/installment_op.html', {
+            'bookings': raw_bookings,
+            'total_amount': total_installment_amount,
+            'no_bookings_message': no_bookings_message
+        })
 
     except Exception as e:
         return HttpResponse(f"An error occurred: {str(e)}", status=500)
