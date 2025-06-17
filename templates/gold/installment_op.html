@@ -1,0 +1,170 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installment Payment</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Font Awesome CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background-color: #f9f9f9;
+      padding-top: 50px;
+    }
+
+    .navbar {
+      background-color: rgb(41, 39, 122);
+      height: 55px;
+      color: white;
+    }
+
+    .navbar-toggler-icon,
+    .fa-arrow-left {
+      color: white;
+    }
+
+    .navbar-brand {
+      font-size: 20px;
+      margin-left: 20px;
+      color: white;
+    }
+
+    .card {
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .common-pay-btn {
+      width: 80%;
+      background-color: rgb(41, 39, 122);
+      color: white;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      margin: 20px auto 0;
+      display: block;
+    }
+
+    .common-pay-btn:hover {
+      background-color: #29277a;
+    }
+
+    .row-section {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .left-section {
+      flex: 0 0 60%;
+    }
+
+    .right-section {
+      flex: 0 0 40%;
+    }
+
+    .total-amount-box {
+      background-color: #e9ecef;
+      padding: 5px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .compact-p {
+      margin: 2px 0;
+      padding: 0;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top">
+  <div class="container-fluid">
+    <div>
+      <button class="navbar-toggler" type="button" id="menuBtn">
+        <a href="{% url 'dashboard' %}"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+      </button>
+      <a class="navbar-brand">Pay Installment</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  <!-- Bookings -->
+  {% for booking in bookings %}
+    <div class="card p-1 mb-2">
+      <div class="row-section">
+        <div class="left-section">
+          <p class="compact-p"><strong>Booking No:</strong> {{ booking.booking_no }}</p>
+          <p class="compact-p"><strong>Quantity:</strong> {{ booking.gold }}</p>
+          <p class="compact-p"><strong>Tenure:</strong> {{ booking.tenure }}</p>
+        </div>
+        <div class="right-section">
+          <p class="compact-p"><strong>Amt:</strong> ₹{{ booking.installment_amount }}</p>
+          <p class="compact-p"><strong>Date:</strong> {{ booking.installment_date }}</p>
+        </div>
+      </div>
+
+      <!-- Hidden inputs for total pay -->
+      <input type="hidden" name="booking_no" form="paymentForm" value="{{ booking.booking_no }}">
+      <input type="hidden" name="booking_amount" form="paymentForm" value="{{ booking.installment_amount }}">
+    </div>
+  {% endfor %}
+
+  <!-- Total Installment Amount -->
+  <div class="total-amount-box mb-3">
+    Total Installment Amount: ₹{{ total_amount }}
+  </div>
+
+  <!-- Payment Form -->
+  <div class="text-center mt-3">
+    <form method="post" id="paymentForm">
+      {% csrf_token %}
+      
+      <!-- Partial Amount Box -->
+      <div id="partial-amount-box" class="mb-3" style="display: none;">
+        <input type="number" name="partial_amount" class="form-control" placeholder="Enter Partial Amount" min="1" />
+      </div>
+
+     <!-- Total Pay Button -->
+      <button type="submit" name="pay_type" value="total" class="btn btn-success m-2" onclick="hideAmountInput()">Total Pay</button>
+
+      <!-- Partial Pay Button triggers input box -->
+      <button type="button" class="btn btn-warning m-2" onclick="showAmountInput()">Partial Pay</button>
+
+      <!-- Actual Submit after entering partial amount -->
+      <div id="confirm-partial-pay" style="display: none;">
+        <button type="submit" name="pay_type" value="partial" class="btn btn-primary">Confirm Partial Pay</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function showAmountInput() {
+    document.getElementById("partial-amount-box").style.display = "block";
+    document.getElementById("confirm-partial-pay").style.display = "block";
+  }
+
+  function hideAmountInput() {
+    document.getElementById("partial-amount-box").style.display = "none";
+    document.getElementById("confirm-partial-pay").style.display = "none";
+  }
+</script>
+
+
+</body>
+</html>

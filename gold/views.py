@@ -421,10 +421,18 @@ def Dashboard(request):
         user_id = user_data.get('User_Id')  # Get the user's ID
         
         # Pass the first name into the context for rendering
-        context = {'first_name': first_name}
+        # context = {'first_name': first_name}
+        context = {
+            'first_name': first_name,
+            'user_id': user_id
+        }
     else:
         # Default values if no user data is found
-        context = {'first_name': 'User'}
+        # context = {'first_name': 'User'}
+        context = {
+            'first_name': "User",
+            'user_id': 404
+        }
         return redirect('login') 
 
     if user_id:
@@ -2947,7 +2955,6 @@ def nach_response(request):
         print(request.POST)
         post_data = request.POST
         
-        
         # return redirect('dashboard')
         return render(request, 'gold/nach_response.html', {'post_data': post_data})
     
@@ -3040,10 +3047,26 @@ def nominee_mandiates(request):
         Filler8 = request.POST.get("Filler8", "")
         Filler9 = request.POST.get("Filler9", "")
         Filler10 = request.POST.get("Filler10", "")
+        
+        def to_decimal(value, other_value_present):
+            try:
+                if value.strip() == "" and other_value_present:
+                    return ""
+                return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
+            except (InvalidOperation, TypeError, ValueError, AttributeError):
+                if other_value_present:
+                    return ""
+                return "0.00"
+
+        Customer_DebitAmount = to_decimal(Customer_DebitAmount, other_value_present=bool(Customer_MaxAmount.strip()))
+        Customer_MaxAmount = to_decimal(Customer_MaxAmount, other_value_present=bool(Customer_DebitAmount.strip()))
+
+        
+        # print(Customer_DebitAmount,Customer_MaxAmount)
 
         # Concatenate the required fields with the delimiter "|"
         data_to_hash = f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}"
-        # print(data_to_hash)
+        print(data_to_hash)
         # Generate the SHA-2 checksum (SHA-256 is commonly used)
         checksum = hashlib.sha256(data_to_hash.encode('utf-8')).hexdigest()
 
@@ -3079,7 +3102,7 @@ def nominee_mandiates(request):
             "Filler8": Filler8,
             "Filler9": Filler9,
             "Filler10": Filler10,
-            "checksum": hashlib.sha256(f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}".encode('utf-8')).hexdigest()
+            "checksum": checksum
         }
 
         print("UNENCRYPTED PAYLOAD:")
@@ -3087,6 +3110,8 @@ def nominee_mandiates(request):
 
         Customer_Name = encrypt_text_using_api(Customer_Name)
         # print("Encrypted Customer_Name:", Customer_Name)
+        
+        Short_Code = encrypt_text_using_api(Short_Code)
 
         Customer_Mobile = encrypt_text_using_api(Customer_Mobile)
         # print("Encrypted Customer_Mobile:", Customer_Mobile)
@@ -3113,16 +3138,15 @@ def nominee_mandiates(request):
         #     except (InvalidOperation, TypeError):
         #         return Decimal('0.00')  # or handle as needed
         
-        def to_decimal(value):
-            try:
-                return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
-            except (InvalidOperation, TypeError, ValueError):
-                return "0.00"
+        # def to_decimal(value):
+        #     try:
+        #         return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
+        #     except (InvalidOperation, TypeError, ValueError):
+        #         return "0.00"
 
-        Customer_DebitAmount = to_decimal(Customer_DebitAmount)
-        Customer_MaxAmount = to_decimal(Customer_MaxAmount)
-        
-        # print(Customer_DebitAmount,Customer_MaxAmount)
+        # Customer_DebitAmount = to_decimal(Customer_DebitAmount)
+        # Customer_MaxAmount = to_decimal(Customer_MaxAmount)
+     
 
         # Construct final payload
         payload = {
@@ -3383,5 +3407,315 @@ def deposite_agreement_otp(request, id):
 
     return render(request, 'gold/deposite_agrement_otp.html', context)
 
+#######################################################################################
+def payment(request):
+    if request.method == 'POST':
+        amount = request.POST.get('amount')
 
+        # Configuration from config file
+        api_key = 'D672D5DCFB64471A651287AC44262D'
+        merchant_id = 'SG2885'
+        client_id = 'hdfcmaster'
+        base_url = 'https://smartgatewayuat.hdfcbank.com'
+        order_id = "testing-order-one455"
+        # return_url = 'https://shop.merchant.com'
+        return_url = f"http://127.0.0.1:8000/vgold/payment_status/{order_id}/"
+        print(return_url)
+        # return HttpResponse(return_url)
+
+        # Encode API key
+        encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+        # Payload for payment session
+        payload = {
+            "order_id": order_id,  # You should generate unique order_id in production
+            "amount": amount,
+            "customer_id": "1testing-customer-one",  # Match sample data
+            "customer_email": "test@mail.com",
+            "customer_phone": "8604613494",
+            "payment_page_client_id": client_id,
+            "action": "paymentPage",
+            "currency": "INR",
+            "return_url": return_url,
+            "description": "Complete your payment",
+            "first_name": "John",
+            "last_name": "wick"
+        }
+
+        # Headers with auth and identifiers
+        headers = {
+            "Authorization": f"Basic {encoded_key}",
+            "Content-Type": "application/json",
+            "x-merchantid": merchant_id,
+            "x-customerid": payload['customer_id']
+        }
+
+        try:
+            response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+            response_data = response.json()
+            print("Payment API Response:", response_data)
+
+            if response.status_code == 200 and 'payment_links' in response_data:
+                # if 'order_id' in response_data and response_data['order_id']:
+                #     # request.session['order_id'] = response_data['order_id']
+                #     print(f"Order ID '{response_data['order_id']}' stored in session.")
+                
+                return redirect(response_data['payment_links']['web'])
+            else:
+                error_message = response_data.get('message', 'Failed to create payment session')
+                messages.error(request, f"Error: {error_message}")
+        except Exception as e:
+            messages.error(request, f"Exception occurred: {str(e)}")
+
+    return render(request, 'gold/payment.html')
+
+import uuid
+import re
+def regular_payment(request, id):
+    amount = id
+    print("Received Amount in regular_payment:", amount)
+    # Configuration from config file
+    api_key = 'D672D5DCFB64471A651287AC44262D'
+    merchant_id = 'SG2885'
+    client_id = 'hdfcmaster'
+    base_url = 'https://smartgatewayuat.hdfcbank.com'
+    # order_id = "testing-order-one865"
     
+    # Extract customer name
+     # Get customer name from session
+    user_data = request.session.get('user_data', {})
+    customer_name = user_data.get('UserFirstname', 'user')
+
+    # Sanitize name: only alphanumeric, lowercase
+    safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+
+    # Limit name part to 10 characters max
+    name_part = safe_name[:10]
+
+    # Generate a random suffix (remaining to keep total 20 chars)
+    remaining_len = 20 - len(name_part)
+    random_suffix = uuid.uuid4().hex[:remaining_len]  # use hex for uniqueness
+
+    # Final order_id
+    order_id = f"{name_part}{random_suffix}"
+    
+    # return_url = 'https://shop.merchant.com'
+    # return_url = f"http://127.0.0.1:8000/vgold/payment_status/{order_id}/"
+    return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+    print(return_url)
+    # return HttpResponse(return_url)
+
+    # Encode API key
+    encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+    # Payload for payment session
+    payload = {
+        "order_id": order_id,  # You should generate unique order_id in production
+        "amount": amount,
+        "customer_id": "testing-customer-one",  # Match sample data
+        "customer_email": "sl@mail.com",
+        "customer_phone": "9850180648",
+        "payment_page_client_id": client_id,
+        "action": "paymentPage",
+        "currency": "INR",
+        "return_url": return_url,
+        "description": "Complete your payment",
+        "first_name": "Testing",
+        "last_name": "1"
+    }
+
+    # Headers with auth and identifiers
+    headers = {
+        "Authorization": f"Basic {encoded_key}",
+        "Content-Type": "application/json",
+        "x-merchantid": merchant_id,
+        "x-customerid": payload['customer_id']
+    }
+
+    try:
+        response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+        response_data = response.json()
+        print("Payment API Response:", response_data)
+
+        if response.status_code == 200 and 'payment_links' in response_data:
+            # if 'order_id' in response_data and response_data['order_id']:
+            #     # request.session['order_id'] = response_data['order_id']
+            #     print(f"Order ID '{response_data['order_id']}' stored in session.")
+            
+            return redirect(response_data['payment_links']['web'])
+        else:
+            error_message = response_data.get('message', 'Failed to create payment session')
+            messages.error(request, f"Error: {error_message}")
+    except Exception as e:
+        messages.error(request, f"Exception occurred: {str(e)}")
+
+
+
+@csrf_exempt
+def payment_status(request,id):
+    """
+    This function will be called as the return_url from the HDFC payment gateway.
+    It retrieves the order_id from the session and then calls the HDFC order status API.
+    """
+    context = {
+        "order_id": "N/A",
+        "payment_status": "Unknown",
+        "amount": "N/A",
+        "message": "An unexpected error occurred or no order ID found."
+    }
+    
+    order_id = id
+    print(order_id)
+    
+    if order_id :
+        
+        # Configuration (same as in payment function, consider centralizing if many functions use it)
+        api_key = 'D672D5DCFB64471A651287AC44262D'
+        merchant_id = 'SG2885'
+        base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+        # Encode API key
+        encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+        # Headers for the order status API call
+        headers = {
+            "Authorization": f"Basic {encoded_key}",
+            "Content-Type": "application/json",
+            "x-merchantid": merchant_id,
+        }
+
+        try:
+            # Call the HDFC order status API
+            status_response = requests.get(f"{base_url}/orders/{order_id}", headers=headers)
+            status_data = status_response.json()
+            print("Order Status API Response:", status_data)
+
+            if status_response.status_code == 200:
+                hdfc_status = status_data.get('status', 'N/A').upper() # Get status and convert to uppercase for consistent checking
+
+                if hdfc_status == 'CHARGED':
+                    payment_status_display = 'success'
+                    message = "Payment was successful!"
+                elif hdfc_status == 'PENDING':
+                    payment_status_display = 'pending'
+                    message = "Payment is pending. Please check again later."
+                elif hdfc_status == 'FAILED' or hdfc_status == 'CANCELLED':
+                    payment_status_display = 'failed'
+                    message = f"Payment failed. Reason: {status_data.get('resp_message', 'N/A')}"
+                else:
+                    payment_status_display = 'unknown'
+                    message = f"Payment status is: {hdfc_status}. For more details, contact support."
+
+                context = {
+                    "order_id": order_id,
+                    "payment_status": payment_status_display, # Lowercased for HTML template
+                    "amount": status_data.get('amount', 'N/A'),
+                    "message": message,
+                    "customer_email": status_data.get('customer_email', 'N/A'),
+                    "customer_phone": status_data.get('customer_phone', 'N/A'),
+                    "transaction_id": status_data.get('txn_id', 'N/A'),
+                    "payment_method": status_data.get('payment_method', 'N/A'),
+                }
+                # You might want to remove the order_id from the session after processing
+                # del request.session['order_id']
+            else:
+                error_message = status_data.get('message', 'Failed to retrieve payment status from HDFC.')
+                context = {
+                    "order_id": order_id,
+                    "payment_status": "error", # Lowercased for HTML template
+                    "message": f"Error retrieving payment status from HDFC: {error_message}"
+                }
+        except requests.exceptions.RequestException as req_e:
+            context = {
+                "order_id": order_id,
+                "payment_status": "error",
+                "message": f"Network or API connection error: {str(req_e)}"
+            }
+        except Exception as e:
+            context = {
+                "order_id": order_id,
+                "payment_status": "error",
+                "message": f"An unexpected exception occurred: {str(e)}"
+            }
+    else:
+        context = {
+            "order_id": "N/A",
+            "payment_status": "no_order_id",
+            "message": "No order ID found in your session. This might indicate an issue with the payment flow or a direct access to this page."
+        }
+    
+    return render(request, 'gold/payment_status.html', context)
+
+
+##################################################################################
+
+def installment_op(request):
+    if request.method == 'POST':
+        pay_type = request.POST.get('pay_type')
+
+        if pay_type == 'total':
+            booking_nos = request.POST.getlist('booking_no')
+            booking_amounts = request.POST.getlist('booking_amount')
+
+            total_info = list(zip(booking_nos, booking_amounts))
+            print("=== Total Pay Clicked ===")
+            for b_no, amt in total_info:
+                print(f"Booking No: {b_no}, Amount: ₹{amt}")
+
+            total_amount = sum(float(amt) for amt in booking_amounts)
+            return redirect('regular_payment', id=total_amount)
+
+        elif pay_type == 'partial':
+            partial_amount = request.POST.get('partial_amount')
+            print("=== Partial Pay Clicked ===")
+            print("Partial Amount:", partial_amount)
+            return redirect('regular_payment', id=partial_amount)
+        
+    # api_url = 'http://127.0.0.1:8000/vgold_admin/m_api/get_installemnt_info/'
+    api_url = 'https://vgold.app/vgold_admin/m_api/get_installemnt_info/'
+    user_data = request.session.get('user_data', {})
+    
+    # Extract user_id from the session data
+    user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
+    print(user_id)
+
+    # If user_id is not found in the session data, return an error message
+    if not user_id:
+        return redirect('login') 
+    
+    # Prepare the payload for the API call
+    payload = {'user_id': user_id}
+    # payload = {"user_id": 40}
+
+    try:
+        # Make the API call
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()
+
+        # Check if the API call was successful
+        if response.status_code == 200 and response_data.get('message_code') == 1000:
+            raw_bookings = []
+
+            for item in response_data.get('message_data', []):
+                # Extract the needed data
+                booking = {
+                    'booking_no': item.get('gold_booking_id', ''),
+                    'installment_amount': float(item.get('current_month_emi_amount', 0.00)),
+                    'tenure': f"{item.get('tennure', 0)} months",
+                    'gold': f"{item.get('gold', 0)} Gm",
+                    'installment_date': item.get('installment_date', '') or item.get('added_date', '') # or item['added_date'] if needed
+                }
+                raw_bookings.append(booking)
+
+            # Calculate total
+            total_installment_amount = sum(b['installment_amount'] for b in raw_bookings)
+
+            return render(request, 'gold/installment_op.html', {
+                'bookings': raw_bookings,
+                'total_amount': total_installment_amount
+            })
+        else:
+            return HttpResponse("Failed to fetch data from API", status=500)
+
+    except Exception as e:
+        return HttpResponse(f"An error occurred: {str(e)}", status=500)

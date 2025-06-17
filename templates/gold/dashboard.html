@@ -500,10 +500,24 @@
             <p>My Booking</p></a>
           </div>
 
-          <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
+          {% comment %} <div><a href="{% url 'pay_installment' %}" style="color: black; text-decoration: none;">
             <center><img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>
             <p >Pay Installment</p></a>
+          </div> {% endcomment %}
+
+         <div>
+            {% if user_id == 994 or user_id == 1011 %}
+              <a href="{% url 'installment_op' %}" style="color: black; text-decoration: none;">
+            {% else %}
+              <a href="javascript:void(0);" style="pointer-events: none; text-decoration: none; color: black;">
+            {% endif %}
+                <center>
+                  <img src="{% static 'assets/img/installment.png' %}" alt="Sell" style="width: 30px; height: 34px;">
+                </center>
+                <p>Pay Installment</p>
+              </a>
           </div>
+
 
           <div><a href="{% url 'gdeposit_history' %}" style="color: black; text-decoration: none;">
             <center><img src="{% static 'assets/img/depos.png' %}" alt="Sell" style="width: 30px; height: 34px;"></i></center>

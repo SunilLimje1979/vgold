@@ -131,5 +131,12 @@ urlpatterns = [
     
     path('deposite_agreement_otp/<str:id>/', views.deposite_agreement_otp, name='deposite_agreement_otp'),
     # path('verify_agreement_otp/', views.verify_agreement_otp, name='verify_agreement_otp'),
-      
+    
+    path('payment/', views.payment, name='payment'), 
+    
+    path('regular_payment/<str:id>/', views.regular_payment, name='regular_payment'), 
+    
+    path('installment_op/', views.installment_op, name='installment_op'), 
+    
+    path('payment_status/<str:id>/', views.payment_status, name='payment_status'),
 ]

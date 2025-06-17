@@ -80,298 +80,406 @@
         </div>
     </nav>
 
-<div class="container">
-    <form method="POST" onsubmit="return validateForm()">
-        {% csrf_token %}
-        
-        <!-- MsgId -->
-        <div class="mb-2">
-            <label class="required form-label">MsgId</label>
-            <input type="text" name="MsgId" maxlength="25" class="form-control" required>
-        </div>
-
-        <!-- Customer Name -->
-        <div class="mb-2">
-            <label class="required form-label">Name</label>
-            <input type="text" name="Customer_Name" maxlength="40" class="form-control" 
-                   value="{{ nominee_data.UserFirstname }} {{ nominee_data.UserLastname }}" 
-                   required>
-        </div>        
-
-        <!-- Customer Mobile -->
-        <div class="mb-2">
-            <label class="form-label">Mobile</label>
-            <input type="text" name="Customer_Mobile" maxlength="34" id="Customer_Mobile"
-                value="{{ nominee_data.UserMobileNo }}" class="form-control">
-        </div>
-
-        <!-- Customer Email -->
-        <div class="mb-2">
-            <label class="form-label">EmailId</label>
-            <input type="email" name="Customer_EmailId" maxlength="50" id="Customer_EmailId"
-                value="{{ nominee_data.UserEmail }}" class="form-control">
-        </div>
-
-        <!-- Customer Account No -->
-        <div class="mb-2">
-            <label class="required form-label">Account No</label>
-            <input type="text" name="Customer_AccountNo" maxlength="35" class="form-control" required>
-        </div>
-
-        <!-- Start Date -->
-       <div class="mb-2">
-            <label class="required form-label">Start Date</label>
-            <input type="date" id="start_date" name="Customer_StartDate" class="form-control" required>
-        </div>
-
-        <div class="mb-2">
-            <label class="form-label">Expiry Date</label>
-            <input type="date" id="expiry_date" name="Customer_ExpiryDate" class="form-control">
-        </div>
-
-        <!-- Debit & Max Amount -->
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label class="form-label"> Debit Amount</label>
-                <input type="number" step="0.01" name="Customer_DebitAmount" id="Customer_DebitAmount" class="form-control">
+    <div class="container">
+        <form id="PostForm" name="PostForm" action="https://emandateut.hdfcbank.com/Emandate.aspx" method="POST">   
+            <div class="mb-2">
+                <label class="required form-label">MsgId</label>
+                <input type="text" name="MsgId" maxlength="25" class="form-control" required>
             </div>
-            <div class="col-md-6 mb-2">
-                <label class="form-label"> Max Amount</label>
-                <input type="number" step="0.01" name="Customer_MaxAmount" id="Customer_MaxAmount" class="form-control">
+
+            <div class="mb-2">
+                <label class="required form-label">Name</label>
+                <input type="text" name="Customer_Name" id="Customer_Name" maxlength="40" class="form-control" 
+                    value="{{ nominee_data.UserFirstname }} {{ nominee_data.UserLastname }}" required>
             </div>
-        </div>
 
-        <!-- Debit Frequency -->
-       <div class="mb-2">
-            <label class="required form-label">Debit Frequency</label>
-            <select name="Customer_DebitFrequency" id="Customer_DebitFrequency" class="form-select" required>
-                <option value="">Select</option>
-                <option value="ADHO">ADHO</option>
-                <option value="INDA">INDA</option>
-                <option value="DAIL">DAIL</option>
-                <option value="WEEK">WEEK</option>
-                <option value="MNTH" selected>MNTH</option>
-                <option value="QURT">QURT</option>
-                <option value="MIAN">MIAN</option>
-                <option value="YEAR">YEAR</option>
-                <option value="BIMN">BIMN</option>
-            </select>
-        </div>
+            <div class="mb-2">
+                <label class="form-label">Mobile</label>
+                <input type="text" name="Customer_Mobile" id="Customer_Mobile" maxlength="34"
+                    value="{{ nominee_data.UserMobileNo }}" class="form-control">
+            </div>
 
-        <!-- Instructed Member ID -->
-        <div class="mb-2">
-            <label class="required form-label"> Instructed Member Id (IFSC)</label>
-            <input type="text" name="Customer_InstructedMemberId" maxlength="11" class="form-control" required>
-        </div>
+            <div class="mb-2">
+                <label class="form-label">EmailId</label>
+                <input type="email" name="Customer_EmailId" id="Customer_EmailId" maxlength="50"
+                    value="{{ nominee_data.UserEmail }}" class="form-control">
+            </div>
 
-        <!-- Short Code -->
-        {% comment %} <div class="mb-2">
-            <label class="required form-label">Short Code</label>
-            <input type="text" name="Short_Code" maxlength="10" class="form-control" required>
-        </div> {% endcomment %}
-        <div class="mb-2">
-            <label class="required form-label">Short Code</label>
-            <input type="text" name="Short_Code" maxlength="10" class="form-control" value="VGL" readonly style="background-color: #e9ecef;" required>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Account No</label>
+                <input type="text" id="Customer_AccountNo" name="Customer_AccountNo" maxlength="35" class="form-control" required>
+            </div>
 
+            <div class="mb-2">
+                <label class="required form-label">Start Date</label>
+                <input type="date" id="start_date" name="Customer_StartDate" class="form-control" required>
+            </div>
 
-        <!-- Sequence Type -->
-        {% comment %} <div class="mb-2">
-            <label class="required form-label">Sequence Type</label>
-            <select name="Customer_SequenceType" id="Customer_SequenceType" class="form-select" required onchange="toggleFrequencyRequirement()">
-                <option value="RCUR">RCUR</option>
-                <option value="OOFF">OOFF</option>
-            </select>
-        </div> {% endcomment %}
+            <div class="mb-2">
+                <label class="form-label">Expiry Date</label>
+                <input type="date" id="expiry_date" name="Customer_ExpiryDate" class="form-control">
+            </div>
 
-        <div class="mb-2">
-            <label class="required form-label">Sequence Type</label>
-            <select name="Customer_SequenceType_Display" id="Customer_SequenceType" class="form-select" required disabled>
-                <option value="RCUR" selected>RCUR</option>
-                <option value="OOFF">OOFF</option>
-            </select>
-            <!-- Hidden input to actually submit the selected value -->
-            <input type="hidden" name="Customer_SequenceType" value="RCUR">
-        </div>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <label class="form-label"> Debit Amount</label>
+                    <input type="number" step="0.01" name="Customer_DebitAmount" id="Customer_DebitAmount" class="form-control">
+                </div>
+                <div class="col-md-6 mb-2">
+                    <label class="form-label"> Max Amount</label>
+                    <input type="number" step="0.01" name="Customer_MaxAmount" id="Customer_MaxAmount" class="form-control">
+                </div>
+            </div>
 
+            <div class="mb-2">
+                <label class="required form-label">Debit Frequency</label>
+                <select name="Customer_DebitFrequency" id="Customer_DebitFrequency" class="form-select" required>
+                    <option value="">Select</option>
+                    <option value="ADHO">ADHO</option>
+                    <option value="INDA">INDA</option>
+                    <option value="DAIL">DAIL</option>
+                    <option value="WEEK">WEEK</option>
+                    <option value="MNTH" selected>MNTH</option>
+                    <option value="QURT">QURT</option>
+                    <option value="MIAN">MIAN</option>
+                    <option value="YEAR">YEAR</option>
+                    <option value="BIMN">BIMN</option>
+                </select>
+            </div>
 
-        <!-- Merchant Code -->
-        {% comment %} <div class="mb-2">
-            <label class="required form-label">Merchant Category Code</label>
-            <input type="text" name="Merchant_Category_Code" maxlength="4" class="form-control" required>
-        </div> {% endcomment %}
-        <div class="mb-2">
-            <label class="required form-label">Merchant Category Code</label>
-            <input type="text" name="Merchant_Category_Code" maxlength="4" class="form-control" value="U099" readonly style="background-color: #e9ecef;" required>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label"> Instructed Member Id (IFSC)</label>
+                <input type="text" name="Customer_InstructedMemberId" maxlength="11" class="form-control" required>
+            </div>
 
+            <div class="mb-2">
+                <label class="required form-label">Short Code</label>
+                <input type="text" name="Short_Code" maxlength="10" class="form-control" value="VGL" readonly style="background-color: #e9ecef;" required>
+            </div>
 
-        <!-- Channel -->
-        <div class="mb-2">
-            <label class="required form-label">Channel</label>
-            <select name="Channel" class="form-select" required>
-                <option value="Debit">Debit</option>
-                <option value="Net">Net</option>
-                <option value="Aadhaar">Aadhaar</option>
-            </select>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Sequence Type</label>
+                <select name="Customer_SequenceType_Display" id="Customer_SequenceType" class="form-select" required disabled>
+                    <option value="RCUR" selected>RCUR</option>
+                    <option value="OOFF">OOFF</option>
+                </select>
+                <input type="hidden" name="Customer_SequenceType" value="RCUR">
+            </div>
 
-        <!-- Customer Reference 1 -->
-        <div class="mb-2">
-            <label class="required form-label">Reference_1 (Consumer_Reference_no)</label>
-            <input type="text" name="Customer_Reference1" maxlength="50" class="form-control" 
-                pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed." required>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Merchant Category Code</label>
+                <input type="text" name="Merchant_Category_Code" maxlength="4" class="form-control" value="U099" readonly style="background-color: #e9ecef;" required>
+            </div>
 
-        <!-- Customer Reference 2 -->
-        <div class="mb-2">
-            <label class="required form-label">Customer Reference 2 (Scheme Name - Corporates Only)</label>
-            <input type="text" name="Customer_Reference2" maxlength="50" class="form-control" 
-                pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed." required>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Channel</label>
+                <select name="Channel" class="form-select" required>
+                    <option value="Debit">Debit</option>
+                    <option value="Net">Net</option>
+                    <option value="Aadhaar">Aadhaar</option>
+                </select>
+            </div>
 
+            <div class="mb-2">
+                <label class="required form-label">Util Code</label>
+                <input type="text" id="UtilCode" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000000020" readonly style="background-color: #e9ecef;" required>
+            </div>
 
-        <!-- Util Code -->
-        {% comment %} <div class="mb-2">
-            <label class="required form-label">Util Code</label>
-            <input type="text" name="UtilCode" maxlength="18" class="form-control" required>
-        </div> {% endcomment %}
-        <div class="mb-2">
-            <label class="required form-label">Util Code</label>
-            <input type="text" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000000020" readonly style="background-color: #e9ecef;" required>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Reference_1 (Consumer_Reference_no)</label>
+                <input type="text" id="Customer_Reference1" name="Customer_Reference1" maxlength="50" class="form-control" pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed.">
+            </div>
 
-        <!-- Account Type -->
-        <div class="mb-2">
-            <label class="required form-label">Filler5 (Account Type)</label>
-            <select name="Filler5" class="form-select" required>
-                <option value="S">Savings</option>
-                <option value="C">Current</option>
-                <option value="O">Other</option>
-            </select>
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Customer Reference 2 (Scheme Name - Corporates Only)</label>
+                <input type="text" id="Customer_Reference2" name="Customer_Reference2" maxlength="50" class="form-control" pattern="[A-Za-z0-9#]*" title="Only alphanumeric characters and '#' are allowed.">
+            </div>
 
-        <div class="mb-2">
-            <label class="required form-label" for="bank_name">Filler6</label>
-            <select id="bank_name" name="Filler6" class="form-control select2">
-                <option value="">-- Select Bank --</option>
-                {% for bank in bank_list %}
-                    <option value="{{ bank.bankId }}">{{ bank.bankName }}</option>
-                {% endfor %}
-            </select> 
-        </div>
+            <div class="mb-2">
+                <label class="required form-label">Filler5 (Account Type)</label>
+                <select name="Filler5" class="form-select" required>
+                    <option value="S">Savings</option>
+                    <option value="C">Current</option>
+                    <option value="O">Other</option>
+                </select>
+            </div>
 
-        
-        <!-- Additional Fillers -->
-        {% for i in "1234789" %}
-        <div class="mb-2">
-            <label class="form-label">Filler{{ i }}</label>
-            <input type="text" name="Filler{{ i }}" maxlength="50" class="form-control">
-        </div>
-        {% endfor %}
+            <div class="mb-2">
+                <label class="required form-label" for="bank_name">Filler6</label>
+                <select id="bank_name" name="Filler6" class="form-control select2">
+                    <option value="">-- Select Bank --</option>
+                    {% for bank in bank_list %}
+                        <option value="{{ bank.bankId }}">{{ bank.bankName }}</option>
+                    {% endfor %}
+                </select> 
+            </div>
 
-        <!-- Submit -->
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary px-5">Submit</button>
-        </div>
-    </form>
-</div>
+            {% for i in "1234789" %}
+            <div class="mb-2">
+                <label class="form-label">Filler{{ i }}</label>
+                <input type="text" name="Filler{{ i }}" maxlength="50" class="form-control">
+            </div>
+            {% endfor %}
 
-<!-- Include jQuery first -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <div class="mb-2">
+                <label class="form-label">Checksum (SHA-256)</label>
+                <input type="text" id="checksum_field" class="form-control" readonly style="background-color: #e9ecef;">
+            </div>
 
-<!-- Include Select2 CSS and JS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+            <div class="text-center">
+                <button type="button" class="btn btn-primary px-5" onclick="submitForm()">Submit</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
-    $(document).ready(function() {
-        $('#bank_name').select2({
-            placeholder: "-- Select Bank --",
-            allowClear: true,
-            width: '100%'  // optional to match Bootstrap styling
+     document.addEventListener("DOMContentLoaded", function () {
+            $('#bank_name').select2({
+                placeholder: "-- Select Bank --",
+                allowClear: true,
+                width: '100%'
+            });
+
+            setDefaultDates();
+            toggleFrequencyRequirement();
+            setupMutualExclusion();
+            removeMessageContainer();
+            setupChecksumListeners();
+
+            const form = document.querySelector("form");
+            if (form) {
+                form.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+                    if (!validateForm()) return;
+
+                    const fieldsToEncrypt = [
+                        "Customer_Name",
+                        "Customer_Mobile",
+                        "Customer_EmailId",
+                        "Customer_AccountNo",
+                        "UtilCode",
+                        "Customer_Reference1",
+                        "Customer_Reference2"
+                    ];
+
+                    for (const fieldId of fieldsToEncrypt) {
+                        await encryptField(fieldId);
+                    }
+
+                    this.submit();
+                });
+            }
+
+            document.getElementById("Customer_SequenceType")?.addEventListener("change", toggleFrequencyRequirement);
+            document.getElementById("start_date")?.addEventListener("change", updateExpiryDate);
         });
-    });
-</script>
-<script>
-    function padZero(num) {
-        return num.toString().padStart(2, '0');
-    }
 
-    function setDefaultDates() {
-        const startDateInput = document.getElementById("start_date");
-        const expiryDateInput = document.getElementById("expiry_date");
+    // Helper: Pad numbers to 2-digits
+    const padZero = (num) => num.toString().padStart(2, '0');
 
-        const today = new Date();
-        let nextMonth = today.getMonth() + 1;
-        let year = today.getFullYear();
+    // Set default start and expiry dates
+   function setDefaultDates() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = padZero(today.getMonth() + 1);
+            const dd = padZero(today.getDate());
 
-        if (nextMonth > 11) {
-            nextMonth = 0; // January
-            year += 1;
+            document.getElementById("start_date").value = `${yyyy}-${mm}-${dd}`;
+
+            const expiry = new Date(today);
+            expiry.setFullYear(expiry.getFullYear() + 1);
+            const yyyyExp = expiry.getFullYear();
+            const mmExp = padZero(expiry.getMonth() + 1);
+            const ddExp = padZero(expiry.getDate());
+
+            document.getElementById("expiry_date").value = `${yyyyExp}-${mmExp}-${ddExp}`;
         }
 
-        const defaultStartDate = new Date(year, nextMonth, 1); // 1st of next month
-        const defaultStartStr = `${defaultStartDate.getFullYear()}-${padZero(defaultStartDate.getMonth() + 1)}-01`;
 
-        startDateInput.value = defaultStartStr;
+        // Update expiry date when start date changes
+        function updateExpiryDate() {
+            const startDateInput = document.getElementById("start_date");
+            const expiryDateInput = document.getElementById("expiry_date");
 
-        // Set expiry date to 5 years after start date
-        const expiryDate = new Date(defaultStartDate);
-        expiryDate.setFullYear(expiryDate.getFullYear() + 5);
+            if (startDateInput && expiryDateInput) {
+                const startDate = new Date(startDateInput.value);
+                if (!isNaN(startDate.getTime())) {
+                    const newExpiry = new Date(startDate);
+                    newExpiry.setFullYear(newExpiry.getFullYear() + 1);
+                    const yyyy = newExpiry.getFullYear();
+                    const mm = padZero(newExpiry.getMonth() + 1);
+                    const dd = padZero(newExpiry.getDate());
 
-        const expiryDateStr = `${expiryDate.getFullYear()}-${padZero(expiryDate.getMonth() + 1)}-${padZero(expiryDate.getDate())}`;
-        expiryDateInput.value = expiryDateStr;
+                    expiryDateInput.value = `${yyyy}-${mm}-${dd}`;
+                }
+            }
+        }
+
+
+        function toggleFrequencyRequirement() {
+            const freqSelect = document.getElementById("Customer_DebitFrequency");
+            const sequenceType = document.getElementById("Customer_SequenceType")?.value;
+
+            if (sequenceType === "OOFF") {
+                freqSelect.removeAttribute("required");
+            } else {
+                freqSelect.setAttribute("required", "required");
+            }
+        }
+
+    // Format value to two decimal points
+    function toDecimal(value, required) {
+        value = value.trim();
+        if (value === "" && required) return "";
+        const num = parseFloat(value);
+        return isNaN(num) ? (required ? "" : "0.00") : (Math.floor(num * 100) / 100).toFixed(2);
     }
 
-    document.addEventListener("DOMContentLoaded", setDefaultDates);
+    // Process mutual exclusive fields: Debit / Max Amount
+    function processAmounts() {
+        const debit = document.getElementById("Customer_DebitAmount");
+        const max = document.getElementById("Customer_MaxAmount");
 
-    // Optional: Update expiry date automatically if start date is changed manually
-    document.getElementById("start_date").addEventListener("change", function () {
-        const selectedDate = new Date(this.value);
-        const expiryDateInput = document.getElementById("expiry_date");
+        debit.value = toDecimal(debit.value, max.value.trim() !== "");
+        max.value = toDecimal(max.value, debit.value.trim() !== "");
+    }
 
-        if (!isNaN(selectedDate)) {
-            selectedDate.setFullYear(selectedDate.getFullYear() + 5);
-            const expiryDateStr = `${selectedDate.getFullYear()}-${padZero(selectedDate.getMonth() + 1)}-${padZero(selectedDate.getDate())}`;
-            expiryDateInput.value = expiryDateStr;
-        }
-    });
-</script>
-<script>
+    // Enable/disable frequency based on sequence type
+
+
+    // Validate before submission
     function validateForm() {
         const mobile = document.getElementById("Customer_Mobile").value.trim();
         const email = document.getElementById("Customer_EmailId").value.trim();
-        const debitAmt = document.getElementById("Customer_DebitAmount").value.trim();
-        const maxAmt = document.getElementById("Customer_MaxAmount").value.trim();
-        const sequenceType = document.getElementById("Customer_SequenceType").value;
-        const frequency = document.getElementById("Customer_DebitFrequency");
+        const debit = document.getElementById("Customer_DebitAmount").value.trim();
+        const max = document.getElementById("Customer_MaxAmount").value.trim();
 
-        if (mobile === "" && email === "") {
+        if (!mobile && !email) {
             alert("Either Customer Mobile or Email is required.");
             return false;
         }
-
-        if (debitAmt === "" && maxAmt === "") {
+        if (!debit && !max) {
             alert("Either Debit Amount or Max Amount is required.");
             return false;
         }
-
-        if (debitAmt !== "" && maxAmt !== "") {
+        if (debit && max) {
             alert("Only one of Debit Amount or Max Amount should be filled.");
             return false;
         }
 
-        frequency.required = (sequenceType !== "OOFF");
-
+        processAmounts();
         return true;
     }
 
-    function toggleFrequencyRequirement() {
-        const sequenceType = document.getElementById("Customer_SequenceType").value;
-        const frequency = document.getElementById("Customer_DebitFrequency");
-        frequency.disabled = (sequenceType === "OOFF");
+    // Only allow one of Debit or Max Amount
+    function setupMutualExclusion() {
+        const debit = document.getElementById("Customer_DebitAmount");
+        const max = document.getElementById("Customer_MaxAmount");
+
+        debit.addEventListener("input", () => {
+            max.disabled = debit.value.trim() !== "";
+            if (max.disabled) max.value = "";
+        });
+
+        max.addEventListener("input", () => {
+            debit.disabled = max.value.trim() !== "";
+            if (debit.disabled) debit.value = "";
+        });
     }
+
+    // Auto remove flash messages
+    function removeMessageContainer() {
+        const msg = document.querySelector('.messages');
+        if (msg) setTimeout(() => msg.remove(), 5000);
+    }
+
+    // Encrypt text fields before submit
+    async function encryptField(fieldId) {
+        const field = document.getElementById(fieldId);
+        const value = field.value.trim();
+
+        if (!value) return;
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/vgold_admin/api/encrypt_text/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: value })
+            });
+
+            const result = await response.json();
+            if (result.message_code === 1000) {
+                field.value = result.message_data.encrypted_text;
+            } else {
+                console.error(`Encryption failed for ${fieldId}: ${result.message_text}`);
+            }
+        } catch (error) {
+            console.error(`API error for ${fieldId}:`, error);
+        }
+    }
+
+    // Generate SHA-256 checksum
+    async function generateChecksum(data) {
+        const encoded = new TextEncoder().encode(data);
+        const hash = await crypto.subtle.digest('SHA-256', encoded);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Set up listeners for checksum fields
+    function setupChecksumListeners() {
+        const ids = [
+            "Customer_AccountNo",
+            "start_date",
+            "expiry_date",
+            "Customer_DebitAmount",
+            "Customer_MaxAmount"
+        ];
+
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("input", updateChecksum);
+        });
+    }
+
+    // Update checksum value
+    async function updateChecksum() {
+        const accNo = document.getElementById("Customer_AccountNo").value.trim();
+        const start = document.getElementById("start_date").value.trim();
+        const end = document.getElementById("expiry_date").value.trim();
+        let debit = document.getElementById("Customer_DebitAmount").value.trim();
+        let max = document.getElementById("Customer_MaxAmount").value.trim();
+
+        debit = formatToTwoDecimal(debit);
+        max = formatToTwoDecimal(max);
+
+        if (accNo && start && (debit || max)) {
+            const data = `${accNo}|${start}|${end}|${debit}|${max}`;
+            const checksum = await generateChecksum(data);
+            document.getElementById("checksum_field").value = checksum;
+        } else {
+            document.getElementById("checksum_field").value = "";
+        }
+    }
+
+    function formatToTwoDecimal(value) {
+        const num = parseFloat(value);
+        return (!isNaN(num)) ? num.toFixed(2) : "";
+    }
+
+    // Manual form submit
+    function submitForm() {
+    const form = document.getElementById("PostForm");
+    if (form) {
+        form.requestSubmit(); // Triggers the submit event which already has encryption and validation
+    }
+}
 </script>
+
 
 </body>
 </html>
