@@ -3473,7 +3473,7 @@ import uuid
 import re
 def regular_payment(request, id):
     amount = id
-    print("Received Amount in regular_payment:", amount)
+    # print("Received Amount in regular_payment:", amount)
     # Configuration from config file
     api_key = 'D672D5DCFB64471A651287AC44262D'
     merchant_id = 'SG2885'
@@ -3500,9 +3500,9 @@ def regular_payment(request, id):
     order_id = f"{name_part}{random_suffix}"
     
     # return_url = 'https://shop.merchant.com'
-    # return_url = f"http://127.0.0.1:8000/vgold/payment_status/{order_id}/"
+    # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
     return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
-    print(return_url)
+    # print(return_url)
     # return HttpResponse(return_url)
 
     # Encode API key
@@ -3551,6 +3551,101 @@ def regular_payment(request, id):
 
 
 
+# @csrf_exempt
+# def payment_status(request,id):
+#     """
+#     This function will be called as the return_url from the HDFC payment gateway.
+#     It retrieves the order_id from the session and then calls the HDFC order status API.
+#     """
+#     context = {
+#         "order_id": "N/A",
+#         "payment_status": "Unknown",
+#         "amount": "N/A",
+#         "message": "An unexpected error occurred or no order ID found."
+#     }
+    
+#     order_id = id
+#     print(order_id)
+    
+#     if order_id :
+        
+#         # Configuration (same as in payment function, consider centralizing if many functions use it)
+#         api_key = 'D672D5DCFB64471A651287AC44262D'
+#         merchant_id = 'SG2885'
+#         base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+#         # Encode API key
+#         encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+#         # Headers for the order status API call
+#         headers = {
+#             "Authorization": f"Basic {encoded_key}",
+#             "Content-Type": "application/json",
+#             "x-merchantid": merchant_id,
+#         }
+
+#         try:
+#             # Call the HDFC order status API
+#             status_response = requests.get(f"{base_url}/orders/{order_id}", headers=headers)
+#             status_data = status_response.json()
+#             print("Order Status API Response:", status_data)
+
+#             if status_response.status_code == 200:
+#                 hdfc_status = status_data.get('status', 'N/A').upper() # Get status and convert to uppercase for consistent checking
+
+#                 if hdfc_status == 'CHARGED':
+#                     payment_status_display = 'success'
+#                     message = "Payment was successful!"
+#                 elif hdfc_status == 'PENDING':
+#                     payment_status_display = 'pending'
+#                     message = "Payment is pending. Please check again later."
+#                 elif hdfc_status == 'FAILED' or hdfc_status == 'CANCELLED':
+#                     payment_status_display = 'failed'
+#                     message = f"Payment failed. Reason: {status_data.get('resp_message', 'N/A')}"
+#                 else:
+#                     payment_status_display = 'unknown'
+#                     message = f"Payment status is: {hdfc_status}. For more details, contact support."
+
+#                 context = {
+#                     "order_id": order_id,
+#                     "payment_status": payment_status_display, # Lowercased for HTML template
+#                     "amount": status_data.get('amount', 'N/A'),
+#                     "message": message,
+#                     "customer_email": status_data.get('customer_email', 'N/A'),
+#                     "customer_phone": status_data.get('customer_phone', 'N/A'),
+#                     "transaction_id": status_data.get('txn_id', 'N/A'),
+#                     "payment_method": status_data.get('payment_method', 'N/A'),
+#                 }
+#                 # You might want to remove the order_id from the session after processing
+#                 # del request.session['order_id']
+#             else:
+#                 error_message = status_data.get('message', 'Failed to retrieve payment status from HDFC.')
+#                 context = {
+#                     "order_id": order_id,
+#                     "payment_status": "error", # Lowercased for HTML template
+#                     "message": f"Error retrieving payment status from HDFC: {error_message}"
+#                 }
+#         except requests.exceptions.RequestException as req_e:
+#             context = {
+#                 "order_id": order_id,
+#                 "payment_status": "error",
+#                 "message": f"Network or API connection error: {str(req_e)}"
+#             }
+#         except Exception as e:
+#             context = {
+#                 "order_id": order_id,
+#                 "payment_status": "error",
+#                 "message": f"An unexpected exception occurred: {str(e)}"
+#             }
+#     else:
+#         context = {
+#             "order_id": "N/A",
+#             "payment_status": "no_order_id",
+#             "message": "No order ID found in your session. This might indicate an issue with the payment flow or a direct access to this page."
+#         }
+    
+#     return render(request, 'gold/payment_status.html', context)
+
 @csrf_exempt
 def payment_status(request,id):
     """
@@ -3591,24 +3686,40 @@ def payment_status(request,id):
             print("Order Status API Response:", status_data)
 
             if status_response.status_code == 200:
-                hdfc_status = status_data.get('status', 'N/A').upper() # Get status and convert to uppercase for consistent checking
+                hdfc_status = status_data.get('status', 'N/A').upper()
+                # hdfc_status = "PENDING_VBV"
+                status_id = str(status_data.get('status_id', ''))
 
-                if hdfc_status == 'CHARGED':
-                    payment_status_display = 'success'
-                    message = "Payment was successful!"
-                elif hdfc_status == 'PENDING':
-                    payment_status_display = 'pending'
-                    message = "Payment is pending. Please check again later."
-                elif hdfc_status == 'FAILED' or hdfc_status == 'CANCELLED':
-                    payment_status_display = 'failed'
-                    message = f"Payment failed. Reason: {status_data.get('resp_message', 'N/A')}"
-                else:
-                    payment_status_display = 'unknown'
-                    message = f"Payment status is: {hdfc_status}. For more details, contact support."
+                # Default fallback values
+                payment_status_display = 'unknown'
+                message = f"Payment status is: {hdfc_status}. Please contact support."
+
+                # Mapping HDFC status to user-friendly status
+                status_map = {
+                    'CHARGED': ('success', "Payment was successful!"),
+                    'PENDING_VBV': ('pending', "Payment authentication is in progress. Please wait."),
+                    'AUTHORIZED': ('pending', "Transaction authorized. Awaiting capture."),
+                    'AUTHORIZING': ('pending', "Awaiting bank authorization."),
+                    'STARTED': ('pending', "Transaction is pending due to gateway issues."),
+                    'AUTO_REFUNDED': ('failed', "Payment was auto-refunded."),
+                    'AUTHENTICATION_FAILED': ('failed', "Authentication failed. Please try again."),
+                    'AUTHORIZATION_FAILED': ('failed', "Authorization failed. Bank refused the transaction."),
+                    'JUSPAY_DECLINED': ('failed', "Transaction failed during processing. Please retry."),
+                    'VOIDED': ('failed', "Transaction was voided."),
+                    'VOID_INITIATED': ('pending', "Void is in progress."),
+                    'VOID_FAILED': ('failed', "Void request failed."),
+                    'CAPTURE_INITIATED': ('pending', "Capture initiated."),
+                    'CAPTURE_FAILED': ('failed', "Capture failed."),
+                    'FAILED': ('failed', status_data.get('resp_message', "Transaction failed.")),
+                    'CANCELLED': ('failed', "Transaction was cancelled."),
+                }
+
+                if hdfc_status in status_map:
+                    payment_status_display, message = status_map[hdfc_status]
 
                 context = {
                     "order_id": order_id,
-                    "payment_status": payment_status_display, # Lowercased for HTML template
+                    "payment_status": payment_status_display,
                     "amount": status_data.get('amount', 'N/A'),
                     "message": message,
                     "customer_email": status_data.get('customer_email', 'N/A'),
@@ -3616,15 +3727,24 @@ def payment_status(request,id):
                     "transaction_id": status_data.get('txn_id', 'N/A'),
                     "payment_method": status_data.get('payment_method', 'N/A'),
                 }
+
                 # You might want to remove the order_id from the session after processing
                 # del request.session['order_id']
             else:
                 error_message = status_data.get('message', 'Failed to retrieve payment status from HDFC.')
+                
+                # Still try to extract and show available details from the response
                 context = {
                     "order_id": order_id,
-                    "payment_status": "error", # Lowercased for HTML template
-                    "message": f"Error retrieving payment status from HDFC: {error_message}"
+                    "payment_status": "error",  # Used for status icon and styling
+                    "message": f"Error retrieving payment status from HDFC: {error_message}",
+                    "amount": status_data.get('amount', 'N/A'),
+                    "customer_email": status_data.get('customer_email', 'N/A'),
+                    "customer_phone": status_data.get('customer_phone', 'N/A'),
+                    "transaction_id": status_data.get('txn_id', 'N/A'),
+                    "payment_method": status_data.get('payment_method', 'N/A'),
                 }
+
         except requests.exceptions.RequestException as req_e:
             context = {
                 "order_id": order_id,

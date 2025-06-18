@@ -114,7 +114,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="status-container">
-                    {% if payment_status == 'success' %}
+                    {% comment %} {% if payment_status == 'success' %}
                         <i class="fas fa-check-circle status-icon status-success"></i>
                         <p class="status-text">Payment Successful!</p>
                     {% elif payment_status == 'failed' %}
@@ -124,6 +124,20 @@
                         <i class="fas fa-hourglass-half status-icon status-pending"></i>
                         <p class="status-text">Payment Pending...</p>
                     {% else %} {# This will catch 'error', 'unknown', and 'no_order_id' #}
+                        <i class="fas fa-info-circle status-icon"></i>
+                        <p class="status-text">Payment Status</p>
+                    {% endif %} {% endcomment %}
+
+                    {% if payment_status == 'success' %}
+                        <i class="fas fa-check-circle status-icon status-success"></i>
+                        <p class="status-text">Payment Successful!</p>
+                    {% elif payment_status == 'failed' %}
+                        <i class="fas fa-times-circle status-icon status-failure"></i>
+                        <p class="status-text">Payment Failed!</p>
+                    {% elif payment_status == 'pending' %}
+                        <i class="fas fa-hourglass-half status-icon status-pending"></i>
+                        <p class="status-text">Payment Pending...</p>
+                    {% else %}
                         <i class="fas fa-info-circle status-icon"></i>
                         <p class="status-text">Payment Status</p>
                     {% endif %}
