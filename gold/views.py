@@ -1533,13 +1533,15 @@ from django.http import HttpResponse
 
 def Booking_details(request):
     if request.method == 'GET':
+        user_data = request.session.get('user_data', {})
+        user_id = user_data.get('User_Id') 
         # Retrieve the API response from the session
         api_response = request.session.get('api_response')
         # print(api_response)
 
         if api_response:
             # Render the template with API response data
-            return render(request, 'gold/booking_details.html', {'api_response': api_response})
+            return render(request, 'gold/booking_details.html', {'api_response': api_response,"user_id":user_id})
         else:
             return HttpResponse("No API response found in session.", status=404)
 
@@ -1587,44 +1589,87 @@ def Booking_details(request):
         Initial_Booking_charges = api_response.get('Initial_Booking_charges')
         Booking_charges = api_response.get('Booking_charges')
         
-        payload={
-            "user_id":user_id,
-            "booking_value":booking_value,
-            "down_payment" :down_payment,
-            "monthly":monthly,
-            "rate":gold_rate,
-            "pc":pc,
-            "gold_weight":gold_in_gm, 
-            "tennure":tenure,
-            "payment_option":payment_option,
-            "bank_details":bank_details,
-            "cheque_no" :cheque_no,
-            "tr_id":tr_id,
-            "initial_booking_charges":Initial_Booking_charges,
-            "booking_charges_discount":booking_charges_discount,
-            "booking_charges":Booking_charges,
-            "confirmed":0                  
+        # payload={
+        #     "user_id":user_id,
+        #     "booking_value":booking_value,
+        #     "down_payment" :down_payment,
+        #     "monthly":monthly,
+        #     "rate":gold_rate,
+        #     "pc":pc,
+        #     "gold_weight":gold_in_gm, 
+        #     "tennure":tenure,
+        #     "payment_option":payment_option,
+        #     "bank_details":bank_details,
+        #     "cheque_no" :cheque_no,
+        #     "tr_id":tr_id,
+        #     "initial_booking_charges":Initial_Booking_charges,
+        #     "booking_charges_discount":booking_charges_discount,
+        #     "booking_charges":Booking_charges,
+        #     "confirmed":0                  
+        # }
+        payload = {
+            "user_id": user_id,
+            "booking_value": booking_value,
+            "down_payment": down_payment,
+            "monthly": monthly,
+            "rate": gold_rate,
+            "pc": pc,
+            "gold_weight": gold_in_gm,
+            "tennure": tenure,
+            "payment_option": payment_option,
+            "bank_details": bank_details if payment_option != "PG" else "",
+            "cheque_no": cheque_no if payment_option == "Cheque" else "",
+            "tr_id": tr_id if payment_option == "Online" else "",
+            "initial_booking_charges": Initial_Booking_charges,
+            "booking_charges_discount": booking_charges_discount,
+            "booking_charges": Booking_charges,
+            "confirmed": 0
         }
 
         api_url = "https://vgold.app/vgold_admin/m_api/create_gold_booking/"
+        # api_url = "http://127.0.0.1:8001/vgold_admin/m_api/create_gold_booking/"
 
         # Send POST request to the API
+        # try:
+        #     response = requests.post(api_url, json=payload)
+        #     response_data = response.json()
+
+        #     if response.status_code == 200 and response_data.get('message_code') == 1000:
+        #         # Success: Save booking ID or other details if needed
+        #         booking_id = response_data['message_data']['booking_id']
+        #         messages.success(request, f"Booking successful! Booking ID: {booking_id}")
+        #         return redirect('gold_booking')  # Redirect to a success page
+        #     else:
+        #         # Handle API error
+        #         error_message = response_data.get('message_text', 'An error occurred during booking.')
+        #         messages.error(request, error_message)
+        #         return redirect('booking_details') 
+            
+        #     # Redirect to the same page
+        # except requests.exceptions.RequestException as e:
+        #     # Handle request exceptions
+        #     messages.error(request, "Failed to connect to the booking API. Please try again later.")
+        #     return redirect('booking_details')
+        
         try:
             response = requests.post(api_url, json=payload)
             response_data = response.json()
 
             if response.status_code == 200 and response_data.get('message_code') == 1000:
-                # Success: Save booking ID or other details if needed
                 booking_id = response_data['message_data']['booking_id']
-                messages.success(request, f"Booking successful! Booking ID: {booking_id}")
-                return redirect('gold_booking')  # Redirect to a success page
+                
+                if payment_option == "PG":
+                    partial_amount = float(down_payment) + float(Booking_charges)
+                    # partial_amount = down_payment  # or monthly or whatever value you'd use
+                    return redirect('regular_payment', id=partial_amount)
+                else:
+                    messages.success(request, f"Booking successful! Booking ID: {booking_id}")
+                    return redirect('gold_booking')
             else:
-                # Handle API error
                 error_message = response_data.get('message_text', 'An error occurred during booking.')
                 messages.error(request, error_message)
-                return redirect('booking_details')  # Redirect to the same page
-        except requests.exceptions.RequestException as e:
-            # Handle request exceptions
+                return redirect('booking_details')
+        except requests.exceptions.RequestException:
             messages.error(request, "Failed to connect to the booking API. Please try again later.")
             return redirect('booking_details')
        

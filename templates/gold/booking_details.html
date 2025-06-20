@@ -175,13 +175,24 @@
             <label for="monthly_installment" class="form-label">Monthly Installment</label>
             <input type="text" class="form-control" id="monthly_installment" value="{{ api_response.Monthly }}" readonly>
           </div>
-          <div class="form-group form-element">
+          {% comment %} <div class="form-group form-element">
             <select class="form-control bold-text" id="dropdown2" name="dropdown2">
                 <option value="">--  Please Select Payment Option  --</option>
                 <option value="Cheque">Cheque</option>
                 <option value="Online">Online</option>
+                <option value="PG">Payment Gateway</option>
             </select>
-          </div>
+          </div> {% endcomment %}
+
+          <div class="form-group form-element">
+            <select class="form-control bold-text" id="dropdown2" name="dropdown2">
+                <option value="">--  Please Select Payment Option  --</option>
+                <option value="Cheque">Cheque</option>
+                {% if user_id == 994 or user_id == 1011 %}
+                    <option value="PG">Payment Gateway</option>
+                {% endif %}
+            </select>
+        </div>
 
           <div id="bankDetails" style="display: none;">
             <div class="mb-3">
@@ -194,7 +205,7 @@
 
           <button id="updateProfileBtn" type="submit">Pay</button>
 
-          <div class="center-image">
+          {% comment %} <div class="center-image">
             <img
               src="https://www.vgold.co.in/AccountQR.png"
               alt="Your Logo"
@@ -202,47 +213,25 @@
               style="height: 80%; width: 100%; margin-bottom: 10px"
             />
             <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
+          </div> {% endcomment %}
+
+          <!-- QR code image (default visible) -->
+          <div class="center-image" id="qrSection">
+            <img
+              src="https://www.vgold.co.in/AccountQR.png"
+              alt="QR Code"
+              class="logo"
+              style="height: 80%; width: 100%; margin-bottom: 10px"
+            />
+            <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
           </div>
 
-          {% comment %} <div class="center-image">
-            <img
-              src="https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png"
-              alt="Your Logo"
-              class="logo"
-              style="height: 80%; width: 90%; margin-bottom: 10px"
-            />
-            <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
-          </div> {% endcomment %}
-          
-          {% comment %} <div class="center-image">
-            <img
-                src="https://www.vgold.co.in/AccountQR.png"
-                alt="Your Logo"
-                class="logo"
-                style="width: 100%; margin-bottom: 10px"
-            />
-            <i class="fas fa-share-alt share-icon" onclick="shareImage()"></i>
-        </div>
-        
-        <div class="account-details">
-            <p><strong>Account Name:</strong> Vighnaharata Gold Ltd.</p>
-            <p><strong>Bank Name:</strong> HDFC</p>
-            <p><strong>Account No:</strong> 18117610000015</p>
-            <p><strong>Branch Name:</strong> Manjari, Hadapsar, Pune</p>
-            <p><strong>IFSC Code:</strong> HDFC0001811</p>
-            <p><strong>UPI ID:</strong> vgold@hdfcbank</p>
-        </div>
-        <style>
-          .account-details {
-              font-size: 13px;
-              margin-top: 20px;
-              line-height: 1.5;
-              text-align:center;
-          }
-          .account-details p {
-              margin: 5px 0;
-          }
-      </style> {% endcomment %}
+          <!-- HDFC logo image (hidden by default) -->
+          <div class="text-center" id="hdfcSection" style="display: none;">
+            <img src="{% static 'assets/img/hdfclogo.png' %}" alt="HDFC Logo"
+              style="width: 300px; height: 85px; margin-top: 8px; padding-left: 10px; border-radius: 25px;">
+          </div>
+
 
         </form>
       </div>
@@ -252,7 +241,7 @@
   <!-- Bootstrap JS (optional, for Bootstrap features) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Custom JS -->
-  <script>
+  {% comment %} <script>
     document.getElementById("dropdown2").addEventListener("change", function() {
       var paymentMethod = this.value;
       var bankDetailsDiv = document.getElementById("bankDetails");
@@ -269,30 +258,41 @@
         additionalFieldDiv.innerHTML = '';
       }
     });
-  </script>
-  {% comment %} <script>
-    function shareImage() {
-      const imageUrl = "https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png";
-      if (navigator.share) {
-        navigator.share({
-          title: 'Share Bank Details Image',
-          url: imageUrl
-        }).then(() => {
-          console.log('Thanks for sharing!');
-        }).catch(err => {
-          console.error('Error while sharing', err);
-        });
-      } else {
-        const dummy = document.createElement('input');
-        document.body.appendChild(dummy);
-        dummy.value = imageUrl;
-        dummy.select();
-        document.execCommand('copy');
-        document.body.removeChild(dummy);
-        alert('Image URL copied to clipboard');
-      }
-    }
   </script> {% endcomment %}
+
+  <script>
+    document.getElementById("dropdown2").addEventListener("change", function () {
+      var paymentMethod = this.value;
+      var bankDetailsDiv = document.getElementById("bankDetails");
+      var additionalFieldDiv = document.getElementById("additionalField");
+      var qrSection = document.getElementById("qrSection");
+      var hdfcSection = document.getElementById("hdfcSection");
+
+      if (paymentMethod === "Cheque") {
+        bankDetailsDiv.style.display = "block";
+        additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="chequeNoInput" name="chequeNo" placeholder="Enter cheque no">';
+        qrSection.style.display = "block";
+        hdfcSection.style.display = "none";
+      } else if (paymentMethod === "Online") {
+        bankDetailsDiv.style.display = "block";
+        additionalFieldDiv.innerHTML = '<input type="text" class="form-control" id="transactionIdInput" name="transactionId" placeholder="Enter transaction ID">';
+        qrSection.style.display = "block";
+        hdfcSection.style.display = "none";
+      } else if (paymentMethod === "PG") {
+        bankDetailsDiv.style.display = "none";
+        additionalFieldDiv.innerHTML = '';
+        qrSection.style.display = "none";
+        hdfcSection.style.display = "block";
+      } else {
+        bankDetailsDiv.style.display = "none";
+        additionalFieldDiv.innerHTML = '';
+        qrSection.style.display = "none";
+        hdfcSection.style.display = "none";
+      }
+    });
+  </script>
+
+
   <script>
     async function shareImage() {
       const imageUrl = 'https://www.vgold.co.in/dashboard/vgold_rate/bank%20details.png';
