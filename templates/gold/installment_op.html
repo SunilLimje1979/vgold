@@ -21,16 +21,20 @@
       background-color: rgb(41, 39, 122);
       height: 55px;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .navbar-toggler-icon,
-    .fa-arrow-left {
+    .fa-arrow-left,
+    .fa-sync-alt {
       color: white;
     }
 
     .navbar-brand {
       font-size: 20px;
-      margin-left: 20px;
+      margin-left: 10px;
       color: white;
     }
 
@@ -83,19 +87,24 @@
       padding: 0;
       line-height: 1.5;
     }
+
+    .refresh-icon {
+      font-size: 20px;
+      margin-right: 15px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
-  <div class="container-fluid">
-    <div>
-      <button class="navbar-toggler" type="button" id="menuBtn">
-        <a href="{% url 'dashboard' %}"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
-      </button>
-      <a class="navbar-brand">Pay Installment</a>
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center">
+      <a href="{% url 'dashboard' %}" class="me-3"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+      <span class="navbar-brand">Pay Installment</span>
     </div>
+    <i class="fa fa-sync-alt refresh-icon" onclick="location.reload();" title="Refresh Page"></i>
   </div>
 </nav>
 
@@ -131,24 +140,22 @@
   <div class="text-center mt-3">
     <form method="post" id="paymentForm">
       {% csrf_token %}
-      
+
       <!-- Partial Amount Box -->
       <div id="partial-amount-box" class="mb-3" style="display: none;">
         <input type="number" name="partial_amount" class="form-control" placeholder="Enter Partial Amount" min="1" />
       </div>
 
-     <!-- Total Pay Button -->
-      <button type="submit" name="pay_type" value="total" class="btn btn-success m-2" onclick="hideAmountInput()">Total Pay</button>
+      <!-- Buttons -->
+      <button type="submit" name="pay_type" value="total" id="totalPayBtn" class="btn btn-success m-2" onclick="hideAmountInput()">Total Pay</button>
+      <button type="button" id="partialPayBtn" class="btn btn-warning m-2" onclick="showAmountInput()">Partial Pay</button>
 
-      <!-- Partial Pay Button triggers input box -->
-      <button type="button" class="btn btn-warning m-2" onclick="showAmountInput()">Partial Pay</button>
-
-      <!-- Actual Submit after entering partial amount -->
+      <!-- Confirm Partial Pay -->
       <div id="confirm-partial-pay" style="display: none;">
         <button type="submit" name="pay_type" value="partial" class="btn btn-primary">Confirm Partial Pay</button>
       </div>
 
-      <!-- Logo Image Centered Below Buttons -->
+      <!-- Logo Image -->
       <div class="text-center">
         <img src="{% static 'assets/img/hdfclogo.png' %}" alt="HDFC Logo" style="width: 300px; height: 85px; margin-top: 8px; padding-left: 10px; border-radius: 25px;">
       </div>
@@ -163,14 +170,20 @@
   function showAmountInput() {
     document.getElementById("partial-amount-box").style.display = "block";
     document.getElementById("confirm-partial-pay").style.display = "block";
+    document.getElementById("totalPayBtn").disabled = true;
   }
 
   function hideAmountInput() {
     document.getElementById("partial-amount-box").style.display = "none";
     document.getElementById("confirm-partial-pay").style.display = "none";
+    document.getElementById("partialPayBtn").disabled = true;
   }
-</script>
 
+  window.onload = function() {
+    document.getElementById("totalPayBtn").disabled = false;
+    document.getElementById("partialPayBtn").disabled = false;
+  };
+</script>
 
 </body>
 </html>
