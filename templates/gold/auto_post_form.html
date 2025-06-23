@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to HDFC eMandate</title>
+</head>
+<body onload="document.forms['PostForm'].submit();">
+    <form id="PostForm" name="PostForm" action="https://emandateut.hdfcbank.com/Emandate.aspx" method="POST">
+        {% for key, value in payload.items %}
+            <input type="hidden" id="{{ key }}" name="{{ key }}" value="{{ value|escape }}" />
+        {% endfor %}
+    </form>
+    <p>Please wait while we redirect you to HDFC eMandate...</p>
+</body>
+</html>

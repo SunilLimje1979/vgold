@@ -3016,17 +3016,44 @@ def generate_checksum(data_list):
     checksum = hashlib.sha256(combined_data.encode()).hexdigest()
     return checksum
 
+# def encrypt_text_using_api(text):
+#     try:
+#         url = 'http://127.0.0.1:8000/vgold_admin/api/encrypt_text/'
+#         # url = 'https://vgold.app/vgold_admin/api/encrypt_text/'
+#         response = requests.post(url, json={"text": text})
+#         if response.status_code == 200:
+#             result = response.json()
+#             return result.get('message_data', {}).get('encrypted_text', '')
+#     except Exception as e:
+#         print("Encryption API error:", str(e))
+#     return ''
+from Crypto.Cipher import AES
+
+BLOCK_SIZE = 16
+
+def pad(data):
+    padding_length = BLOCK_SIZE - len(data.encode('utf-8')) % BLOCK_SIZE
+    return data + chr(padding_length) * padding_length
+
+def encrypt_data_aes256_ecb(data, key="k2hLr4X0ozNyZByj5DT66edtCEee1x+6"):
+    try:
+        padded_data = pad(data)
+        key_bytes = key.encode('utf-8')
+        if len(key_bytes) != 32:
+            raise ValueError("Key must be exactly 32 bytes for AES-256 encryption.")
+        cipher = AES.new(key_bytes, AES.MODE_ECB)
+        encrypted_bytes = cipher.encrypt(padded_data.encode('utf-8'))
+        return "\\x" + encrypted_bytes.hex()
+    except Exception as e:
+        return str(e)
+
 def encrypt_text_using_api(text):
     try:
-        url = 'http://127.0.0.1:8000/vgold_admin/api/encrypt_text/'
-        # url = 'https://vgold.app/vgold_admin/api/encrypt_text/'
-        response = requests.post(url, json={"text": text})
-        if response.status_code == 200:
-            result = response.json()
-            return result.get('message_data', {}).get('encrypted_text', '')
+        encrypted_text = encrypt_data_aes256_ecb(text)
+        return encrypted_text
     except Exception as e:
-        print("Encryption API error:", str(e))
-    return ''
+        print("Encryption error:", str(e))
+        return ''
 
 ########################### Nominee Mandiate #########################################
 import requests
@@ -3111,7 +3138,7 @@ def nominee_mandiates(request):
 
         # Concatenate the required fields with the delimiter "|"
         data_to_hash = f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}"
-        print(data_to_hash)
+        # print(data_to_hash)
         # Generate the SHA-2 checksum (SHA-256 is commonly used)
         checksum = hashlib.sha256(data_to_hash.encode('utf-8')).hexdigest()
 
@@ -3151,7 +3178,7 @@ def nominee_mandiates(request):
         }
 
         print("UNENCRYPTED PAYLOAD:")
-        print(unencrypted_payload)
+        # print(unencrypted_payload)
 
         Customer_Name = encrypt_text_using_api(Customer_Name)
         # print("Encrypted Customer_Name:", Customer_Name)
@@ -3226,28 +3253,30 @@ def nominee_mandiates(request):
             "checksum": checksum
         }
 
-        print(payload)
+        # print(payload)
 
         # Send the payload to the external API
-        try:
-            response = requests.post("https://emandateut.hdfcbank.com/Emandate.aspx", data=payload)
+        # try:
+        #     response = requests.post("https://emandateut.hdfcbank.com/Emandate.aspx", data=payload)
 
-            # Log the response for debugging
-            print("Response Status Code:", response.status_code)
-            print("Response Text:", response.text)
+        #     # Log the response for debugging
+        #     print("Response Status Code:", response.status_code)
+        #     print("Response Text:", response.text)
 
-            # You can add error handling or status check if needed
-            if response.status_code == 200:
-                # success logic, if needed
-                pass
-            else:
-                # failure logic, log error or show message
-                print("Failed to post data to HDFC eMandate API")
+        #     # You can add error handling or status check if needed
+        #     if response.status_code == 200:
+        #         # success logic, if needed
+        #         pass
+        #     else:
+        #         # failure logic, log error or show message
+        #         print("Failed to post data to HDFC eMandate API")
 
-        except Exception as e:
-            print("Exception occurred while sending data:", str(e))
+        # except Exception as e:
+        #     print("Exception occurred while sending data:", str(e))
 
-        return redirect("nominee_mandiates")
+        # return redirect("nominee_mandiates")
+        
+        return render(request, 'gold/auto_post_form.html', {'payload': payload})
 
     return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data,'bank_list': bank_list})
 
@@ -3530,6 +3559,14 @@ def regular_payment(request, id):
      # Get customer name from session
     user_data = request.session.get('user_data', {})
     customer_name = user_data.get('UserFirstname', 'user')
+    last_name = user_data.get('UserLastname', '')
+    mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+    email = user_data.get('UserEmail', 'user@example.com')
+    user_id = user_data.get('User_Id', 994)
+    
+    # Sanitize name: only alphanumeric, lowercase
+    email = user_data.get('UserEmail', 'user@example.com')
+
 
     # Sanitize name: only alphanumeric, lowercase
     safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
@@ -3554,19 +3591,34 @@ def regular_payment(request, id):
     encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
     # Payload for payment session
+    # payload = {
+    #     "order_id": order_id,  # You should generate unique order_id in production
+    #     "amount": amount,
+    #     "customer_id": "testing-customer-one",  # Match sample data
+    #     "customer_email": "sl@mail.com",
+    #     "customer_phone": "9850180648",
+    #     "payment_page_client_id": client_id,
+    #     "action": "paymentPage",
+    #     "currency": "INR",
+    #     "return_url": return_url,
+    #     "description": "Complete your payment",
+    #     "first_name": "Testing",
+    #     "last_name": "1"
+    # }
     payload = {
         "order_id": order_id,  # You should generate unique order_id in production
         "amount": amount,
         "customer_id": "testing-customer-one",  # Match sample data
-        "customer_email": "sl@mail.com",
-        "customer_phone": "9850180648",
+        # "customer_id": f"user-{user_data.get('User_Id', '0')}", 
+        "customer_email": email,
+        "customer_phone": mobile_no,
         "payment_page_client_id": client_id,
         "action": "paymentPage",
         "currency": "INR",
         "return_url": return_url,
         "description": "Complete your payment",
-        "first_name": "Testing",
-        "last_name": "1"
+        "first_name": customer_name,
+        "last_name": last_name
     }
 
     # Headers with auth and identifiers
@@ -3586,6 +3638,25 @@ def regular_payment(request, id):
             # if 'order_id' in response_data and response_data['order_id']:
             #     # request.session['order_id'] = response_data['order_id']
             #     print(f"Order ID '{response_data['order_id']}' stored in session.")
+            
+            transaction_payload = {
+                "PTUserId": user_id,
+                "PTReceive_id": "VGOLD123456789",  # Can be dynamic if needed
+                "PTOrder_id": order_id,  # Using generated order_id
+                "PTStatus": 0,  # Initially pending
+                "PTAmount": amount,
+                "CreatedBy": user_id
+            }
+
+            try:
+                transaction_response = requests.post(
+                    # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+                    "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+                    json=transaction_payload
+                )
+                print("Transaction API Response:", transaction_response.json())
+            except Exception as e:
+                messages.error(request, f"Failed to record transaction: {e}")
             
             return redirect(response_data['payment_links']['web'])
         else:
@@ -3691,6 +3762,7 @@ def regular_payment(request, id):
     
 #     return render(request, 'gold/payment_status.html', context)
 
+from django.utils.timezone import now
 @csrf_exempt
 def payment_status(request,id):
     """
@@ -3760,6 +3832,41 @@ def payment_status(request,id):
                 }
 
                 if hdfc_status in status_map:
+                    # Inside your `if hdfc_status in status_map:` and when payment is CHARGED
+                    if hdfc_status == 'CHARGED':
+                        try:
+                            # You need to determine how to get the user_id (PPUserId). 
+                            # This example assumes it's somehow available; update logic as needed.
+                            user_id = request.session.get('user_data', {}).get('User_Id', None)
+                            if not user_id:
+                                user_id = 994  # Fallback hardcoded for example
+
+                            # Prepare payload
+                            partial_payload = {
+                                "PPUserId": user_id,
+                                "PPDate": now().strftime('%Y-%m-%dT%H:%M'),
+                                "PPStatus": 1,
+                                "PPAmount": status_data.get('amount', 0),
+                                "CreatedBy": user_id,  # Or another user ID if different
+                                "PPTransectionId": status_data.get('txn_id', '')
+                            }
+
+                            # Send to your internal API
+                            response = requests.post(
+                                # "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
+                                "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
+                                data=json.dumps(partial_payload),
+                                headers={"Content-Type": "application/json"}
+                            )
+
+                            print("Partial Payment API Response:", response.status_code, response.text)
+                            if response.status_code == 200:
+                                resp_data = response.json()
+                                context["api_message"] = resp_data.get('message_text', '')
+
+                        except Exception as e:
+                            print("Failed to send partial payment:", str(e))
+                            
                     payment_status_display, message = status_map[hdfc_status]
 
                 context = {
