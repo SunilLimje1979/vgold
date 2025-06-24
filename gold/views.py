@@ -3003,24 +3003,284 @@ def deactivates(request, id):
 #         # return redirect('dashboard')
 #         return render(request, 'gold/nach_response.html', {'post_data': post_data})
 
+# @csrf_exempt
+# def nach_response(request):
+#     if request.method == "POST":
+#         post_data = request.POST.dict()
+
+#         mandate_resp_raw = post_data.get("MandateRespDoc", "{}")
+#         print(mandate_resp_raw)
+
+#         try:
+#             mandate_resp_json = json.loads(mandate_resp_raw)
+#         except json.JSONDecodeError:
+#             mandate_resp_json = {"error": "Invalid JSON in MandateRespDoc"}
+
+#         is_success = mandate_resp_json.get("Status", "").lower() == "success"
+
+#         context = {
+#             "post_data": post_data,
+#             "mandate_resp": mandate_resp_json,
+#             "is_success": is_success,
+#         }
+
+#         return render(request, 'gold/nach_response.html', context)
+
+# @csrf_exempt
+# def nach_response(request):
+#     if request.method == "POST":
+#         post_data = request.POST.dict()
+
+#         # Convert single quotes to double for JSON parsing
+#         mandate_resp_raw = post_data.get("MandateRespDoc", "{}").replace("'", '"')
+
+#         try:
+#             mandate_resp_json = json.loads(mandate_resp_raw)
+#         except json.JSONDecodeError:
+#             mandate_resp_json = {"Status": "Failed", "Error": "Invalid JSON in MandateRespDoc"}
+
+#         is_success = (
+#             mandate_resp_json.get("Status", "").lower() == "success" and
+#             mandate_resp_json.get("Errors", [{}])[0].get("Error_Code") == "000"
+#         )
+
+#         context = {
+#             "post_data": post_data,
+#             "mandate_resp": mandate_resp_json,
+#             "is_success": is_success,
+#         }
+
+#         return render(request, 'gold/nach_response.html', context)
+
+ERROR_CODE_MAPPING = {
+    "000": "No Error",
+
+    # AP (Bank) Errors
+    "AP01": "Account blocked",
+    "AP02": "Account closed",
+    "AP03": "Account frozen",
+    "AP04": "Account Inoperative",
+    "AP05": "No such account",
+    "AP06": "Not a CBS act no.or old act no.represent with CBS no",
+    "AP07": "Refer to the branch - KYC not completed",
+    "AP10": "Amount Exceeds E mandate Limit",
+    "AP11": "Authentication Failed",
+    "AP14": "Invalid User Credentials",
+    "AP15": "Mandate Not Registered - Not maintaining required balance",
+    "AP16": "Mandate Not Registered - Minor Account",
+    "AP17": "Mandate Not Registered - NRE Account",
+    "AP18": "Mandate registration not allowed for CC account",
+    "AP19": "Mandate registration not allowed for PF account",
+    "AP20": "Mandate registration not allowed for PPF account",
+    "AP23": "Transaction rejected or cancelled by the customer",
+    "AP24": "Withdrawal stopped owing to death of account holder",
+    "AP28": "Mandate registration failed. Please contact your home branch",
+    "AP29": "Technical errors or connectivity issue at bank end",
+    "AP30": "Browser closed by the customer in mid transaction",
+    "AP31": "Mandate registration not allowed for joint account",
+    "AP32": "Mandate registration not allowed for wallet account",
+    "AP33": "User rejected the transaction on pre-Login page",
+    "AP34": "Account number not registered for net-banking facility",
+    "AP35": "Invalid card number",
+    "AP36": "Invalid expiry date",
+    "AP37": "Invalid PIN",
+    "AP38": "Invalid CVV",
+    "AP39": "OTP invalid",
+    "AP40": "Maximum tries exceeded for OTP",
+    "AP41": "Time expired for OTP",
+    "AP42": "Debit card not activated",
+    "AP43": "Debit card blocked",
+    "AP44": "Debit card hot listed",
+    "AP45": "Debit card expired",
+    "AP46": "No response received from customer while performing mandate registration",
+    "AP47": "Account number registered for only view rights in net-banking facility",
+
+    # IM (Merchant) Errors
+    "IM01": "Merchant account is not valid",
+    "IM02": "Merchant IFSC code is not valid",
+    "IM03": "Merchant category code is not valid",
+    "IM04": "Merchant category description is not valid",
+    "IM05": "Merchant account name is not valid",
+    "IM06": "Duplicate msgid found",
+
+    # IC (Customer) Errors
+    "IC01": "All contact fields (Email, Mobile, Telephone) cannot be empty",
+    "IC04": "Expiry date should be greater than Start date",
+    "IC06": "InstructedMember Bank is not available",
+    "IC11": "Mandate cannot be registered with Inactive account",
+    "IC13": "Mandate registration is not allowed with provided relationship type",
+    "IC14": "Mandate registration is not allowed with provided relationship type",
+
+    # I (Common) Errors
+    "I001": "Invalid JSON",
+    "I002": "Invalid Token",
+    "I003": "Invalid Merchant",
+    "I004": "Invalid Account",
+    "I005": "Key is not provided",
+    "I006": "Field cannot be empty",
+    "I007": "Value exceeds maximum length",
+    "I008": "Value below minimum length",
+    "I009": "Invalid value",
+    "I010": "Request is not valid",
+    "I011": "All keys not provided in the form",
+    "I012": "Session expired",
+    "I013": "Request and Response checksum do not match",
+
+    # ONMAGS/NPCI/Bank Errors (partial, extend as needed)
+    "151": "Merchant xmlns name empty or incorrect",
+    "152": "Merchant MsgId empty or incorrect",
+    "153": "Merchant CreDtTm empty or incorrect",
+    "154": "Merchant ReqInitPty Id empty or incorrect",
+    "155": "Merchant CatCode empty or incorrect",
+    "156": "Merchant UtilCode empty or incorrect",
+    "157": "Merchant CatDesc empty or incorrect",
+    "158": "Merchant ReqInitPty name empty or incorrect",
+    "159": "Merchant MndtReqId empty or incorrect",
+    "160": "Merchant SeqTp empty or incorrect",
+    "161": "Merchant Frequency empty or incorrect",
+    "162": "First collection date empty or incorrect",
+    "163": "Final collection date empty or incorrect",
+    "164": "Collection Amount currency type empty or incorrect",
+    "165": "Collection Amount empty or incorrect",
+    "166": "Max Amount currency type empty or incorrect",
+    "167": "Max Amount empty or incorrect",
+    "168": "Creditor name empty or incorrect",
+    "169": "Creditor account number empty or incorrect",
+    "170": "Creditor Member ID empty or incorrect",
+    "171": "MandateReqId empty or incorrect",
+    "172": "Creditor Account No empty",
+    "173": "Merchant Info not available",
+    "174": "ReqInitPty not available",
+    "175": "Creditor Account Details not available",
+    "176": "Group Header not available",
+    "177": "Mandate not available",
+    "178": "MandateAuthReq empty or not available",
+    "179": "Checksum validation failed",
+    "180": "Signature validation failed",
+    "181": "Error in decrypting Creditor Acc No",
+    "182": "Error in decrypting First Collection Date",
+    "183": "Error in decrypting Final Collection Date",
+    "184": "Error in decrypting Collection Amount",
+    "185": "Error in decrypting Max Amount",
+    "186": "Invalid request",
+    "187": "Merchant ID empty or incorrect",
+    "188": "MandateReqDoc incorrect",
+    "189": "Checksum empty or not available",
+    "190": "Signature not found",
+    "191": "Group Header missing tags",
+    "192": "ReqInitPty missing tags",
+    "193": "Mandate missing tags",
+    "194": "Creditor Account Details missing tags",
+    "195": "Certificate not found",
+    "196": "Signature algorithm incorrect",
+    "197": "Signature Digest algorithm incorrect",
+    "198": "First date is after final date",
+    "199": "Creditor Account Details not available",
+    "200": "First date not available",
+    "201": "Final date not available",
+    "202": "First date empty",
+    "203": "Final date empty",
+    "204": "MandateReqDoc empty or not available",
+    "205": "MerchantId not in approved list",
+    "206": "Both ColltnAmt and MaxAmt empty",
+    "207": "Both ColltnAmt and MaxAmt present (conflict)",
+    "208": "Category code not in approved list",
+    "209": "MsgId is duplicate",
+    "210": "Frequency type is invalid",
+    "211": "Sequence type is invalid",
+    "212": "Category description not in approved list",
+    "213": "UtilCode not in approved list",
+    "214": "Req Pay ID not in approved list",
+    "215": "Creditor Account name not in approved list",
+    "216": "Occurrences is empty",
+    "217": "Debitor name empty or incorrect",
+    "218": "Debitor account number empty or incorrect",
+    "219": "Debitor tags missing",
+    "220": "Debitor Account No empty",
+    "221": "Debitor Account not available",
+    "222": "Creditor and Debitor account number are the same",
+    "251": "Bank Request is invalid",
+    "252": "Bank xmlns is empty or incorrect",
+    "253": "Bank Response type not available or empty",
+    "254": "Bank Check sum is not available or empty",
+    "255": "Mandate request document is incorrect",
+    "256": "Bank ID not available or empty",
+    "257": "Error decrypting Accepted value",
+    "258": "Error decrypting Accepted Ref Number",
+    "259": "Error decrypting Reason Code",
+    "260": "Error decrypting Reason Description",
+    "261": "Error decrypting Rejected By",
+    "262": "NPCI Ref ID empty or incorrect",
+    "263": "Error code not available in Error XML",
+    "264": "Error description not available in Error XML",
+    "265": "Rejected By not available in Error XML",
+    "266": "Mandate Error Response not available in Error XML",
+    "267": "Checksum validation failed",
+    "268": "UndrlygAccptncDtls not available",
+    "269": "GrpHdr empty or not available",
+    "270": "MsgId empty or incorrect",
+    "271": "CreDtTm empty or incorrect",
+    "272": "ReqInitPty empty or incorrect",
+    "273": "OrgnlMsgInf not available",
+    "274": "MndtReqId empty or incorrect",
+    "275": "UndrlygAccptncDtls CreDtTm empty or incorrect",
+    "276": "Accptd empty",
+    "277": "AccptRefNo empty or incorrect",
+    "278": "RjctRsn not available",
+    "279": "RjctRsn ReasonCode not empty",
+    "280": "RjctRsn ReasonDesc not empty",
+    "281": "RjctRsn RejectBy not empty",
+    "282": "RjctRsn ReasonCode empty or incorrect",
+    "283": "RjctRsn ReasonDesc empty or incorrect",
+    "284": "RjctRsn RejectBy empty or incorrect",
+    "285": "Certificate not found",
+    "286": "IFSC Code incorrect",
+    "287": "RespType is incorrect",
+    "288": "GrpHdr missing some tags",
+    "289": "UndrlygAccptncDtls missing some tags",
+    "290": "OrgnlMsgInf missing some tags",
+    "291": "IFSC tag is missing",
+    "292": "DBTR not available",
+    "293": "AccptncRslt not available",
+    "294": "RjctRsn missing some tags",
+    "295": "ManReqDoc not available or empty",
+    "296": "Accptd type incorrect",
+    "297": "Signature not available",
+    "298": "Signature Digest algorithm incorrect",
+    "299": "Signature validation failed",
+    "300": "Signature algorithm incorrect",
+    "301": "BankId not in approved list",
+    "302": "MsgId is duplicate",
+    "303": "Accepted Ref number is duplicate",
+    "305": "Response timeout",
+    "474": "Returning Error XML",
+    "475": "Invalid JSON Structure",
+    "497": "SpnBank not certified for the variant",
+}
+
+
 @csrf_exempt
 def nach_response(request):
     if request.method == "POST":
         post_data = request.POST.dict()
-
-        mandate_resp_raw = post_data.get("MandateRespDoc", "{}")
+        mandate_resp_raw = post_data.get("MandateRespDoc", "{}").replace("'", '"')
 
         try:
             mandate_resp_json = json.loads(mandate_resp_raw)
         except json.JSONDecodeError:
-            mandate_resp_json = {"error": "Invalid JSON in MandateRespDoc"}
+            mandate_resp_json = {"Status": "Failed", "Errors": [{"Error_Code": "I001", "Error_Message": "Invalid JSON"}]}
 
-        is_success = mandate_resp_json.get("Status", "").lower() == "success"
+        status = mandate_resp_json.get("Status", "")
+        error_code = mandate_resp_json.get("Errors", [{}])[0].get("Error_Code", "")
+        error_desc = ERROR_CODE_MAPPING.get(error_code, "Unknown error")
+
+        is_success = (status.lower() == "success" and error_code == "000")
 
         context = {
             "post_data": post_data,
             "mandate_resp": mandate_resp_json,
             "is_success": is_success,
+            "error_description": error_desc,
         }
 
         return render(request, 'gold/nach_response.html', context)

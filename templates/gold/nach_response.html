@@ -1,4 +1,4 @@
-{% load i18n %}
+{% comment %} {% load i18n %}
 {% load static %}
 {% load pwa %}
 
@@ -104,6 +104,219 @@
     </div>
 
     <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+{% load i18n %}
+{% load static %}
+{% load pwa %}
+
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <title>Mandate Response</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+        }
+        body {
+            padding-top: 70px;
+            background-color: #f5f5f5;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 20px;
+            color: white;
+        }
+        .terms-box {
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        .icon-status {
+            font-size: 22px;
+            font-weight: bold;
+        }
+        .text-success { color: green; }
+        .text-danger { color: red; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a href="{% url 'dashboard' %}" class="navbar-toggler" id="menuBtn">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <a class="navbar-brand">Mandate Response</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="text-center">
+            <img src="{% static 'assets/img/nach.jpg' %}" alt="HDFC Logo"
+                 style="width: 200px; height: 50px; margin-top: 20px; margin-bottom: 10px;
+                        padding-left: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        </div>
+
+        <!-- Response Section -->
+        <div class="terms-box">
+            {% if is_success %}
+                <h4 class="text-success"><span class="icon-status">✅</span> Mandate Submitted Successfully</h4>
+            {% else %}
+                <h4 class="text-danger"><span class="icon-status">❌</span> Mandate Submission Failed</h4>
+            {% endif %}
+
+            <!-- Mandate Info -->
+            <h6 class="mt-4">👤 <u>Mandate Response Details</u>:</h6>
+            <ul class="mb-3">
+                {% for key, value in mandate_resp.items %}
+                    {% if key != "Errors" %}
+                        <li><strong>{{ key|capfirst }}:</strong> {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+                {% if mandate_resp.Errors %}
+                    {% for err in mandate_resp.Errors %}
+                        <li><strong>Error Code:</strong> {{ err.Error_Code }}</li>
+                        <li><strong>Error Message:</strong> {{ err.Error_Message }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+
+            <!-- Submitted Fields -->
+            <h6 class="mt-4">📩 <u>Form Submission Data</u>:</h6>
+            <ul>
+                {% for key, value in post_data.items %}
+                    {% if key != 'MandateRespDoc' %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <title>Mandate Response</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 999;
+        }
+        body {
+            padding-top: 70px;
+            background-color: #f5f5f5;
+        }
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 20px;
+            color: white;
+        }
+        .terms-box {
+            padding: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #fff;
+            color: #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+        .text-success { color: green; }
+        .text-danger { color: red; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a href="{% url 'dashboard' %}" class="navbar-toggler" id="menuBtn">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <a class="navbar-brand">Mandate Response</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="text-center">
+            <img src="{% static 'assets/img/nach.jpg' %}" alt="HDFC Logo"
+                 style="width: 200px; height: 50px; margin-top: 20px; margin-bottom: 10px;
+                        padding-left: 10px; border-radius: 5px; border: 1px solid #ccc;">
+        </div>
+
+        <!-- Mandate Response Box -->
+        <div class="terms-box">
+            {% if is_success %}
+                <h4 class="text-success">✅ Mandate Submitted Successfully</h4>
+            {% else %}
+                <h4 class="text-danger">❌ Mandate Submission Failed</h4>
+            {% endif %}
+
+            <h6 class="mt-3">👤 <u>Mandate Response Details</u>:</h6>
+            <ul class="mb-3">
+                {% for key, value in mandate_resp.items %}
+                    {% if key != "Errors" %}
+                        <li><strong>{{ key|capfirst }}:</strong> {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+                {% if mandate_resp.Errors %}
+                    {% for err in mandate_resp.Errors %}
+                        <li><strong>Error Code:</strong> {{ err.Error_Code }}</li>
+                        <li><strong>Error Message:</strong> {{ error_description }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+
+            <h6 class="mt-4">📩 <u>Submitted POST Data</u>:</h6>
+            <ul>
+                {% for key, value in post_data.items %}
+                    {% if key != 'MandateRespDoc' %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
