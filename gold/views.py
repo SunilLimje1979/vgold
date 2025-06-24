@@ -2993,16 +2993,37 @@ def deactivates(request, id):
 #######################################################################       
     
 # @api_view(["POST"])
+# @csrf_exempt
+# def nach_response(request):
+#     if request.method=="POST":
+#         # print(request.data)
+#         print(request.POST)
+#         post_data = request.POST
+        
+#         # return redirect('dashboard')
+#         return render(request, 'gold/nach_response.html', {'post_data': post_data})
+
 @csrf_exempt
 def nach_response(request):
-    if request.method=="POST":
-        # print(request.data)
-        print(request.POST)
-        post_data = request.POST
-        
-        # return redirect('dashboard')
-        return render(request, 'gold/nach_response.html', {'post_data': post_data})
-    
+    if request.method == "POST":
+        post_data = request.POST.dict()
+
+        mandate_resp_raw = post_data.get("MandateRespDoc", "{}")
+
+        try:
+            mandate_resp_json = json.loads(mandate_resp_raw)
+        except json.JSONDecodeError:
+            mandate_resp_json = {"error": "Invalid JSON in MandateRespDoc"}
+
+        is_success = mandate_resp_json.get("Status", "").lower() == "success"
+
+        context = {
+            "post_data": post_data,
+            "mandate_resp": mandate_resp_json,
+            "is_success": is_success,
+        }
+
+        return render(request, 'gold/nach_response.html', context)
 ###################################################################################
 
 import hashlib
@@ -3058,6 +3079,229 @@ def encrypt_text_using_api(text):
 ########################### Nominee Mandiate #########################################
 import requests
 from decimal import Decimal, ROUND_DOWN, InvalidOperation
+# def nominee_mandiates(request):
+#     user_data = request.session.get('user_data', {})
+#     NomieeForUserId = user_data.get('User_Id')
+
+#     if not NomieeForUserId:
+#         return redirect('login')
+
+#     # Call API and get user data
+#     api_url = f'https://vgold.app/vgold_admin/m_api/deactivate_user/{NomieeForUserId}/'
+#     try:
+#         response = requests.get(api_url)
+#         response_data = response.json()
+#         nominee_data = response_data.get('message_data', {})
+#         # print(nominee_data)
+#     except Exception as e:
+#         nominee_data = {}
+#         # print("Error fetching nominee data:", e)
+        
+#         # Fetch live bank list from NPCI API
+#     bank_list = []
+#     try:
+#         bank_response = requests.get('https://enachuat.npci.org.in:8086/apiservices_new/getLiveBankDtls')
+#         if bank_response.status_code == 200:
+#             bank_json = bank_response.json()
+#             bank_list = bank_json.get("liveBankList", [])
+#             # print("Fetched bank list:", bank_list)
+#         else:
+#             print("Failed to fetch bank list. Status:", bank_response.status_code)
+#     except Exception as e:
+#         print("Error fetching bank list:", str(e))
+        
+
+#     if request.method == "POST":
+#         MsgId = request.POST.get("MsgId", "")
+#         Customer_Name = request.POST.get("Customer_Name", "")
+#         Customer_Mobile = request.POST.get("Customer_Mobile", "")
+#         Customer_EmailId = request.POST.get("Customer_EmailId", "")
+#         Customer_AccountNo = request.POST.get("Customer_AccountNo", "")
+#         Customer_StartDate = request.POST.get("Customer_StartDate", "")
+#         Customer_ExpiryDate = request.POST.get("Customer_ExpiryDate", "")
+#         Customer_DebitAmount = request.POST.get("Customer_DebitAmount", "")
+#         Customer_MaxAmount = request.POST.get("Customer_MaxAmount", "")
+#         Customer_DebitFrequency = request.POST.get("Customer_DebitFrequency", "")
+#         Customer_InstructedMemberId = request.POST.get("Customer_InstructedMemberId", "")
+#         Short_Code = request.POST.get("Short_Code", "")
+#         Customer_SequenceType = request.POST.get("Customer_SequenceType", "")
+#         Merchant_Category_Code = request.POST.get("Merchant_Category_Code", "")
+#         Customer_Reference1 = request.POST.get("Customer_Reference1", "")
+#         Customer_Reference2 = request.POST.get("Customer_Reference2", "")
+#         Channel = request.POST.get("Channel", "")
+#         UtilCode = request.POST.get("UtilCode", "")
+#         Filler1 = request.POST.get("Filler1", "")
+#         Filler2 = request.POST.get("Filler2", "")
+#         Filler3 = request.POST.get("Filler3", "")
+#         Filler4 = request.POST.get("Filler4", "")
+#         Filler5 = request.POST.get("Filler5", "")
+#         Filler6 = request.POST.get("Filler6", "")
+#         Filler7 = request.POST.get("Filler7", "")
+#         Filler8 = request.POST.get("Filler8", "")
+#         Filler9 = request.POST.get("Filler9", "")
+#         Filler10 = request.POST.get("Filler10", "")
+        
+#         def to_decimal(value, other_value_present):
+#             try:
+#                 if value.strip() == "" and other_value_present:
+#                     return ""
+#                 return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
+#             except (InvalidOperation, TypeError, ValueError, AttributeError):
+#                 if other_value_present:
+#                     return ""
+#                 return "0.00"
+
+#         Customer_DebitAmount = to_decimal(Customer_DebitAmount, other_value_present=bool(Customer_MaxAmount.strip()))
+#         Customer_MaxAmount = to_decimal(Customer_MaxAmount, other_value_present=bool(Customer_DebitAmount.strip()))
+
+        
+#         # print(Customer_DebitAmount,Customer_MaxAmount)
+
+#         # Concatenate the required fields with the delimiter "|"
+#         data_to_hash = f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}"
+#         # print(data_to_hash)
+#         # Generate the SHA-2 checksum (SHA-256 is commonly used)
+#         checksum = hashlib.sha256(data_to_hash.encode('utf-8')).hexdigest()
+
+#         # Now the checksum is ready to be used
+#         # print("Generated Checksum:", checksum)
+#         # Store unencrypted values
+#         unencrypted_payload = {
+#             "MsgId": MsgId,
+#             "Customer_Name": Customer_Name,
+#             "Customer_Mobile": Customer_Mobile,
+#             "Customer_EmailId": Customer_EmailId,
+#             "Customer_AccountNo": Customer_AccountNo,
+#             "Customer_StartDate": Customer_StartDate,
+#             "Customer_ExpiryDate": Customer_ExpiryDate,
+#             "Customer_DebitAmount": Customer_DebitAmount,
+#             "Customer_MaxAmount": Customer_MaxAmount,
+#             "Customer_DebitFrequency": Customer_DebitFrequency,
+#             "Customer_InstructedMemberId": Customer_InstructedMemberId,
+#             "Short_Code": Short_Code,
+#             "Customer_SequenceType": Customer_SequenceType,
+#             "Merchant_Category_Code": Merchant_Category_Code,
+#             "Customer_Reference1": Customer_Reference1,
+#             "Customer_Reference2": Customer_Reference2,
+#             "Channel": Channel,
+#             "UtilCode": UtilCode,
+#             "Filler1": Filler1,
+#             "Filler2": Filler2,
+#             "Filler3": Filler3,
+#             "Filler4": Filler4,
+#             "Filler5": Filler5,
+#             "Filler6": Filler6,
+#             "Filler7": Filler7,
+#             "Filler8": Filler8,
+#             "Filler9": Filler9,
+#             "Filler10": Filler10,
+#             "checksum": checksum
+#         }
+
+#         print("UNENCRYPTED PAYLOAD:")
+#         # print(unencrypted_payload)
+
+#         Customer_Name = encrypt_text_using_api(Customer_Name)
+#         # print("Encrypted Customer_Name:", Customer_Name)
+        
+#         Short_Code = encrypt_text_using_api(Short_Code)
+
+#         Customer_Mobile = encrypt_text_using_api(Customer_Mobile)
+#         # print("Encrypted Customer_Mobile:", Customer_Mobile)
+
+#         Customer_EmailId = encrypt_text_using_api(Customer_EmailId)
+#         # print("Encrypted Customer_EmailId:", Customer_EmailId)
+
+#         Customer_AccountNo = encrypt_text_using_api(Customer_AccountNo)
+#         # print("Encrypted Customer_AccountNo:", Customer_AccountNo)
+
+#         Customer_Reference1 = encrypt_text_using_api(Customer_Reference1)
+#         # print("Encrypted Customer_Reference1:", Customer_Reference1)
+
+#         Customer_Reference2 = encrypt_text_using_api(Customer_Reference2)
+#         # print("Encrypted Customer_Reference2:", Customer_Reference2)
+
+#         UtilCode = encrypt_text_using_api(UtilCode)
+#         # print("Encrypted UtilCode:", UtilCode)
+
+#         # Convert to Decimal with 2 decimal places
+#         # def to_decimal(value):
+#         #     try:
+#         #         return Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN)
+#         #     except (InvalidOperation, TypeError):
+#         #         return Decimal('0.00')  # or handle as needed
+        
+#         # def to_decimal(value):
+#         #     try:
+#         #         return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
+#         #     except (InvalidOperation, TypeError, ValueError):
+#         #         return "0.00"
+
+#         # Customer_DebitAmount = to_decimal(Customer_DebitAmount)
+#         # Customer_MaxAmount = to_decimal(Customer_MaxAmount)
+     
+
+#         # Construct final payload
+#         payload = {
+#             "MsgId": MsgId,
+#             "Customer_Name": Customer_Name,
+#             "Customer_Mobile": Customer_Mobile,
+#             "Customer_EmailId": Customer_EmailId,
+#             "Customer_AccountNo": Customer_AccountNo,
+#             "Customer_StartDate": Customer_StartDate,
+#             "Customer_ExpiryDate": Customer_ExpiryDate,
+#             "Customer_DebitAmount": Customer_DebitAmount,
+#             "Customer_MaxAmount": Customer_MaxAmount,
+#             "Customer_DebitFrequency": Customer_DebitFrequency,
+#             "Customer_InstructedMemberId": Customer_InstructedMemberId,
+#             "Short_Code": Short_Code,
+#             "Customer_SequenceType": Customer_SequenceType,
+#             "Merchant_Category_Code": Merchant_Category_Code,
+#             "Customer_Reference1": Customer_Reference1,
+#             "Customer_Reference2": Customer_Reference2,
+#             "Channel": Channel,
+#             "UtilCode": UtilCode,
+#             "Filler1": Filler1,
+#             "Filler2": Filler2,
+#             "Filler3": Filler3,
+#             "Filler4": Filler4,
+#             "Filler5": Filler5,
+#             "Filler6": Filler6,
+#             "Filler7": Filler7,
+#             "Filler8": Filler8,
+#             "Filler9": Filler9,
+#             "Filler10": Filler10,
+#             "checksum": checksum
+#         }
+
+#         # print(payload)
+
+#         # Send the payload to the external API
+#         # try:
+#         #     response = requests.post("https://emandateut.hdfcbank.com/Emandate.aspx", data=payload)
+
+#         #     # Log the response for debugging
+#         #     print("Response Status Code:", response.status_code)
+#         #     print("Response Text:", response.text)
+
+#         #     # You can add error handling or status check if needed
+#         #     if response.status_code == 200:
+#         #         # success logic, if needed
+#         #         pass
+#         #     else:
+#         #         # failure logic, log error or show message
+#         #         print("Failed to post data to HDFC eMandate API")
+
+#         # except Exception as e:
+#         #     print("Exception occurred while sending data:", str(e))
+
+#         # return redirect("nominee_mandiates")
+        
+#         return render(request, 'gold/auto_post_form.html', {'payload': payload})
+
+#     return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data,'bank_list': bank_list})
+
+
 def nominee_mandiates(request):
     user_data = request.session.get('user_data', {})
     NomieeForUserId = user_data.get('User_Id')
@@ -3065,30 +3309,26 @@ def nominee_mandiates(request):
     if not NomieeForUserId:
         return redirect('login')
 
-    # Call API and get user data
+    # Fetch nominee data
     api_url = f'https://vgold.app/vgold_admin/m_api/deactivate_user/{NomieeForUserId}/'
     try:
         response = requests.get(api_url)
         response_data = response.json()
         nominee_data = response_data.get('message_data', {})
-        # print(nominee_data)
     except Exception as e:
         nominee_data = {}
-        # print("Error fetching nominee data:", e)
-        
-        # Fetch live bank list from NPCI API
+
+    # Fetch live bank list from NPCI
     bank_list = []
     try:
         bank_response = requests.get('https://enachuat.npci.org.in:8086/apiservices_new/getLiveBankDtls')
         if bank_response.status_code == 200:
             bank_json = bank_response.json()
             bank_list = bank_json.get("liveBankList", [])
-            # print("Fetched bank list:", bank_list)
-        else:
-            print("Failed to fetch bank list. Status:", bank_response.status_code)
+            # Sort alphabetically by bankName
+            bank_list = sorted(bank_list, key=lambda x: x.get("bankName", "").upper())
     except Exception as e:
         print("Error fetching bank list:", str(e))
-        
 
     if request.method == "POST":
         MsgId = request.POST.get("MsgId", "")
@@ -3119,7 +3359,7 @@ def nominee_mandiates(request):
         Filler8 = request.POST.get("Filler8", "")
         Filler9 = request.POST.get("Filler9", "")
         Filler10 = request.POST.get("Filler10", "")
-        
+
         def to_decimal(value, other_value_present):
             try:
                 if value.strip() == "" and other_value_present:
@@ -3130,21 +3370,14 @@ def nominee_mandiates(request):
                     return ""
                 return "0.00"
 
-        Customer_DebitAmount = to_decimal(Customer_DebitAmount, other_value_present=bool(Customer_MaxAmount.strip()))
-        Customer_MaxAmount = to_decimal(Customer_MaxAmount, other_value_present=bool(Customer_DebitAmount.strip()))
+        Customer_DebitAmount = to_decimal(Customer_DebitAmount, bool(Customer_MaxAmount.strip()))
+        Customer_MaxAmount = to_decimal(Customer_MaxAmount, bool(Customer_DebitAmount.strip()))
 
-        
-        # print(Customer_DebitAmount,Customer_MaxAmount)
-
-        # Concatenate the required fields with the delimiter "|"
+        # Generate checksum
         data_to_hash = f"{Customer_AccountNo}|{Customer_StartDate}|{Customer_ExpiryDate}|{Customer_DebitAmount}|{Customer_MaxAmount}"
-        # print(data_to_hash)
-        # Generate the SHA-2 checksum (SHA-256 is commonly used)
         checksum = hashlib.sha256(data_to_hash.encode('utf-8')).hexdigest()
 
-        # Now the checksum is ready to be used
-        # print("Generated Checksum:", checksum)
-        # Store unencrypted values
+        # Store unencrypted payload for debug or display
         unencrypted_payload = {
             "MsgId": MsgId,
             "Customer_Name": Customer_Name,
@@ -3176,51 +3409,49 @@ def nominee_mandiates(request):
             "Filler10": Filler10,
             "checksum": checksum
         }
+        
+        nach_payload = {
+            "NMUserId": NomieeForUserId,
+            "NMMsgId": MsgId,
+            "NMCustomerAccountNo": Customer_AccountNo,
+            "NMCustomerStartDate": Customer_StartDate,
+            "NMCustomerExpiryDate": Customer_ExpiryDate,
+            "NMCustomerDebitAmount": float(Customer_DebitAmount or 0.00),
+            "NMCustomer_MaxAmount": float(Customer_MaxAmount or 0.00),
+            "NMCustomer_DebitFrequency": Customer_DebitFrequency,
+            "NMCustomer_InstructedMemberId": Customer_InstructedMemberId,
+            "NMShortCode": Short_Code,
+            "NMCustomerSequenceType": Customer_SequenceType,
+            "NMMerchantCategoryCode": Merchant_Category_Code,
+            "NMChannel": Channel,
+            "NMCustomer_Reference1": Customer_Reference1,
+            "NMCustomer_Reference2": Customer_Reference2,
+            "NMUtilCode": UtilCode,
+            "Filler1": Filler1,
+            "Filler2": Filler2,
+            "Filler3": Filler3,
+            "Filler4": Filler4,
+            "Filler5": Filler5,
+            "Filler6": Filler6,
+            "Filler7": Filler7,
+            "Filler8": Filler8,
+            "Filler9": Filler9,
+            "Filler10": Filler10,
+            "NMStatus": 0,
+            "CreatedBy": NomieeForUserId
+        }
 
-        print("UNENCRYPTED PAYLOAD:")
-        # print(unencrypted_payload)
-
+        # Encrypt values
         Customer_Name = encrypt_text_using_api(Customer_Name)
-        # print("Encrypted Customer_Name:", Customer_Name)
-        
-        Short_Code = encrypt_text_using_api(Short_Code)
-
         Customer_Mobile = encrypt_text_using_api(Customer_Mobile)
-        # print("Encrypted Customer_Mobile:", Customer_Mobile)
-
         Customer_EmailId = encrypt_text_using_api(Customer_EmailId)
-        # print("Encrypted Customer_EmailId:", Customer_EmailId)
-
         Customer_AccountNo = encrypt_text_using_api(Customer_AccountNo)
-        # print("Encrypted Customer_AccountNo:", Customer_AccountNo)
-
         Customer_Reference1 = encrypt_text_using_api(Customer_Reference1)
-        # print("Encrypted Customer_Reference1:", Customer_Reference1)
-
         Customer_Reference2 = encrypt_text_using_api(Customer_Reference2)
-        # print("Encrypted Customer_Reference2:", Customer_Reference2)
-
+        Short_Code = encrypt_text_using_api(Short_Code)
         UtilCode = encrypt_text_using_api(UtilCode)
-        # print("Encrypted UtilCode:", UtilCode)
 
-        # Convert to Decimal with 2 decimal places
-        # def to_decimal(value):
-        #     try:
-        #         return Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN)
-        #     except (InvalidOperation, TypeError):
-        #         return Decimal('0.00')  # or handle as needed
-        
-        # def to_decimal(value):
-        #     try:
-        #         return str(Decimal(value).quantize(Decimal('0.00'), rounding=ROUND_DOWN))
-        #     except (InvalidOperation, TypeError, ValueError):
-        #         return "0.00"
-
-        # Customer_DebitAmount = to_decimal(Customer_DebitAmount)
-        # Customer_MaxAmount = to_decimal(Customer_MaxAmount)
-     
-
-        # Construct final payload
+        # Final payload
         payload = {
             "MsgId": MsgId,
             "Customer_Name": Customer_Name,
@@ -3253,35 +3484,27 @@ def nominee_mandiates(request):
             "checksum": checksum
         }
 
-        # print(payload)
 
-        # Send the payload to the external API
-        # try:
-        #     response = requests.post("https://emandateut.hdfcbank.com/Emandate.aspx", data=payload)
+        try:
+            insert_response = requests.post(
+                "http://127.0.0.1:8000/vgold_admin/m_api/add_nach_mandate/",
+                json=nach_payload
+            )
+            response_json = insert_response.json()
+            print("Insert Response:", response_json)
+            if response_json.get("message_code") == 1000:
+                messages.success(request, "NACH Mandate saved successfully.")
+            else:
+                messages.error(request, "Failed to save mandate.")
+        except Exception as e:
+            messages.error(request, f"API error: {str(e)}")
 
-        #     # Log the response for debugging
-        #     print("Response Status Code:", response.status_code)
-        #     print("Response Text:", response.text)
-
-        #     # You can add error handling or status check if needed
-        #     if response.status_code == 200:
-        #         # success logic, if needed
-        #         pass
-        #     else:
-        #         # failure logic, log error or show message
-        #         print("Failed to post data to HDFC eMandate API")
-
-        # except Exception as e:
-        #     print("Exception occurred while sending data:", str(e))
-
-        # return redirect("nominee_mandiates")
-        
         return render(request, 'gold/auto_post_form.html', {'payload': payload})
 
-    return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data,'bank_list': bank_list})
-
-
-
+    return render(request, 'gold/nominee_mandiates.html', {
+        'nominee_data': nominee_data,
+        'bank_list': bank_list
+    })
 
 # def agreement_otp(request,id):
 #     account_display_id=id

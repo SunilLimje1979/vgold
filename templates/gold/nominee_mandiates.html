@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,8 +17,31 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
+            padding-top: 50px;
             {% comment %} padding: 20px; {% endcomment %}
         }
+
+        .navbar {
+      background-color: rgb(41, 39, 122);
+      height: 55px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-toggler-icon,
+    .fa-arrow-left,
+    .fa-sync-alt {
+      color: white;
+    }
+
+    .navbar-brand {
+      font-size: 20px;
+      margin-left: 10px;
+      color: white;
+    }
+
 
         .container {
             background-color: white;
@@ -73,14 +98,27 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark w-100" 
-        style="background-color: rgb(33, 31, 102); padding-top: 5px; padding-bottom: 5px; position: sticky; top: 0; z-index: 1030;">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#" style="font-size: 1rem;">e-Mandate Form</a>
-        </div>
-    </nav>
 
-<div class="container">
+    <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+        <!-- Left Side -->
+        <div class="d-flex align-items-center">
+            <a href="{% url 'dashboard' %}" class="me-3">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+            </a>
+            <span class="navbar-brand">e-Mandate Form</span>
+        </div>
+
+        <!-- Right Side Image -->
+        <div>
+            <img src="{% static 'assets/img/nach.jpg' %}" alt="HDFC Logo"
+                style="height: 32px; border-radius: 5px;">
+        </div>
+    </div>
+</nav>
+
+
+    <div class="container">
     <form method="POST" onsubmit="return validateForm()">
         {% csrf_token %}
         
@@ -112,10 +150,36 @@
                 value="{{ nominee_data.UserEmail }}" class="form-control">
         </div>
 
+        <div class="mb-2">
+            <label class="required form-label" for="bank_name">Select Bank</label>
+            <select id="bank_name" name="Filler6" class="form-control select2">
+                <option value="">-- Select Bank --</option>
+                {% for bank in bank_list %}
+                    <option value="{{ bank.bankId }}">{{ bank.bankName }}</option>
+                {% endfor %}
+            </select> 
+        </div>
+
         <!-- Customer Account No -->
         <div class="mb-2">
             <label class="required form-label">Account No</label>
             <input type="text" name="Customer_AccountNo" maxlength="35" class="form-control" required>
+        </div>
+
+        <!-- Instructed Member ID -->
+        <div class="mb-2">
+            <label class="required form-label"> Instructed Member Id (IFSC)</label>
+            <input type="text" name="Customer_InstructedMemberId" maxlength="11" class="form-control" required>
+        </div>
+
+        <!-- Account Type -->
+        <div class="mb-2">
+            <label class="required form-label">Account Type</label>
+            <select name="Filler5" class="form-select" required>
+                <option value="S">Savings</option>
+                <option value="C">Current</option>
+                <option value="O">Other</option>
+            </select>
         </div>
 
         <!-- Start Date -->
@@ -156,12 +220,6 @@
                 <option value="YEAR">YEAR</option>
                 <option value="BIMN">BIMN</option>
             </select>
-        </div>
-
-        <!-- Instructed Member ID -->
-        <div class="mb-2">
-            <label class="required form-label"> Instructed Member Id (IFSC)</label>
-            <input type="text" name="Customer_InstructedMemberId" maxlength="11" class="form-control" required>
         </div>
 
         <!-- Short Code -->
@@ -241,27 +299,6 @@
             <input type="text" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000000020" readonly style="background-color: #e9ecef;" required>
         </div>
 
-        <!-- Account Type -->
-        <div class="mb-2">
-            <label class="required form-label">Filler5 (Account Type)</label>
-            <select name="Filler5" class="form-select" required>
-                <option value="S">Savings</option>
-                <option value="C">Current</option>
-                <option value="O">Other</option>
-            </select>
-        </div>
-
-        <div class="mb-2">
-            <label class="required form-label" for="bank_name">Filler6</label>
-            <select id="bank_name" name="Filler6" class="form-control select2">
-                <option value="">-- Select Bank --</option>
-                {% for bank in bank_list %}
-                    <option value="{{ bank.bankId }}">{{ bank.bankName }}</option>
-                {% endfor %}
-            </select> 
-        </div>
-
-        
         <!-- Additional Fillers -->
         {% for i in "1234789" %}
         <div class="mb-2">
@@ -272,9 +309,21 @@
 
         <!-- Submit -->
         <div class="text-center">
-            <button type="submit" class="btn btn-primary px-5">Submit</button>
+            <button type="submit" class="btn btn-primary px-5 me-3">Submit</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-danger px-5">Cancel</a>
         </div>
     </form>
+
+    {% comment %} <div class="text-center">
+        <img src="{% static 'assets/img/hdfclogo.png' %}" alt="HDFC Logo" style="width: 300px; height: 85px; margin-top: 8px; padding-left: 10px; border-radius: 25px;">
+    </div> {% endcomment %}
+
+    <!-- Logo below Submit -->
+   <div class="text-center">
+        <img src="{% static 'assets/img/nach.jpg' %}" alt="HDFC Logo" style="width: 200px; height: 50px; margin-top: 8px; padding-left: 10px; border-radius: 5px; border: 1px solid #ccc;">
+    </div>
+
+
 </div>
 
 <!-- Include jQuery first -->
