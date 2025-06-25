@@ -3560,9 +3560,25 @@ from decimal import Decimal, ROUND_DOWN, InvalidOperation
 #         return render(request, 'gold/auto_post_form.html', {'payload': payload})
 
 #     return render(request, 'gold/nominee_mandiates.html', {'nominee_data': nominee_data,'bank_list': bank_list})
+import random
+import string
+def nominee_mandiates(request,id):
+    booking_id=id
+    
+    # api_url = f"http://127.0.0.1:8000/vgold_admin/api/account_id_detail/{booking_id}/"
+    api_url = f"https://vgold.app/vgold_admin/api/account_id_detail/{booking_id}/"
 
+    try:
+        api_response = requests.get(api_url)
+        response_json = api_response.json()
 
-def nominee_mandiates(request):
+        if response_json.get("message_code") == 1000:
+            api_data = response_json.get("message_data", {})
+        else:
+            api_data = {}
+    except Exception as e:
+        api_data = {}
+    
     user_data = request.session.get('user_data', {})
     NomieeForUserId = user_data.get('User_Id')
 
@@ -3589,6 +3605,17 @@ def nominee_mandiates(request):
             bank_list = sorted(bank_list, key=lambda x: x.get("bankName", "").upper())
     except Exception as e:
         print("Error fetching bank list:", str(e))
+        
+        
+    # Generate auto MsgId using first/last name
+    def generate_msg_id(first_name, last_name):
+        prefix = (first_name[:1] + last_name[:1]).upper()
+        random_part = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+        return prefix + random_part  # Total 12 characters
+
+    first_name = user_data.get('UserFirstname', '')
+    last_name = user_data.get('UserLastname', '')
+    auto_msg_id = generate_msg_id(first_name, last_name)
 
     if request.method == "POST":
         MsgId = request.POST.get("MsgId", "")
@@ -3747,7 +3774,8 @@ def nominee_mandiates(request):
 
         try:
             insert_response = requests.post(
-                "http://127.0.0.1:8000/vgold_admin/m_api/add_nach_mandate/",
+                # "http://127.0.0.1:8000/vgold_admin/m_api/add_nach_mandate/",
+                "https://vgold.app/vgold_admin/m_api/add_nach_mandate/",
                 json=nach_payload
             )
             response_json = insert_response.json()
@@ -3762,8 +3790,10 @@ def nominee_mandiates(request):
         return render(request, 'gold/auto_post_form.html', {'payload': payload})
 
     return render(request, 'gold/nominee_mandiates.html', {
+        'api_data':api_data,
         'nominee_data': nominee_data,
-        'bank_list': bank_list
+        'bank_list': bank_list,
+        'auto_msg_id': auto_msg_id
     })
 
 # def agreement_otp(request,id):
@@ -4542,3 +4572,32 @@ def installment_op(request):
 
     except Exception as e:
         return HttpResponse(f"An error occurred: {str(e)}", status=500)
+    
+    
+def nach_form(request):
+    user_data = request.session.get('user_data', {})
+    
+    # Extract user_id from session
+    user_id = user_data.get('User_Id')
+    
+    if not user_id:
+        return redirect('login')
+    
+    api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
+    payload = {'user_id': 40}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    bookings = []
+    try:
+        response = requests.post(api_url, data=payload, headers=headers)
+        response.raise_for_status()
+        data = response.json()
+        
+        if data.get("message_code") == 1000:
+            bookings = data.get("message_data", [])
+    except requests.exceptions.RequestException as e:
+        print(f"API error: {e}")
+
+    return render(request, 'gold/nach_form.html', {'bookings': bookings})

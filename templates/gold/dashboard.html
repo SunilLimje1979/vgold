@@ -305,6 +305,13 @@
             ><i class="fa-solid fa-envelopes-bulk"></i>Offers</a
           >
         </li>
+
+        {% if user_id == 994 or user_id == 1011 %}
+          <li>
+              <a href="{% url 'nach_form' %}"><i class="bi bi-share"></i> NACH Form</a>
+            </li>
+          {% endif %}
+
         {% comment %} <li>
           <a href="{% url 'feedback' %}"
             ><i class="bi bi-chat-left-dots"></i> Feedback</a

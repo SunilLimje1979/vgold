@@ -113,11 +113,13 @@ urlpatterns = [
     
     path('privacypolicy/', views.privacypolicy, name='privacypolicy'),
     
-    path('nominee_mandiates/', views.nominee_mandiates, name='nominee_mandiates'),
+    path('nominee_mandiates/<str:id>/', views.nominee_mandiates, name='nominee_mandiates'),
     
     path('deactivate/', views.deactivate, name='deactivate'),
     
     path('nach_response/', views.nach_response, name='nach_response'),
+
+    path('nach_form/', views.nach_form, name='nach_form'),
     
     path('deactivates/<str:id>/', views.deactivates, name='deactivates'),
     
