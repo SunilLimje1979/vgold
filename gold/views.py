@@ -3299,15 +3299,16 @@ def nach_response(request):
             }
             messages.error(request, "Invalid JSON received in Mandate Response.")
 
-        # Default values
-        status = mandate_resp_json.get("Status", "")
+        # Extract high-level response details
+        status_value = mandate_resp_json.get("Status", "")
         error_code = mandate_resp_json.get("Errors", [{}])[0].get("Error_Code", "")
         error_desc = ERROR_CODE_MAPPING.get(error_code, "Unknown error")
-        is_success = (status.lower() == "success" and error_code == "000")
+        is_success = (status_value.lower() == "success" and error_code == "000")
 
-        # Extract Msgid
         msgid = ""
         mandate_data = {}
+
+        # Extract Msgid
         if "d" in mandate_resp_json and "tranStatus" in mandate_resp_json["d"]:
             tran_status_list = mandate_resp_json["d"]["tranStatus"]
             if tran_status_list and isinstance(tran_status_list, list):
@@ -3315,6 +3316,47 @@ def nach_response(request):
                 print(f"Msgid from NACH response: {msgid}")
 
                 if msgid:
+                    # Extract Filler fields from top-level JSON
+                    filler8 = mandate_resp_json.get("Filler8", "")
+                    filler9 = mandate_resp_json.get("Filler9", "")
+                    filler10 = mandate_resp_json.get("Filler10", "")
+
+                    # Determine final values based on status
+                    if status_value.lower() == "success":
+                        nm_status = 1
+                        nm_error_code = "000"
+                        nm_error_message = "N/A"
+                    else:
+                        nm_status = 2
+                        nm_error_code = error_code
+                        nm_error_message = error_desc
+
+                    # 🔁 Call the update API
+                    # update_url = "http://127.0.0.1:8000/vgold_admin/m_api/update_nach_mandate/"
+                    update_url = "https://vgold.app/vgold_admin/m_api/update_nach_mandate/"
+
+                    update_payload = {
+                        "Msgid": msgid,
+                        "Filler8": filler8,
+                        "Filler9": filler9,
+                        "Filler10": filler10,
+                        "NMStatus": nm_status,
+                        "NMErrorCode": nm_error_code,
+                        "NMErrorMessage": nm_error_message
+                    }
+
+                    try:
+                        update_response = requests.post(update_url, json=update_payload)
+                        update_json = update_response.json()
+                        if update_json.get("message_code") == 1000:
+                            messages.success(request, "NACH mandate updated successfully.")
+                        else:
+                            messages.error(request, "Failed to update NACH mandate.")
+                    except requests.RequestException as e:
+                        print(f"Error calling update API: {e}")
+                        messages.error(request, "Error occurred during mandate update API call.")
+
+                    # Optionally fetch mandate details if needed
                     try:
                         api_url = f"https://vgold.app/vgold_admin/m_api/get_mandate_data/{msgid}/"
                         # api_url = f"http://127.0.0.1:8000/vgold_admin/m_api/get_mandate_data/{msgid}/"
@@ -3324,16 +3366,15 @@ def nach_response(request):
                             mandate_api_data = api_response.json()
                             if mandate_api_data.get("message_code") == 1000:
                                 mandate_data = mandate_api_data.get("message_data", {})
-                                # messages.success(request, "Mandate details fetched successfully.")
                             else:
                                 messages.error(request, "Mandate data not found for the given Msgid.")
                         else:
                             messages.error(request, "Failed to fetch mandate details from server.")
-
                     except requests.RequestException as e:
                         print(f"Error calling mandate API: {e}")
                         messages.error(request, "An error occurred while calling mandate API.")
 
+        # Prepare and render context
         context = {
             "post_data": post_data,
             "mandate_resp": mandate_resp_json,

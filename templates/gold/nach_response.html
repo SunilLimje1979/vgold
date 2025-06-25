@@ -78,17 +78,8 @@
             {% endif %}
 
             <h6 class="mt-3">👤 <u>Mandate Response Details</u>:</h6>
-             {% if mandate_data.FullName or mandate_data.NMCustomer_Reference2 %}
-                <div class="mt-3">
-                    <h6>🙍 <strong>Full Name:</strong> 
-                        {{ mandate_data.FullName|default:"N/A" }} 
-                        {% if mandate_data.NMCustomer_Reference2 %}
-                            ({{ mandate_data.NMCustomer_Reference2 }})
-                        {% endif %}
-                    </h6>
-                </div>
-            {% endif %}
-            
+             
+
             <ul class="mb-3">
                 {% for key, value in mandate_resp.items %}
                     {% if key != "Errors" %}
@@ -103,14 +94,19 @@
                 {% endif %}
             </ul>
 
-            {% comment %} <h6 class="mt-4">📩 <u>Submitted POST Data</u>:</h6>
+             <h6 class="mt-4">📩 <u>Submitted POST Data</u>:</h6>
             <ul>
-                {% for key, value in post_data.items %}
-                    {% if key != 'MandateRespDoc' %}
-                        <li><strong>{{ key }}:</strong> {{ value }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul> {% endcomment %}
+                {% if mandate_data.FullName or mandate_data.NMCustomer_Reference2 %}
+                <div class="mt-3">
+                    <h6>🙍 <strong>Full Name:</strong> 
+                        {{ mandate_data.FullName|default:"N/A" }} 
+                        {% if mandate_data.NMCustomer_Reference2 %}
+                            ({{ mandate_data.NMCustomer_Reference2 }})
+                        {% endif %}
+                    </h6>
+                </div>
+            {% endif %}
+            </ul> 
         </div>
         <!-- Centered Button Below the Card -->
         <div class="text-center mt-4">
