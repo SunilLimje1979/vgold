@@ -3258,6 +3258,31 @@ ERROR_CODE_MAPPING = {
     "497": "SpnBank not certified for the variant",
 }
 
+# @csrf_exempt
+# def nach_response(request):
+#     if request.method == "POST":
+#         post_data = request.POST.dict()
+#         mandate_resp_raw = post_data.get("MandateRespDoc", "{}").replace("'", '"')
+
+#         try:
+#             mandate_resp_json = json.loads(mandate_resp_raw)
+#         except json.JSONDecodeError:
+#             mandate_resp_json = {"Status": "Failed", "Errors": [{"Error_Code": "I001", "Error_Message": "Invalid JSON"}]}
+
+#         status = mandate_resp_json.get("Status", "")
+#         error_code = mandate_resp_json.get("Errors", [{}])[0].get("Error_Code", "")
+#         error_desc = ERROR_CODE_MAPPING.get(error_code, "Unknown error")
+
+#         is_success = (status.lower() == "success" and error_code == "000")
+
+#         context = {
+#             "post_data": post_data,
+#             "mandate_resp": mandate_resp_json,
+#             "is_success": is_success,
+#             "error_description": error_desc,
+#         }
+
+#         return render(request, 'gold/nach_response.html', context)
 
 @csrf_exempt
 def nach_response(request):
@@ -3268,22 +3293,58 @@ def nach_response(request):
         try:
             mandate_resp_json = json.loads(mandate_resp_raw)
         except json.JSONDecodeError:
-            mandate_resp_json = {"Status": "Failed", "Errors": [{"Error_Code": "I001", "Error_Message": "Invalid JSON"}]}
+            mandate_resp_json = {
+                "Status": "Failed",
+                "Errors": [{"Error_Code": "I001", "Error_Message": "Invalid JSON"}]
+            }
+            messages.error(request, "Invalid JSON received in Mandate Response.")
 
+        # Default values
         status = mandate_resp_json.get("Status", "")
         error_code = mandate_resp_json.get("Errors", [{}])[0].get("Error_Code", "")
         error_desc = ERROR_CODE_MAPPING.get(error_code, "Unknown error")
-
         is_success = (status.lower() == "success" and error_code == "000")
+
+        # Extract Msgid
+        msgid = ""
+        mandate_data = {}
+        if "d" in mandate_resp_json and "tranStatus" in mandate_resp_json["d"]:
+            tran_status_list = mandate_resp_json["d"]["tranStatus"]
+            if tran_status_list and isinstance(tran_status_list, list):
+                msgid = tran_status_list[0].get("Msgid", "")
+                print(f"Msgid from NACH response: {msgid}")
+
+                if msgid:
+                    try:
+                        api_url = f"https://vgold.app/vgold_admin/m_api/get_mandate_data/{msgid}/"
+                        # api_url = f"http://127.0.0.1:8000/vgold_admin/m_api/get_mandate_data/{msgid}/"
+                        api_response = requests.get(api_url, timeout=10)
+
+                        if api_response.status_code == 200:
+                            mandate_api_data = api_response.json()
+                            if mandate_api_data.get("message_code") == 1000:
+                                mandate_data = mandate_api_data.get("message_data", {})
+                                # messages.success(request, "Mandate details fetched successfully.")
+                            else:
+                                messages.error(request, "Mandate data not found for the given Msgid.")
+                        else:
+                            messages.error(request, "Failed to fetch mandate details from server.")
+
+                    except requests.RequestException as e:
+                        print(f"Error calling mandate API: {e}")
+                        messages.error(request, "An error occurred while calling mandate API.")
 
         context = {
             "post_data": post_data,
             "mandate_resp": mandate_resp_json,
             "is_success": is_success,
             "error_description": error_desc,
+            "msgid": msgid,
+            "mandate_data": mandate_data,
         }
 
         return render(request, 'gold/nach_response.html', context)
+
 ###################################################################################
 
 import hashlib
@@ -4584,7 +4645,7 @@ def nach_form(request):
         return redirect('login')
     
     api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
-    payload = {'user_id': 40}
+    payload = {'user_id': user_id}
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     }
