@@ -115,6 +115,18 @@
             </a>
         </div>
 
+
+        <!-- 🔧 Debug Section: Raw Data -->
+            <div class="mt-4 p-3 bg-light border rounded">
+                <h6>🛠️ <u>Raw Debug Data</u>:</h6>
+
+                <h6 class="mt-2">📄 <strong>Raw MandateRespDoc:</strong></h6>
+                <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ mandate_resp_raw }}</pre>
+
+                <h6 class="mt-2">📨 <strong>Full Raw POST Data:</strong></h6>
+                <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ post_data }}</pre>
+            </div>
+
     </div>
 
     {% if messages %}

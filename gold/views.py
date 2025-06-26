@@ -3376,7 +3376,8 @@ def nach_response(request):
 
         # Prepare and render context
         context = {
-            "post_data": post_data,
+            "post_data": post_data,  # already a dict, will show as raw below
+            "mandate_resp_raw": mandate_resp_raw,  # the raw JSON string
             "mandate_resp": mandate_resp_json,
             "is_success": is_success,
             "error_description": error_desc,
