@@ -96,16 +96,17 @@
 
              <h6 class="mt-4">📩 <u>Submitted POST Data</u>:</h6>
             <ul>
-                {% if mandate_data.FullName or mandate_data.NMCustomer_Reference2 %}
-                <div class="mt-3">
-                    <h6>🙍 <strong>Full Name:</strong> 
-                        {{ mandate_data.FullName|default:"N/A" }} 
-                        {% if mandate_data.NMCustomer_Reference2 %}
-                            ({{ mandate_data.NMCustomer_Reference2 }})
-                        {% endif %}
-                    </h6>
-                </div>
-            {% endif %}
+                {% if mandate_data.FullName %}
+                    <div class="mt-3">
+                        <h6>🙍 <strong>Full Name:</strong> {{ mandate_data.FullName|default:"N/A" }}</h6>
+                    </div>
+                {% endif %}
+
+                {% if mandate_data.NMCustomer_Reference2 %}
+                    <div class="mt-1">
+                        <h6>🆔 <strong>Booking ID:</strong> {{ mandate_data.NMCustomer_Reference2 }}</h6>
+                    </div>
+                {% endif %}
             </ul> 
         </div>
         <!-- Centered Button Below the Card -->
@@ -116,7 +117,7 @@
         </div>
 
 
-        <!-- 🔧 Debug Section: Raw Data -->
+        {% comment %} <!-- 🔧 Debug Section: Raw Data -->
             <div class="mt-4 p-3 bg-light border rounded">
                 <h6>🛠️ <u>Raw Debug Data</u>:</h6>
 
@@ -125,7 +126,7 @@
 
                 <h6 class="mt-2">📨 <strong>Full Raw POST Data:</strong></h6>
                 <pre style="white-space: pre-wrap; word-wrap: break-word;">{{ post_data }}</pre>
-            </div>
+            </div> {% endcomment %}
 
     </div>
 
