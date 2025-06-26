@@ -3331,10 +3331,8 @@ def nach_response(request):
                         nm_error_code = error_code
                         nm_error_message = error_desc
 
-                    # 🔁 Call the update API
-                    # update_url = "http://127.0.0.1:8000/vgold_admin/m_api/update_nach_mandate/"
+                    # 🔁 Call the update mandate API
                     update_url = "https://vgold.app/vgold_admin/m_api/update_nach_mandate/"
-
                     update_payload = {
                         "Msgid": msgid,
                         "Filler8": filler8,
@@ -3356,16 +3354,41 @@ def nach_response(request):
                         print(f"Error calling update API: {e}")
                         messages.error(request, "Error occurred during mandate update API call.")
 
-                    # Optionally fetch mandate details if needed
+                    # ✅ Fetch mandate details
                     try:
                         api_url = f"https://vgold.app/vgold_admin/m_api/get_mandate_data/{msgid}/"
-                        # api_url = f"http://127.0.0.1:8000/vgold_admin/m_api/get_mandate_data/{msgid}/"
                         api_response = requests.get(api_url, timeout=10)
 
                         if api_response.status_code == 200:
                             mandate_api_data = api_response.json()
                             if mandate_api_data.get("message_code") == 1000:
                                 mandate_data = mandate_api_data.get("message_data", {})
+
+                                # ✅ Call update_nach_status API if success
+                                if is_success:
+                                    display_id = mandate_data.get("NMCustomer_Reference2")
+                                    user_id = request.session.get("user_id")
+
+                                    if display_id and user_id:
+                                        update_status_url = "https://vgold.app/vgold_admin/m_api/update_nach_status/"
+                                        update_status_payload = {
+                                            "display_id": display_id,
+                                            "user_id": user_id
+                                        }
+
+                                        try:
+                                            status_response = requests.post(update_status_url, json=update_status_payload, timeout=10)
+                                            status_json = status_response.json()
+
+                                            if status_json.get("message_code") == 1000:
+                                                messages.success(request, "NACH status updated successfully.")
+                                            else:
+                                                messages.error(request, f"Failed to update NACH status: {status_json.get('message_text', '')}")
+                                        except requests.RequestException as e:
+                                            print(f"Error calling NACH status update API: {e}")
+                                            messages.error(request, "An error occurred while calling NACH status update API.")
+                                    else:
+                                        messages.error(request, "Display ID or User ID not found for NACH status update.")
                             else:
                                 messages.error(request, "Mandate data not found for the given Msgid.")
                         else:
