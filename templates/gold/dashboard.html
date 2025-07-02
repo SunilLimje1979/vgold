@@ -306,11 +306,11 @@
           >
         </li>
 
-        {% if user_id == 994 or user_id == 1011 %}
-          <li>
-              <a href="{% url 'nach_form' %}"><i class="bi bi-share"></i> NACH Form</a>
-            </li>
-          {% endif %}
+        <li>
+          <a href="{% url 'nach_form' %}">
+            <i class="bi bi-journal-text"></i> NACH Form
+          </a>
+        </li>
 
         {% comment %} <li>
           <a href="{% url 'feedback' %}"

@@ -198,11 +198,24 @@
 
          <!-- Debit & Max Amount -->
         <div class="row">
-           <div class="col-md-6 mb-2">
+            <div class="col-md-6 mb-2">
+                <label class="form-label">Debit Amount</label>
+                <input type="number" step="0.01"
+                    name="Customer_DebitAmount"
+                    id="Customer_DebitAmount"
+                    class="form-control"
+                    value="{{ api_data.GBMonthlyInstallment }}"
+                    min="{{ api_data.GBMonthlyInstallment }}">
+                <div id="debit-error" class="text-danger mt-1" style="display: none;">
+                    Amount cannot be less than ₹{{ api_data.GBMonthlyInstallment }}
+                </div>
+            </div>
+
+           {% comment %} <div class="col-md-6 mb-2">
                 <label class="form-label">Debit Amount</label>
                 <input type="number" step="0.01" name="Customer_DebitAmount" id="Customer_DebitAmount" 
                     class="form-control" value="{{ api_data.GBMonthlyInstallment }}">
-            </div>
+            </div> {% endcomment %}
             <div class="col-md-6 mb-2">
                 <input type="hidden" step="0.01" name="Customer_MaxAmount" id="Customer_MaxAmount" value="">
                 {% comment %} <label class="form-label"> Max Amount</label> {% endcomment %}
@@ -306,10 +319,16 @@
             <input type="text" name="UtilCode" maxlength="18" class="form-control" required>
         </div> {% endcomment %}
 
-        <div class="mb-2">
+        {% comment %} <div class="mb-2">
             <label class="required form-label">Util Code</label>
             <input type="text" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000000020" readonly style="background-color: #e9ecef;" required>
+        </div> {% endcomment %}
+
+        <div class="mb-2">
+            <label class="required form-label">Util Code</label>
+            <input type="text" name="UtilCode" maxlength="18" class="form-control" value="NACH00000000007938" readonly style="background-color: #e9ecef;" required>
         </div>
+        
 
         <!-- Additional Fillers -->
         {% comment %} {% for i in "1234789" %}
@@ -318,6 +337,7 @@
             <input type="text" name="Filler{{ i }}" maxlength="50" class="form-control">
         </div>
         {% endfor %} {% endcomment %}
+         
          <!-- Hidden Additional Fillers -->
         {% for i in "1234789" %}
             <input type="hidden" name="Filler{{ i }}" maxlength="50" value="">
@@ -386,7 +406,9 @@
 
         // Set expiry date based on GBTennure (in months)
         const expiryDate = new Date(defaultStartDate);
-        expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths);
+        // expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths);
+        expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths + 3);
+
 
         const expiryDateStr = `${expiryDate.getFullYear()}-${padZero(expiryDate.getMonth() + 1)}-${padZero(expiryDate.getDate())}`;
         expiryDateInput.value = expiryDateStr;
@@ -440,6 +462,25 @@
         const frequency = document.getElementById("Customer_DebitFrequency");
         frequency.disabled = (sequenceType === "OOFF");
     }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const debitInput = document.getElementById("Customer_DebitAmount");
+        const errorDiv = document.getElementById("debit-error");
+        const minAmount = parseFloat(debitInput.min);
+
+        debitInput.addEventListener("input", function () {
+            const enteredValue = parseFloat(debitInput.value);
+
+            if (enteredValue < minAmount) {
+                errorDiv.style.display = "block";
+                debitInput.classList.add("is-invalid");
+            } else {
+                errorDiv.style.display = "none";
+                debitInput.classList.remove("is-invalid");
+            }
+        });
+    });
 </script>
 
 </body>

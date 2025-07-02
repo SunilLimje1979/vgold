@@ -3760,6 +3760,12 @@ from decimal import Decimal, ROUND_DOWN, InvalidOperation
 import random
 import string
 def nominee_mandiates(request,id):
+    user_data = request.session.get('user_data', {})
+    user_id = user_data.get('User_Id') 
+
+    if not user_id:
+        return redirect('login') 
+    
     booking_id=id
     
     # api_url = f"http://127.0.0.1:8000/vgold_admin/api/account_id_detail/{booking_id}/"
@@ -4771,6 +4777,33 @@ def installment_op(request):
         return HttpResponse(f"An error occurred: {str(e)}", status=500)
     
     
+# def nach_form(request):
+#     user_data = request.session.get('user_data', {})
+    
+#     # Extract user_id from session
+#     user_id = user_data.get('User_Id')
+    
+#     if not user_id:
+#         return redirect('login')
+    
+#     api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
+#     payload = {'user_id': user_id}
+#     headers = {
+#         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+#     }
+
+#     bookings = []
+#     try:
+#         response = requests.post(api_url, data=payload, headers=headers)
+#         response.raise_for_status()
+#         data = response.json()
+        
+#         if data.get("message_code") == 1000:
+#             bookings = data.get("message_data", [])
+#     except requests.exceptions.RequestException as e:
+#         print(f"API error: {e}")
+
+#     return render(request, 'gold/nach_form.html', {'bookings': bookings})
 def nach_form(request):
     user_data = request.session.get('user_data', {})
     
@@ -4793,7 +4826,8 @@ def nach_form(request):
         data = response.json()
         
         if data.get("message_code") == 1000:
-            bookings = data.get("message_data", [])
+            all_bookings = data.get("message_data", [])
+            bookings = [b for b in all_bookings if str(b.get("account_status")) in ["1", "5"]]
     except requests.exceptions.RequestException as e:
         print(f"API error: {e}")
 

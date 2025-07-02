@@ -103,8 +103,8 @@
                     </thead>
                     <tbody>
                         {% for booking in bookings %}
-                        <tr class="{% if booking.account_status == 1 %}row-active{% else %}row-closed{% endif %}">
-                            <td class="fw-bold text-center {% if booking.account_status == 1 %}text-success{% else %}text-danger{% endif %}">
+                        <tr class="{% if booking.account_status == 1 or booking.account_status == 5 %}row-active{% else %}row-closed{% endif %}">
+                            <td class="fw-bold text-center {% if booking.account_status == 1 or booking.account_status == 5 %}text-success{% else %}text-danger{% endif %}">
                                 {{ booking.gold_booking_id }}
                             </td>
                             <td>{{ booking.gold|floatformat:"0" }}</td>
