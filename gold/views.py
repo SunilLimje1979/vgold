@@ -3849,6 +3849,13 @@ def nominee_mandiates(request,id):
         Filler8 = request.POST.get("Filler8", "")
         Filler9 = request.POST.get("Filler9", "")
         Filler10 = request.POST.get("Filler10", "")
+        
+        if Channel == "Aadhaar":
+            Filler7 = "OTP"
+        else:
+            Filler7 = request.POST.get("Filler7", "")
+            
+        print(Filler7,"3858")
 
         def to_decimal(value, other_value_present):
             try:

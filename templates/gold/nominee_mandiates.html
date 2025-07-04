@@ -232,6 +232,9 @@
         <div class="mb-2">
             <label class="form-label">Expiry Date</label>
             <input type="date" id="expiry_date" name="Customer_ExpiryDate" class="form-control">
+        <div id="expiry-error" class="text-danger mt-1" style="display: none;">
+            Expiry date must be greater than start date.
+        </div>
         </div>
 
         <!-- Debit Frequency -->
@@ -256,6 +259,7 @@
             <label class="required form-label">Short Code</label>
             <input type="text" name="Short_Code" maxlength="10" class="form-control" required>
         </div> {% endcomment %}
+        
         <div class="mb-2">
             <label class="required form-label">Short Code</label>
             <input type="text" name="Short_Code" maxlength="10" class="form-control" value="VGL" readonly style="background-color: #e9ecef;" required>
@@ -378,7 +382,7 @@
         });
     });
 </script>
-<script>
+{% comment %} <script>
     const gbtTennureMonths = {{ api_data.GBTennure|default:0 }};
 </script>
 <script>
@@ -427,7 +431,154 @@
             expiryDateInput.value = expiryDateStr;
         }
     });
+</script> {% endcomment %}
+
+{% comment %} <script>
+    const gbtTennureMonths = {{ api_data.GBTennure|default:0 }};
+    const added_date = "{{ api_data.Book_date|default:'' }}";  // format: "YYYY-MM-DD"
+
+    console.log("Raw added_date from template:", added_date);
+
+    function padZero(num) {
+        return num.toString().padStart(2, '0');
+    }
+
+    function formatDate(date) {
+        return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}`;
+    }
+
+    function setDefaultDates() {
+        const startDateInput = document.getElementById("start_date");
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        // ✅ 1. UI Start Date = 15th of NEXT MONTH
+        const today = new Date();
+        let nextMonth = today.getMonth() + 1;
+        let year = today.getFullYear();
+        if (nextMonth > 11) {
+            nextMonth = 0;
+            year += 1;
+        }
+        const displayStartDate = new Date(year, nextMonth, 15);
+        startDateInput.value = formatDate(displayStartDate);
+        console.log("Displayed Start Date (15th next month):", formatDate(displayStartDate));
+
+        // ✅ 2. Expiry Date = added_date + GBTennure + 3 months
+        const addedDateObj = new Date(added_date);
+        if (!isNaN(addedDateObj)) {
+            console.log("Parsed added_date:", formatDate(addedDateObj));
+
+            const expiryDate = new Date(addedDateObj);
+            expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths + 3);
+            expiryDateInput.value = formatDate(expiryDate);
+            console.log("Calculated Expiry Date from added_date:", formatDate(expiryDate));
+        } else {
+            console.warn("Invalid added_date format. Expiry not set.");
+            expiryDateInput.value = "";
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", setDefaultDates);
+
+    // Optional: Update expiry manually if user changes start date
+    document.getElementById("start_date").addEventListener("change", function () {
+        const selectedDate = new Date(this.value);
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        if (!isNaN(selectedDate)) {
+            const expiryDate = new Date(selectedDate);
+            expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths + 3);
+            expiryDateInput.value = formatDate(expiryDate);
+        }
+    });
+</script> {% endcomment %}
+
+
+<script>
+    const gbtTennureMonths = {{ api_data.GBTennure|default:0 }};
+    const added_date = "{{ api_data.Book_date|default:'' }}";  // format: "YYYY-MM-DD"
+
+    console.log("Raw added_date from template:", added_date);
+
+    function padZero(num) {
+        return num.toString().padStart(2, '0');
+    }
+
+    function formatDate(date) {
+        return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}`;
+    }
+
+    function setDefaultDates() {
+        const startDateInput = document.getElementById("start_date");
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        // ✅ 1. UI Start Date = 15th of NEXT MONTH
+        const today = new Date();
+        let nextMonth = today.getMonth() + 1;
+        let year = today.getFullYear();
+        if (nextMonth > 11) {
+            nextMonth = 0;
+            year += 1;
+        }
+        const displayStartDate = new Date(year, nextMonth, 15);
+        startDateInput.value = formatDate(displayStartDate);
+        console.log("Displayed Start Date (15th next month):", formatDate(displayStartDate));
+
+        // ✅ 2. Expiry Date = added_date + GBTennure + 3 months
+        const addedDateObj = new Date(added_date);
+        if (!isNaN(addedDateObj)) {
+            console.log("Parsed added_date:", formatDate(addedDateObj));
+
+            const expiryDate = new Date(addedDateObj);
+            expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths + 3);
+            expiryDateInput.value = formatDate(expiryDate);
+            console.log("Calculated Expiry Date from added_date:", formatDate(expiryDate));
+        } else {
+            console.warn("Invalid added_date format. Expiry not set.");
+            expiryDateInput.value = "";
+        }
+
+        validateExpiryAfterStart(); // Run initial validation
+    }
+
+    function validateExpiryAfterStart() {
+        const startDateInput = document.getElementById("start_date");
+        const expiryDateInput = document.getElementById("expiry_date");
+        const errorDiv = document.getElementById("expiry-error");
+
+        const startDate = new Date(startDateInput.value);
+        const expiryDate = new Date(expiryDateInput.value);
+
+        if (!isNaN(startDate) && !isNaN(expiryDate)) {
+            if (expiryDate <= startDate) {
+                errorDiv.style.display = "block";
+            } else {
+                errorDiv.style.display = "none";
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        setDefaultDates();
+    });
+
+    document.getElementById("start_date").addEventListener("change", function () {
+        const selectedDate = new Date(this.value);
+        const expiryDateInput = document.getElementById("expiry_date");
+
+        if (!isNaN(selectedDate)) {
+            const expiryDate = new Date(selectedDate);
+            expiryDate.setMonth(expiryDate.getMonth() + gbtTennureMonths + 3);
+            expiryDateInput.value = formatDate(expiryDate);
+        }
+
+        validateExpiryAfterStart();
+    });
+
+    document.getElementById("expiry_date").addEventListener("change", validateExpiryAfterStart);
 </script>
+
+
 <script>
     function validateForm() {
         const mobile = document.getElementById("Customer_Mobile").value.trim();
