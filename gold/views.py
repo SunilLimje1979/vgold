@@ -198,7 +198,7 @@ def Login(request):
         if step == 'send_otp':
             mobile_number = request.POST.get('mobileNumber')
             
-            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949','9850180648','8600672101']:
+            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949','9850180648','8483873163','8600672101']:
                 request.session['otp_data'] = {'otp': 9999, 'mobile_no': mobile_number}
                 return render(request, 'gold/logiin.html', {
                     'show_otp_form': True,'mobile_number': mobile_number,'step': 'verify_otp','serverappversion': serverappversion,'source': source
@@ -4268,127 +4268,450 @@ def payment(request):
 
 import uuid
 import re
-def regular_payment(request, id):
-    amount = id
-    # print("Received Amount in regular_payment:", amount)
-    # Configuration from config file
-    api_key = 'D672D5DCFB64471A651287AC44262D'
-    merchant_id = 'SG2885'
-    client_id = 'hdfcmaster'
-    base_url = 'https://smartgatewayuat.hdfcbank.com'
-    # order_id = "testing-order-one865"
+# def regular_payment(request, id):
+#     amount = id
+#     # print("Received Amount in regular_payment:", amount)
+#     # Configuration from config file
+#     api_key = 'D672D5DCFB64471A651287AC44262D'
+#     merchant_id = 'SG2885'
+#     client_id = 'hdfcmaster'
+#     base_url = 'https://smartgatewayuat.hdfcbank.com'
+#     # order_id = "testing-order-one865"
     
-    # Extract customer name
-     # Get customer name from session
-    user_data = request.session.get('user_data', {})
-    customer_name = user_data.get('UserFirstname', 'user')
-    last_name = user_data.get('UserLastname', '')
-    mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
-    email = user_data.get('UserEmail', 'user@example.com')
-    user_id = user_data.get('User_Id', 994)
+#     # Extract customer name
+#      # Get customer name from session
+#     user_data = request.session.get('user_data', {})
+#     customer_name = user_data.get('UserFirstname', 'user')
+#     last_name = user_data.get('UserLastname', '')
+#     mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+#     email = user_data.get('UserEmail', 'user@example.com')
+#     user_id = user_data.get('User_Id', 994)
     
-    # Sanitize name: only alphanumeric, lowercase
-    email = user_data.get('UserEmail', 'user@example.com')
+#     # Sanitize name: only alphanumeric, lowercase
+#     email = user_data.get('UserEmail', 'user@example.com')
 
 
-    # Sanitize name: only alphanumeric, lowercase
-    safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+#     # Sanitize name: only alphanumeric, lowercase
+#     safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
 
-    # Limit name part to 10 characters max
-    name_part = safe_name[:10]
+#     # Limit name part to 10 characters max
+#     name_part = safe_name[:10]
 
-    # Generate a random suffix (remaining to keep total 20 chars)
-    remaining_len = 20 - len(name_part)
-    random_suffix = uuid.uuid4().hex[:remaining_len]  # use hex for uniqueness
+#     # Generate a random suffix (remaining to keep total 20 chars)
+#     remaining_len = 20 - len(name_part)
+#     random_suffix = uuid.uuid4().hex[:remaining_len]  # use hex for uniqueness
 
-    # Final order_id
-    order_id = f"{name_part}{random_suffix}"
+#     # Final order_id
+#     order_id = f"{name_part}{random_suffix}"
     
-    # return_url = 'https://shop.merchant.com'
-    # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
-    return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
-    # print(return_url)
-    # return HttpResponse(return_url)
+#     # return_url = 'https://shop.merchant.com'
+#     # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+#     return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+#     # print(return_url)
+#     # return HttpResponse(return_url)
 
-    # Encode API key
-    encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+#     # Encode API key
+#     encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
-    # Payload for payment session
-    # payload = {
-    #     "order_id": order_id,  # You should generate unique order_id in production
-    #     "amount": amount,
-    #     "customer_id": "testing-customer-one",  # Match sample data
-    #     "customer_email": "sl@mail.com",
-    #     "customer_phone": "9850180648",
-    #     "payment_page_client_id": client_id,
-    #     "action": "paymentPage",
-    #     "currency": "INR",
-    #     "return_url": return_url,
-    #     "description": "Complete your payment",
-    #     "first_name": "Testing",
-    #     "last_name": "1"
-    # }
-    payload = {
-        "order_id": order_id,  # You should generate unique order_id in production
-        "amount": amount,
-        "customer_id": "testing-customer-one",  # Match sample data
-        # "customer_id": f"user-{user_data.get('User_Id', '0')}", 
-        "customer_email": email,
-        "customer_phone": mobile_no,
-        "payment_page_client_id": client_id,
-        "action": "paymentPage",
-        "currency": "INR",
-        "return_url": return_url,
-        "description": "Complete your payment",
-        "first_name": customer_name,
-        "last_name": last_name
-    }
+#     # Payload for payment session
+#     # payload = {
+#     #     "order_id": order_id,  # You should generate unique order_id in production
+#     #     "amount": amount,
+#     #     "customer_id": "testing-customer-one",  # Match sample data
+#     #     "customer_email": "sl@mail.com",
+#     #     "customer_phone": "9850180648",
+#     #     "payment_page_client_id": client_id,
+#     #     "action": "paymentPage",
+#     #     "currency": "INR",
+#     #     "return_url": return_url,
+#     #     "description": "Complete your payment",
+#     #     "first_name": "Testing",
+#     #     "last_name": "1"
+#     # }
+#     payload = {
+#         "order_id": order_id,  # You should generate unique order_id in production
+#         "amount": amount,
+#         "customer_id": "testing-customer-one",  # Match sample data
+#         # "customer_id": f"user-{user_data.get('User_Id', '0')}", 
+#         "customer_email": email,
+#         "customer_phone": mobile_no,
+#         "payment_page_client_id": client_id,
+#         "action": "paymentPage",
+#         "currency": "INR",
+#         "return_url": return_url,
+#         "description": "Complete your payment",
+#         "first_name": customer_name,
+#         "last_name": last_name
+#     }
 
-    # Headers with auth and identifiers
-    headers = {
-        "Authorization": f"Basic {encoded_key}",
-        "Content-Type": "application/json",
-        "x-merchantid": merchant_id,
-        "x-customerid": payload['customer_id']
-    }
+#     # Headers with auth and identifiers
+#     headers = {
+#         "Authorization": f"Basic {encoded_key}",
+#         "Content-Type": "application/json",
+#         "x-merchantid": merchant_id,
+#         "x-customerid": payload['customer_id']
+#     }
 
-    try:
-        response = requests.post(f"{base_url}/session", json=payload, headers=headers)
-        response_data = response.json()
-        print("Payment API Response:", response_data)
+#     try:
+#         response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+#         response_data = response.json()
+#         print("Payment API Response:", response_data)
 
-        if response.status_code == 200 and 'payment_links' in response_data:
-            # if 'order_id' in response_data and response_data['order_id']:
-            #     # request.session['order_id'] = response_data['order_id']
-            #     print(f"Order ID '{response_data['order_id']}' stored in session.")
+#         if response.status_code == 200 and 'payment_links' in response_data:
+#             # if 'order_id' in response_data and response_data['order_id']:
+#             #     # request.session['order_id'] = response_data['order_id']
+#             #     print(f"Order ID '{response_data['order_id']}' stored in session.")
             
-            transaction_payload = {
-                "PTUserId": user_id,
-                "PTReceive_id": "VGOLD123456789",  # Can be dynamic if needed
-                "PTOrder_id": order_id,  # Using generated order_id
-                "PTStatus": 0,  # Initially pending
-                "PTAmount": amount,
-                "CreatedBy": user_id
+#             transaction_payload = {
+#                 "PTUserId": user_id,
+#                 "PTReceive_id": "VGOLD123456789",  # Can be dynamic if needed
+#                 "PTOrder_id": order_id,  # Using generated order_id
+#                 "PTStatus": 0,  # Initially pending
+#                 "PTAmount": amount,
+#                 "CreatedBy": user_id
+#             }
+
+#             try:
+#                 transaction_response = requests.post(
+#                     # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+#                     "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+#                     json=transaction_payload
+#                 )
+#                 print("Transaction API Response:", transaction_response.json())
+#             except Exception as e:
+#                 messages.error(request, f"Failed to record transaction: {e}")
+            
+#             return redirect(response_data['payment_links']['web'])
+#         else:
+#             error_message = response_data.get('message', 'Failed to create payment session')
+#             messages.error(request, f"Error: {error_message}")
+#     except Exception as e:
+#         messages.error(request, f"Exception occurred: {str(e)}")
+
+from django.db import transaction
+# def regular_payment(request, id):
+#     try:
+#         amount = float(id)  # Ensure it's a float or number
+#     except ValueError:
+#         messages.error(request, "Invalid amount.")
+#         return redirect("installment_op")
+
+#     # API Config
+#     api_key = 'D672D5DCFB64471A651287AC44262D'
+#     merchant_id = 'SG2885'
+#     client_id = 'hdfcmaster'
+#     base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+#     # Session data
+#     user_data = request.session.get('user_data', {})
+#     customer_name = user_data.get('UserFirstname', 'user')
+#     last_name = user_data.get('UserLastname', '')
+#     mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+#     email = user_data.get('UserEmail', 'user@example.com')
+#     user_id = user_data.get('User_Id', 994)
+
+#     # Generate order_id
+#     safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+#     name_part = safe_name[:10]
+#     random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
+#     order_id = f"{name_part}{random_suffix}"
+
+#     # return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+#     return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+
+#     encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+#     payload = {
+#         "order_id": order_id,
+#         "amount": amount,
+#         "customer_id": "testing-customer-one",
+#         "customer_email": email,
+#         "customer_phone": mobile_no,
+#         "payment_page_client_id": client_id,
+#         "action": "paymentPage",
+#         "currency": "INR",
+#         "return_url": return_url,
+#         "description": "Complete your payment",
+#         "first_name": customer_name,
+#         "last_name": last_name
+#     }
+
+#     headers = {
+#         "Authorization": f"Basic {encoded_key}",
+#         "Content-Type": "application/json",
+#         "x-merchantid": merchant_id,
+#         "x-customerid": payload['customer_id']
+#     }
+
+#     try:
+#         with transaction.atomic():
+#             response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+#             response_data = response.json()
+#             print("Payment API Response:", response_data)
+
+#             if response.status_code == 200 and 'payment_links' in response_data:
+#                 transaction_payload = {
+#                     "PTUserId": user_id,
+#                     "PTReceive_id": "VGOLD123456789",
+#                     "PTOrder_id": order_id,
+#                     "PTStatus": 0,
+#                     "PTAmount": amount,  # ensure it's a float, not string
+#                     "CreatedBy": user_id
+#                 }
+
+#                 transaction_response = requests.post(
+#                     # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+#                     "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+#                     json=transaction_payload
+#                 )
+
+#                 transaction_data = transaction_response.json()
+#                 print("Transaction API Response:", transaction_data)
+
+#                 if transaction_data.get("message_code") == 1000:
+#                     return redirect(response_data['payment_links']['web'])
+#                 else:
+#                     messages.error(request, f"Transaction failed: {transaction_data.get('message_text', 'Unknown error')}")
+#             else:
+#                 error_message = response_data.get('message', 'Failed to create payment session')
+#                 messages.error(request, f"Error: {error_message}")
+
+#     except Exception as e:
+#         messages.error(request, f"Exception occurred: {str(e)}")
+
+#     # If any failure, redirect to fallback page
+#     return redirect("installment_op")
+# @csrf_exempt
+# def regular_payment(request):
+#     if request.method == "POST":
+#         try:
+#             amount = float(request.POST.get("final_amount"))
+#             pay_type = request.POST.get("pay_type")  # "total" or "partial"
+#             print(pay_type)
+#             pay_type = request.POST.get("pay_type", "").strip().lower()  # "total", "partial", etc.
+
+#             # Map pay_type to PTType integer
+#             if pay_type == "total":
+#                 pt_type = 0
+#             elif pay_type == "partial":
+#                 pt_type = 1
+#             else:
+#                 pt_type = 2  # fallback or booking case
+                
+#             print(pt_type)
+
+#             # API Config
+#             api_key = 'D672D5DCFB64471A651287AC44262D'
+#             merchant_id = 'SG2885'
+#             client_id = 'hdfcmaster'
+#             base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+#             # Session data
+#             user_data = request.session.get('user_data', {})
+#             customer_name = user_data.get('UserFirstname', 'user')
+#             last_name = user_data.get('UserLastname', '')
+#             mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+#             email = user_data.get('UserEmail', 'user@example.com')
+#             user_id = user_data.get('User_Id', 994)
+
+#             # Generate order_id
+#             safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+#             name_part = safe_name[:10]
+#             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
+#             order_id = f"{name_part}{random_suffix}"
+
+#             return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+
+#             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+#             payload = {
+#                 "order_id": order_id,
+#                 "amount": amount,
+#                 "customer_id": "testing-customer-one",
+#                 "customer_email": email,
+#                 "customer_phone": mobile_no,
+#                 "payment_page_client_id": client_id,
+#                 "action": "paymentPage",
+#                 "currency": "INR",
+#                 "return_url": return_url,
+#                 "description": f"{pay_type.title()} Installment Payment",
+#                 "first_name": customer_name,
+#                 "last_name": last_name
+#             }
+
+#             headers = {
+#                 "Authorization": f"Basic {encoded_key}",
+#                 "Content-Type": "application/json",
+#                 "x-merchantid": merchant_id,
+#                 "x-customerid": payload['customer_id']
+#             }
+
+#             with transaction.atomic():
+#                 response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+#                 response_data = response.json()
+#                 # print("Payment API Response:", response_data)
+
+#                 if response.status_code == 200 and 'payment_links' in response_data:
+#                     transaction_payload = {
+#                         "PTUserId": user_id,
+#                         "PTReceive_id": "VGOLD123456789",
+#                         "PTOrder_id": order_id,
+#                         "PTStatus": 0,
+#                         "PTAmount": amount,
+#                         "CreatedBy": user_id,
+#                         "PTType": pt_type,
+#                     }
+
+#                     transaction_response = requests.post(
+#                        "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+#                         # "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+#                         json=transaction_payload
+#                     )
+
+#                     transaction_data = transaction_response.json()
+#                     print("Transaction API Response:", transaction_data)
+
+#                     if transaction_data.get("message_code") == 1000:
+#                         return redirect(response_data['payment_links']['web'])
+#                     else:
+#                         messages.error(request, f"Transaction failed: {transaction_data.get('message_text', 'Unknown error')}")
+#                 else:
+#                     error_message = response_data.get('message', 'Failed to create payment session')
+#                     messages.error(request, f"Error: {error_message}")
+
+#         except Exception as e:
+#             messages.error(request, f"Exception occurred: {str(e)}")
+
+#     return redirect("installment_op")
+@csrf_exempt
+def regular_payment(request):
+    if request.method == "POST":
+        try:
+            amount = float(request.POST.get("final_amount"))
+            pay_type = request.POST.get("pay_type", "").strip().lower()
+
+            if pay_type == "total":
+                pt_type = 0
+            elif pay_type == "partial":
+                pt_type = 1
+            else:
+                pt_type = 2  # fallback or booking
+
+            # API Config
+            api_key = 'D672D5DCFB64471A651287AC44262D'
+            merchant_id = 'SG2885'
+            client_id = 'hdfcmaster'
+            base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+            # Session Data
+            user_data = request.session.get('user_data', {})
+            customer_name = user_data.get('UserFirstname', 'user')
+            last_name = user_data.get('UserLastname', '')
+            mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+            email = user_data.get('UserEmail', 'user@example.com')
+            user_id = user_data.get('User_Id', 994)
+
+            # Order ID
+            safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+            name_part = safe_name[:10]
+            random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
+            order_id = f"{name_part}{random_suffix}"
+
+            return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+            encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+            payload = {
+                "order_id": order_id,
+                "amount": amount,
+                "customer_id": "testing-customer-one",
+                "customer_email": email,
+                "customer_phone": mobile_no,
+                "payment_page_client_id": client_id,
+                "action": "paymentPage",
+                "currency": "INR",
+                "return_url": return_url,
+                "description": f"{pay_type.title()} Installment Payment",
+                "first_name": customer_name,
+                "last_name": last_name
             }
 
-            try:
-                transaction_response = requests.post(
-                    # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
-                    "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
-                    json=transaction_payload
-                )
-                print("Transaction API Response:", transaction_response.json())
-            except Exception as e:
-                messages.error(request, f"Failed to record transaction: {e}")
-            
-            return redirect(response_data['payment_links']['web'])
-        else:
-            error_message = response_data.get('message', 'Failed to create payment session')
-            messages.error(request, f"Error: {error_message}")
-    except Exception as e:
-        messages.error(request, f"Exception occurred: {str(e)}")
+            headers = {
+                "Authorization": f"Basic {encoded_key}",
+                "Content-Type": "application/json",
+                "x-merchantid": merchant_id,
+                "x-customerid": payload['customer_id']
+            }
 
+            with transaction.atomic():
+                response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+                response_data = response.json()
 
+                if response.status_code == 200 and 'payment_links' in response_data:
+                    # Save transaction
+                    transaction_payload = {
+                        "PTUserId": user_id,
+                        "PTReceive_id": "VGOLD123456789",
+                        "PTOrder_id": order_id,
+                        "PTStatus": 0,
+                        "PTAmount": amount,
+                        "CreatedBy": user_id,
+                        "PTType": pt_type,
+                    }
+
+                    transaction_response = requests.post(
+                        "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+                        json=transaction_payload
+                    )
+                    transaction_data = transaction_response.json()
+                    print("Transaction API Response:", transaction_data)
+
+                    if transaction_data.get("message_code") == 1000:
+                        PT_id = transaction_data.get("message_data", {}).get("PTId")
+                        # ✅ Handle Partial Payment API
+                        if pay_type == "partial":
+                            status_data = {
+                                "amount": amount,
+                                "txn_id": order_id
+                            }
+                            
+                            partial_payload = {
+                                "PPUserId": user_id,
+                                "PPDate": now().strftime('%Y-%m-%dT%H:%M'),
+                                "PPStatus": 1,
+                                "PPAmount": status_data.get('amount', 0),
+                                "CreatedBy": user_id,
+                                "PPTransectionId": status_data.get('txn_id', ''),
+                                "PPTransection":PT_id
+                            }
+
+                            partial_response = requests.post(
+                                "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
+                                # "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
+                                data=json.dumps(partial_payload),
+                                headers={"Content-Type": "application/json"}
+                            )
+
+                            # 👇 Print full response for debugging
+                            print("Partial Payment API Response:", partial_response.status_code, partial_response.text)
+
+                            # Check response status
+                            if partial_response.status_code != 200 or partial_response.json().get("message_code") != 1000:
+                                messages.error(request, "Partial payment could not be saved.")
+                                return redirect("installment_op")
+
+                        # 🎯 Redirect to HDFC payment page
+                        return redirect(response_data['payment_links']['web'])
+
+                    else:
+                        messages.error(request, f"Transaction failed: {transaction_data.get('message_text', 'Unknown error')}")
+                else:
+                    error_message = response_data.get('message', 'Failed to create payment session')
+                    messages.error(request, f"Error: {error_message}")
+
+        except Exception as e:
+            messages.error(request, f"Exception occurred: {str(e)}")
+
+    return redirect("installment_op")
 
 # @csrf_exempt
 # def payment_status(request,id):
@@ -4783,34 +5106,7 @@ def installment_op(request):
     except Exception as e:
         return HttpResponse(f"An error occurred: {str(e)}", status=500)
     
-    
-# def nach_form(request):
-#     user_data = request.session.get('user_data', {})
-    
-#     # Extract user_id from session
-#     user_id = user_data.get('User_Id')
-    
-#     if not user_id:
-#         return redirect('login')
-    
-#     api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
-#     payload = {'user_id': user_id}
-#     headers = {
-#         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-#     }
 
-#     bookings = []
-#     try:
-#         response = requests.post(api_url, data=payload, headers=headers)
-#         response.raise_for_status()
-#         data = response.json()
-        
-#         if data.get("message_code") == 1000:
-#             bookings = data.get("message_data", [])
-#     except requests.exceptions.RequestException as e:
-#         print(f"API error: {e}")
-
-#     return render(request, 'gold/nach_form.html', {'bookings': bookings})
 def nach_form(request):
     user_data = request.session.get('user_data', {})
     

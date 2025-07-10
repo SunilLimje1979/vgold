@@ -136,7 +136,10 @@ urlpatterns = [
     
     path('payment/', views.payment, name='payment'), 
     
-    path('regular_payment/<str:id>/', views.regular_payment, name='regular_payment'), 
+    # path('regular_payment/<str:id>/', views.regular_payment, name='regular_payment'), 
+    
+        # AFTER (no parameter)
+    path('regular_payment/', views.regular_payment, name='regular_payment'),
     
     path('installment_op/', views.installment_op, name='installment_op'), 
     
