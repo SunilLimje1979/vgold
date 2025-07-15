@@ -144,4 +144,11 @@ urlpatterns = [
     path('installment_op/', views.installment_op, name='installment_op'), 
     
     path('payment_status/<str:id>/', views.payment_status, name='payment_status'),
+    
+    path('gloan_history/', views.Gloan_history, name='gloan_history'),
+    
+    path('loan_transaction_seprate/<str:number>/', views.loan_transaction_seprate, name='loan_transaction_seprate'),
+
+    path('loan_receipt_data/<str:number>/', views.loan_receipt_data, name='loan_receipt_data'),
+
 ]

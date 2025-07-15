@@ -5135,3 +5135,134 @@ def nach_form(request):
         print(f"API error: {e}")
 
     return render(request, 'gold/nach_form.html', {'bookings': bookings})
+
+
+
+#######################################################################################
+###################################### Gold Booking History #############################################
+def Gloan_history(request):
+    # API URL for local gold booking history endpoint
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/gold_loan_history/"
+    api_url = "https://vgold.app/vgold_admin/m_api/gold_loan_history/"
+    
+    # Retrieve user data from session
+    user_data = request.session.get('user_data', {})
+    
+    # Extract user_id from the session data
+    user_id = user_data.get('User_Id')  # Correct key for 'User_Id'
+    print(user_id)
+
+    # If user_id is not found in the session data, return an error message
+    if not user_id:
+        return redirect('login') 
+    
+    # Prepare the payload for the API call
+    payload = {'user_id': user_id}
+    # payload = {'user_id': 1}
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    }
+
+    try:
+        # Send the POST request to the local API
+        response = requests.post(api_url, data=payload, headers=headers)
+        response.raise_for_status()  # Raise an error for bad responses
+        data = response.json()  # Parse the response JSON
+        
+        # Check if the response is successful
+        if data.get("message_code") == 1000:  # Success code is 1000
+            bookings = data.get("message_data", [])
+        else:
+            bookings = []  # Default to empty list if unsuccessful
+    except requests.exceptions.RequestException as e:
+        # Print the error if the API request fails
+        print(f"Failed to connect to the API: {str(e)}")
+        bookings = []
+
+    # Process each booking and ensure fields have default values if missing
+    for booking in bookings:
+        booking['number'] = booking.get('gold_booking_id', "N/A")
+        booking['account_status'] = booking.get('account_status', "0")  # Default to "0" for closed
+        booking['today_gain'] = booking.get('todays_gain', "0")
+        booking['paid_amount'] = booking.get('total_paid_amount', "0")
+        booking['monthly_installment'] = booking.get('monthly_installment', "0")  # Assuming monthly_installment exists in response
+        booking['booking_date'] = booking.get('added_date', "N/A")
+        booking['weight'] = f"{booking.get('gold', 0)}"
+        booking['rate'] = booking.get('rate', "0")
+        booking['value'] = booking.get('booking_amount', "0")
+        booking['tenure'] = f"{booking.get('tennure', '0')} Month"
+        booking['down_payment'] = booking.get('down_payment', "0")
+        booking['booking_charge'] = booking.get('booking_charge', "0")
+        booking['balance_amount'] = booking.get('down_payment', "0")
+        booking['closing_date'] = booking.get('closing_date', "N/A")
+        booking['booking_percentage'] = booking.get('percentage_paid', "60")
+
+    # Render the template and pass the processed bookings data
+    return render(request, 'gold/gloan_history.html', {'bookings': bookings})
+
+
+def loan_transaction_seprate(request, number):
+    # API endpoint and payload
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_loan_transaction_list/"
+    api_url = "https://vgold.app/vgold_admin/m_api/get_loan_transaction_list/"
+    
+    # print(type(number),number)
+    payload = {
+        "GBAccountDisplayId": number
+    }
+    
+    # print(payload)
+    
+    try:
+        # Send POST request to the API
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()  # Parse the response as JSON
+        
+        # print(response_data)
+        
+        if response_data.get("message_code") == 1000:
+            # Success - extract transaction data
+            transactions = response_data.get("message_data", [])
+        else:
+            # Handle API response error
+            transactions = []
+            messages.error(request, response_data.get("message_text", "Failed to fetch transactions."))
+    except requests.RequestException as e:
+        # Handle request errors
+        transactions = []
+        messages.error(request, f"An error occurred while connecting to the API: {str(e)}")
+    
+    # Pass the transactions data to the template
+    return render(request, 'gold/loan_transaction_list.html', {"transactions": transactions,"number": number,})
+
+
+################################# Transection Seprate ############################################    
+def loan_receipt_data(request, number):
+    # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_loan_details_transection/"
+    api_url = "https://vgold.app/vgold_admin/m_api/get_loan_details_transection/"
+    payload = {
+        "GBT_Id": number
+    }
+
+    try:
+        # Send POST request to the API
+        response = requests.post(api_url, json=payload)
+        response_data = response.json()  # Parse the response as JSON
+        
+        # print(response_data)
+        
+        if response_data.get("message_code") == 1000:
+            # Success - extract transaction data
+            transactions = response_data.get("message_data", [])
+        else:
+            # Handle API response error
+            transactions = []
+            messages.error(request, response_data.get("message_text", "Failed to fetch transactions."))
+    except requests.RequestException as e:
+        # Handle request errors
+        transactions = []
+        messages.error(request, f"An error occurred while connecting to the API: {str(e)}")
+    
+    # Pass the transactions data to the template
+    return render(request, 'gold/loan_receipt_data.html', {"transactions": transactions,"number": number,})
+

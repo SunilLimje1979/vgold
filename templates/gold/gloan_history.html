@@ -1,0 +1,452 @@
+{% load i18n %} {% load static %}
+{% load pwa %} 
+{% comment %} {% progressive_web_app_meta %} {% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <title>Gold Loan History</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
+
+        .fa-arrow-left {
+            color: white;
+        }
+
+        #submitButtonContainer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            z-index: 999;
+        }
+
+        #submitButton {
+            width: 90%;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 14px;
+            background-color: rgb(41, 39, 122);
+            font-size: 18px;
+        }
+
+        #submitButton:hover {
+            background-color: #29277a;
+        }
+
+        .custom-card {
+            width: 100%;
+            height: 320px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            margin-right: 0;
+        }
+
+        .status-active {
+            color: green;
+        }
+
+        .status-closed {
+            color: red;
+        }
+
+        .horizontal-line {
+            border-top: 1px solid black;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        .custom-p {
+            font-size: 11px;
+            margin-bottom: 1px;
+        }
+
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+            border-radius: 50%; /* Ensures the wrapper is circular */
+            overflow: hidden; /* Prevents overlay from exceeding the circle */
+        }
+        
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 50%; /* Ensures the image stays circular */
+        }
+        
+        .gold-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            {% comment %} width: 80%; /* Cover full image */ {% endcomment %}
+            height: 100%;
+            background: rgb(243, 200, 10); /* Golden color */
+            opacity: 0.9; /* Transparency */
+            mix-blend-mode: multiply; /* Blends effect with image */
+            pointer-events: none; /* Allows interaction with the image */
+            {% comment %} border-radius: 50%; /* Ensures the overlay follows circular shape */ {% endcomment %}
+        }
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <div class="">
+                <button class="navbar-toggler" type="button" id="menuBtn">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fa fa-arrow-left" aria-hidden="true"> </a></i>
+                </button>
+                <a class="navbar-brand">Gold Loan History</a>
+            </div>
+        </div>
+    </nav>
+
+    {% for data in bookings %}
+    <div class="custom-card" {% if forloop.first %} style="margin-top: 55px;" {% endif %}>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <!-- Left side content -->
+            <div class="card-info">
+                <span class="data-number" data-number="{{ data.number }}" style="cursor: pointer;">
+                    {{ data.number }}
+                </span>
+            </div>
+
+            <span class="status {% if data.account_status == 1 %}status-active{% else %}status-closed{% endif %}">
+                {% if data.account_status == 1 %}
+                    Active
+                {% else %}
+                    Closed
+                {% endif %}
+            </span>
+            
+            <!-- Right side PDF icons -->
+            <div class="pdf-icons" style="display: flex; gap: 5px;">
+                <!-- Agreement Icon -->
+                {% comment %} <div class="pdf-icon-wrapper" style="text-align: center; margin-top: -1px;">
+                    <span class="data-number" data-number="{{ data.number }}" style="cursor: pointer;">
+                      <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="width: 24px; height: 24px;">
+                    </span>
+                    <div class="pdf-label" style="font-size: 9px; padding-top: 4px;">Agreement</div>
+                  </div>                   {% endcomment %}
+              
+                <!-- Receipt Icon -->
+                <div class="pdf-icon-wrapper" style="text-align: center; margin-top: -10px;">
+                    <a href="javascript:void(0);" class="btn pdf-btn" data-number="{{ data.number }}" onclick="openBookingStatement(this)">
+                      <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="width: 24px; height: 24px;">
+                    </a>
+                    <div class="pdf-label" style="font-size: 9px;">Receipt</div>
+                </div>                  
+              </div>                           
+        </div>
+        
+        <hr class="horizontal-line">
+        <div class="row">
+            <div class="col">
+                <a href="{% url 'loan_transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                    <div class="image-container">
+                        <a href="{% url 'loan_transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                            <div class="image-wrapper">
+                                <img src="{% static 'assets/img/gold_coin_progress_bw.png' %}" alt="Your Logo" class="logo" />
+                                <div class="gold-overlay" style="width: {{ data.booking_percentage }}%;"></div>
+                            </div>                            
+                        </a>
+                    </div>
+                    {% comment %} <div class="gold-overlay" style="width: {{ data.booking_percentage }}%;"></div> {% endcomment %}
+
+                    <p class="custom-p">Today's Gain: {{ data.today_gain }}</p>
+                    <p class="custom-p">Paid Amt: {{ data.paid_amount }}</p>
+                    <p class="custom-p">EMI Amt: {{ data.monthly_installment }}</p>
+                </a>
+            </div>
+            <div class="col">
+                <a href="{% url 'loan_transaction_seprate' data.number %}" style="text-decoration: none; color: inherit;">
+                    <p class="custom-p">Booking Date: {{ data.booking_date }}</p>
+                    <p class="custom-p">Weight: {{ data.weight }} gm</p>
+                    <p class="custom-p">Rate: ₹{{ data.rate }}</p>
+                    <p class="custom-p">Value: ₹{{ data.value }}</p>
+                    <p class="custom-p">Tenure: {{ data.tenure }}</p><br>
+                    <p class="custom-p">Booking Amt: ₹{{ data.booking_amount }}</p>
+                    <p class="custom-p">Processing Fees: ₹{{ data.booking_charge }}</p>
+                    <p class="custom-p">Balance Amt: ₹{{ data.balance_amount }}</p>
+                    <p class="custom-p">Closing Date: {{ data.closing_date }}</p>
+                </a>
+            </div>
+        </div>        
+        
+    </div>
+    {% endfor %}
+
+    {% comment %} <div id="submitButtonContainer">
+        <a href="{% url 'gold_booking' %}">
+            <button id="submitButton">BOOK GOLD</button>
+        </a>
+    </div> {% endcomment %}
+
+    <!-- OTP Modal (Bootstrap) -->
+    <div class="modal fade" id="otpModal" tabindex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="otpModalLabel">OTP Verification</h5>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="otpInput" class="form-control" placeholder="Enter OTP" />
+                </div>
+                <div class="modal-footer">
+                    <p class="text-muted">Note: Wait for 1 minute to receive the OTP. Please do not close this Screen.</p>
+                    <button type="button" class="btn btn-secondary" id="closeOtpModalFooter" data-dismiss="modal">Close</button>
+                    <button type="button" id="verifyOtp" class="btn btn-primary">Verify OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    {% comment %} <script>
+        $(document).ready(function() {
+            $('.pdf-btn').on('click', function(event) {
+                event.preventDefault();
+                
+                let number = $(this).data('number');
+        
+                if (!number) {
+                    alert("Error: Number is missing.");
+                    console.error("Missing data-number attribute.");
+                    return;
+                }
+        
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "transection_pdf" %}', 
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.link && typeof response.link === 'string') {
+                            console.log("Opening PDF:", response.link);
+                            window.open(response.link, '_blank');
+                        } else {
+                            alert('Error: Invalid PDF link received.');
+                            console.error('Invalid Response:', response);
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('An error occurred while fetching the PDF.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+        
+    </script> {% endcomment %}
+    <script>
+        function openBookingStatement(element) {
+            var number = element.getAttribute("data-number");
+            if (number) {
+               // var url = "http://127.0.0.1:8000/vgold_admin/loan_booking_receipt/" + number + "/";
+                var url = "https://vgold.app/vgold_admin/loan_booking_receipt/" + number + "/";
+                window.open(url, "_blank");
+            } else {
+                alert("Loan statement not available");
+            }
+        }
+    </script>
+    {% comment %} <script>
+        $(document).ready(function() {
+            // Trigger the close functionality on the modal close button
+            $('#closeOtpModal, #closeOtpModalFooter').on('click', function(event) {
+                $('#otpModal').modal('hide'); // Explicitly hide the modal
+            });
+    
+            $('span').on('click', function(event) {
+                event.preventDefault();
+                const number = $(this).text().trim(); // Extract the number from the clicked span
+            
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "agreement" %}', // Adjust for Django's URL tag
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.message === 'OTP verification required') {
+                            $('#otpModal').modal('show'); // Show OTP modal
+                            // OTP verification button click
+                            $('#verifyOtp').on('click', function() {
+                                const otp = $('#otpInput').val().trim();
+                                const gbAccountDisplayId = number; // Pass the actual GBAccountDisplayId dynamically
+                                console.log(gbAccountDisplayId)
+
+                                if (otp) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{% url "verify_agreement_otp" %}', // Replace with the URL for your `verify_otp` view
+                                        contentType: 'application/json', // Send data as JSON
+                                        data: JSON.stringify({
+                                            'GBAccountDisplayId': gbAccountDisplayId,
+                                            'GBAgreement_Otp': otp
+                                        }),
+                                        headers: {
+                                            'X-CSRFToken': '{{ csrf_token }}'
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                // Open the PDF URL in a new tab
+                                                window.open(response.pdf_url, '_blank');
+                                                $('#otpModal').modal('hide'); // Close the modal
+                                            } else {
+                                                alert(response.message || 'Invalid OTP. Please try again.');
+                                            }
+                                        },
+                                        error: function(xhr, textStatus, errorThrown) {
+                                            alert('Incorrect OTP. Please try again.');
+                                            console.error('Error:', xhr.responseText);
+                                            setTimeout(function() {
+                                                location.reload();
+                                            }, 2000); 
+                                        }
+                                    });
+                                } else {
+                                    alert('Please enter the OTP.');
+                                }
+                            });
+                            
+
+                        } else if (response.message === 'PDF available') {
+                            window.open(response.pdf_url, '_blank'); // Open the PDF in a new tab
+                        } else {
+                            alert('Unexpected response. Please try again.');
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('Agreement Not present for this booking.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script> {% endcomment %}
+
+    <script>
+        $(document).ready(function() {
+            // Close modal functionality
+            $('#closeOtpModal, #closeOtpModalFooter').on('click', function(event) {
+                $('#otpModal').modal('hide');
+            });
+    
+            $('.data-number').on('click', function(event) {
+                event.preventDefault();
+                const number = $(this).data('number'); // Extract the number from the data attribute
+    
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "agreement" %}', // Django URL for agreement view
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if (response.message === 'OTP verification required') {
+                            $('#otpModal').modal('show'); // Show OTP modal
+    
+                            // Bind OTP verification button click, removing previous event bindings
+                            $('#verifyOtp').off('click').on('click', function() {
+                                const otp = $('#otpInput').val().trim();
+    
+                                if (otp) {
+                                    $.ajax({
+                                        type: 'POST',
+                                        url: '{% url "verify_agreement_otp" %}', // Django OTP verification URL
+                                        contentType: 'application/json',
+                                        data: JSON.stringify({
+                                            'GBAccountDisplayId': number,
+                                            'GBAgreement_Otp': otp
+                                        }),
+                                        headers: {
+                                            'X-CSRFToken': '{{ csrf_token }}'
+                                        },
+                                        success: function(response) {
+                                            if (response.success) {
+                                                window.open(response.pdf_url, '_blank'); // Open PDF in new tab
+                                                $('#otpModal').modal('hide');
+                                            } else {
+                                                alert(response.message || 'Invalid OTP. Please try again.');
+                                            }
+                                        },
+                                        error: function(xhr) {
+                                            alert('Incorrect OTP. Please try again.');
+                                            console.error('Error:', xhr.responseText);
+                                            setTimeout(function() {
+                                                location.reload();
+                                            }, 2000);
+                                        }
+                                    });
+                                } else {
+                                    alert('Please enter the OTP.');
+                                }
+                            });
+    
+                        } else if (response.message === 'PDF available') {
+                            window.open(response.pdf_url, '_blank'); // Open PDF directly
+                        } else {
+                            alert('Unexpected response. Please try again.');
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Agreement not present for this booking.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+    
+    
+</body>
+</html>

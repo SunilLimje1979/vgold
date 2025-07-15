@@ -265,7 +265,14 @@
           <a href="{% url 'gdeposit_history' %}"
             ><i class="bi bi-wallet2"></i> Gold Deposit History</a
           >
-        </li> {% comment %}
+        </li>
+        <li>
+          <a href="{% url 'gloan_history' %}">
+            <i class="bi bi-clock-history"></i> Loan Booking History
+          </a>
+        </li>
+
+        {% comment %}
         <li>
           <a href="{% url 'membership' %}"
             ><i class="bi bi-people"></i> Membership</a

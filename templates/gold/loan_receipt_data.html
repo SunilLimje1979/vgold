@@ -1,0 +1,195 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loan History</title>
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
+
+        .fa-arrow-left {
+            color: white;
+        }
+        .card:first-child {
+            margin-top: 65px; /* Adds top margin only to the first card */
+        }
+
+        .card {
+            margin-bottom: 8px; /* Reduced space between cards */
+            border-radius: 12px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            height: auto; /* Adjusts card height dynamically */
+        }
+        .card-body {
+            font-size: 13px; /* Smaller text size */
+            line-height: 1.2; /* Reduced line spacing */
+        }
+        p {
+            margin-bottom: 6px; /* Reduce spacing between paragraphs */
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+          <div class="">
+            <button class="navbar-toggler" type="button" id="menuBtn">
+              <a href="{% url 'dashboard' %}">
+                <!-- Replace the existing toggle icon with Font Awesome icon -->
+                <i class="fa fa-arrow-left" aria-hidden="true"></i> </a>
+            </button>
+            <a class="navbar-brand">Loan Receipt</a>
+          </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        <div class="alert alert-danger" role="alert" id="message-box">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        <script>
+            // Close the message box after 5 seconds
+            setTimeout(function() {
+                const messageBox = document.getElementById('message-box');
+                if (messageBox) {
+                    messageBox.style.display = 'none';
+                }
+            }, 5000); // 5000ms = 5 seconds
+        </script>
+    {% endif %}
+
+    <!-- Transaction Cards -->
+    <div class="container mt-5">
+        {% for transaction in transactions %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12" style="text-align: center; font-weight: bold; font-size: 18px;  margin-bottom: 4px;">
+                        <p>Receipt No: {{ transaction.GBT_Id }}</p>
+                    </div>                    
+                    <!-- Left Half -->
+                    <div class="col-6">
+                        <p>{{ transaction.GBAccountDisplayId }}</p>
+                        <p>{{ transaction.FullUsername }}</p>
+                        <p>Transaction Details</p>
+                        <p>Payment Mode</p>
+                        <p>Transaction Id</p>
+                        <p>Credit Amount</p>
+                        <p>Debit Amount</p>
+                        <p>Balance Due</p>
+                        <p>Next Due Date</p>
+                    </div>
+    
+                    <!-- Right Half -->
+                    <div class="col-6">
+                        <p>{{ transaction.GBT_Date }}</p>
+                        <p>{{ transaction.Crn_No }}</p>
+                        <p>{{ transaction.GBTComment }}</p>
+                        <p>{{ transaction.GBTPaymentMethod }}</p>
+                        <p>{{ transaction.GBTTransactionId }}</p>
+                        <p>{{ transaction.CreditAmount|floatformat:2 }}</p>
+                        <p>{{ transaction.DebitAmount|floatformat:2 }}</p>
+                        <p>{{ transaction.GBTRemaining_Amount|floatformat:2 }}</p>
+                        <p>{{ transaction.NextDueDate }}</p>
+                    </div>
+
+                    <div class="col-12" style="text-align: center; font-weight: bold; font-size: 18px;">
+                        <a href="javascript:void(0);" 
+                           onclick="openReceipt('{{ transaction.GBT_Id }}')" 
+                           class="btn pdf-btn" 
+                           style="background-color: rgb(41, 39, 122); color: white; padding: 8px 50px; 
+                                  text-decoration: none; border-radius: 15px; margin-top: 10px;">
+                            DOWNLOAD RECEIPT
+                        </a>                        
+                    </div>
+                      
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    {% comment %} <script>
+        $(document).ready(function() {
+            $('.pdf-btn').on('click', function(event) {
+                event.preventDefault(); // Prevent the default anchor behavior
+    
+                const number = $(this).data('number'); // Retrieve GBT_Id from data-number attribute
+                console.log('Number:', number); // Log for debugging
+    
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "pdf_specific" %}', // Django view to handle PDF link generation
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}' // Include CSRF token
+                    },
+                    success: function(response) {
+                        if (response.link) {
+                            // Open the PDF link in a new tab
+                            window.open(response.link, '_blank');
+                        } else {
+                            alert('Error: PDF link not found.');
+                            console.error('Error: Link not found in response');
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('An error occurred while fetching the PDF.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script> {% endcomment %}
+
+    <script>
+        function openReceipt(gbtId) {
+            if (gbtId) {
+                var pdfUrl = `https://vgold.app/vgold_admin/loan_booking_statement_specific/${gbtId}/`;
+
+                // var pdfUrl = `https://vgold.app/vgold_admin/loan_booking_statement_specific/${gbtId}/`;
+                window.open(pdfUrl, "_blank");
+            } else {
+                alert("Receipt not available");
+            }
+        }
+    </script>
+    
+</body>
+</html>

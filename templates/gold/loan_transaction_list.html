@@ -1,0 +1,186 @@
+{% load i18n %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    {% if request.session.source != "webview" %}
+    <link rel="manifest" href="{% static 'assets/manifest.json' %}">
+    {% endif %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loan Transaction History</title>
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        rel="stylesheet"
+    />
+    <!-- Custom CSS -->
+    <style>
+        .navbar {
+            background-color: rgb(41, 39, 122);
+            height: 55px;
+            color: white;
+        }
+
+        .navbar-toggler-icon {
+            color: white;
+        }
+
+        .navbar-brand {
+            font-size: 20px;
+            margin-left: 10px;
+            color: white;
+        }
+
+        .fa-arrow-left {
+            color: white;
+        }
+        {% comment %} .card:first-child {
+            margin-top: 60px; /* Adds top margin only to the first card */
+        } {% endcomment %}
+
+        .card {
+            margin-bottom: 8px; /* Reduced space between cards */
+            border-radius: 12px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            height: auto; /* Adjusts card height dynamically */
+            {% comment %} padding: 10px; /* Reduced padding */ {% endcomment %}
+        }
+        .card-body {
+            font-size: 13px; /* Smaller text size */
+            line-height: 1.2; /* Reduced line spacing */
+        }
+        p {
+            margin-bottom: 6px; /* Reduce spacing between paragraphs */
+        }
+        /* Remove blue color and underline from links inside cards */
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between w-100">
+                <button class="navbar-toggler" type="button" id="menuBtn">
+                    <a href="{% url 'dashboard' %}">
+                        <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    </a>
+                </button>
+                <a class="navbar-brand">Loan Transaction History</a>
+    
+                {% if transactions %}
+                    <a href="javascript:void(0);" class="btn pdf-btn" 
+                    data-number="{% firstof transactions.0.Account_id '' %}" 
+                    style="margin-left: auto;" 
+                    onclick="openBookingStatement(this)">
+                        <img src="{% static 'assets/img/pdf.png' %}" alt="PDF Icon" style="height: 28px; width: auto;">
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav> 
+    
+    {% if messages %}
+        <div class="alert alert-danger" role="alert" id="message-box">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        </div>
+        <script>
+            // Close the message box after 5 seconds
+            setTimeout(function() {
+                const messageBox = document.getElementById('message-box');
+                if (messageBox) {
+                    messageBox.style.display = 'none';
+                }
+            }, 5000); // 5000ms = 5 seconds
+        </script>
+    {% endif %}
+
+    <div class="container" style="margin-top:65px;">
+        <!-- Iterate over transactions data -->
+        {% for transaction in transactions %}
+        <a href="{% url 'loan_receipt_data' transaction.GBT_Id %}" style="text-decoration: none; color: inherit;">
+        <div class="card">
+            <div class="card-body d-flex justify-content-between">
+                <!-- Left Half: Receipt No and Amount -->
+                <div class="w-50">
+                    <p><strong>Receipt No:</strong> {{ transaction.GBT_Id }}</p>
+                    <p><strong>Date:</strong> {{ transaction.GBT_Date }}</p>
+                    <p><strong>Amount:</strong> ₹ {{ transaction.Amount }}</p>
+                </div>
+                
+                <!-- Right Half: Entry Type with color condition -->
+                <div class="w-50 text-end">
+                    {% if transaction.GBTEntryType == "Credit" or transaction.GBTEntryType == "Installment" %}
+                        <p><strong class="text-success">Credit</strong></p>
+                    {% elif transaction.GBTEntryType == "Debit" %}
+                        <p><strong class="text-danger">Debit</strong></p>
+                    {% else %}
+                        <p><strong>{{ transaction.GBTEntryType }}</strong></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </a>
+        {% empty %}
+        <p>No transactions available.</p>
+        {% endfor %}
+    </div>
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% comment %} <script>
+        $(document).ready(function() {
+            $('.pdf-btn').on('click', function(event) {
+                event.preventDefault();
+                const number = $(this).data('number');
+                console.log(number)
+            
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "transection_pdf" %}',  // Adjusted for Django's URL tag
+                    data: {
+                        'number': number,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'  // Send CSRF token
+                    },
+                    success: function(response) {
+                        if (response.link) {
+                            window.open(response.link, '_blank');  // Open the PDF in a new tab
+                        } else {
+                            alert('Error: PDF link not found.');
+                            console.error('Error: Link not found in response');
+                        }
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        alert('An error occurred while fetching the PDF.');
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script> {% endcomment %}
+    <script>
+        function openBookingStatement(element) {
+            var number = element.getAttribute("data-number");
+            if (number) {
+                // var url = "http://127.0.0.1:8000/vgold_admin/loan_booking_statement/" + number + "/";
+                var url = "https://vgold.app/vgold_admin/loan_booking_statement/" + number + "/";
+                window.open(url, "_blank");
+            } else {
+                alert("Loan statement not available");
+            }
+        }
+    </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
