@@ -520,9 +520,9 @@
             nextMonth = 0;
             year += 1;
         }
-        const displayStartDate = new Date(year, nextMonth, 15);
+        const displayStartDate = new Date(year, nextMonth, 1);
         startDateInput.value = formatDate(displayStartDate);
-        console.log("Displayed Start Date (15th next month):", formatDate(displayStartDate));
+        console.log("Displayed Start Date (1th next month):", formatDate(displayStartDate));
 
         // ✅ 2. Expiry Date = added_date + GBTennure + 3 months
         const addedDateObj = new Date(added_date);
