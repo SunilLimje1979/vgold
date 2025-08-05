@@ -150,5 +150,5 @@ urlpatterns = [
     path('loan_transaction_seprate/<str:number>/', views.loan_transaction_seprate, name='loan_transaction_seprate'),
 
     path('loan_receipt_data/<str:number>/', views.loan_receipt_data, name='loan_receipt_data'),
-
+    path('payment_intrest/', views.payment_intrest, name='payment_intrest'),
 ]

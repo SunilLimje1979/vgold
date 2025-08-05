@@ -3800,7 +3800,8 @@ def nominee_mandiates(request,id):
     # Fetch live bank list from NPCI
     bank_list = []
     try:
-        bank_response = requests.get('https://enachuat.npci.org.in:8086/apiservices_new/getLiveBankDtls')
+        bank_response = requests.get('https://enach.npci.org.in/apiservices/getLiveBankDtls')
+        # bank_response = requests.get('https://enachuat.npci.org.in:8086/apiservices_new/getLiveBankDtls')
         if bank_response.status_code == 200:
             bank_json = bank_response.json()
             bank_list = bank_json.get("liveBankList", [])
@@ -5266,3 +5267,6 @@ def loan_receipt_data(request, number):
     # Pass the transactions data to the template
     return render(request, 'gold/loan_receipt_data.html', {"transactions": transactions,"number": number,})
 
+def payment_intrest(request):
+    # or GET requests, just render the template without any data
+    return render(request, 'gold/payment_intrest.html')
