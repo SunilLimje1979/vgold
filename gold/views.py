@@ -4482,6 +4482,7 @@ from django.db import transaction
 
 #     # If any failure, redirect to fallback page
 #     return redirect("installment_op")
+
 # @csrf_exempt
 # def regular_payment(request):
 #     if request.method == "POST":
@@ -4584,6 +4585,7 @@ from django.db import transaction
 #             messages.error(request, f"Exception occurred: {str(e)}")
 
 #     return redirect("installment_op")
+
 @csrf_exempt
 def regular_payment(request):
     if request.method == "POST":
@@ -4618,7 +4620,8 @@ def regular_payment(request):
             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
             order_id = f"{name_part}{random_suffix}"
 
-            return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+            return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+            # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
             payload = {
@@ -4660,7 +4663,8 @@ def regular_payment(request):
                     }
 
                     transaction_response = requests.post(
-                        "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+                        "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+                        # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
                         json=transaction_payload
                     )
                     transaction_data = transaction_response.json()
@@ -4686,8 +4690,8 @@ def regular_payment(request):
                             }
 
                             partial_response = requests.post(
-                                "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
-                                # "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
+                                # "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
+                                "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
                                 data=json.dumps(partial_payload),
                                 headers={"Content-Type": "application/json"}
                             )
