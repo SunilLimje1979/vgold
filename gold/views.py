@@ -5119,7 +5119,10 @@ def nach_form(request):
     user_id = user_data.get('User_Id')
     
     if not user_id:
-        return redirect('login')
+        user_id=request.GET.get("id")
+        print(user_id)
+        if not user_id:
+            return redirect('login')
     
     api_url = "https://vgold.app/vgold_admin/m_api/gold_booking_history/"
     payload = {'user_id': user_id}
