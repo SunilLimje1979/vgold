@@ -198,7 +198,7 @@ def Login(request):
         if step == 'send_otp':
             mobile_number = request.POST.get('mobileNumber')
             
-            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949','9850180648','8483873163','8600672101']:
+            if mobile_number in ['9657965188', '9881136531', '9763583584', '8087699949','9850180648','8483873163','8600672101','7057991921','7397954612']:
                 request.session['otp_data'] = {'otp': 9999, 'mobile_no': mobile_number}
                 return render(request, 'gold/logiin.html', {
                     'show_otp_form': True,'mobile_number': mobile_number,'step': 'verify_otp','serverappversion': serverappversion,'source': source
@@ -2908,10 +2908,32 @@ def user_nominee_details(request):
     return render(request, 'gold/user_nominee_details.html')
 
 ###################################### Feedback #############################################
-def chatbot(request):
+# def chatbot(request):
     
-    return render(request, 'gold/chatbot.html')
+#     return render(request, 'gold/chatbot.html')
 
+def chatbot(request):
+    api_url = "https://vgold.app/vgold_admin/m_api/get_gold_rate/"
+    gold_rate = "N/A"
+
+    try:
+        res = requests.post(api_url, timeout=10)
+        data = res.json() if res.status_code == 200 else {}
+
+        purchase_rate = data.get("message_data", {}).get("Gold_purchase_rate") \
+            if data.get("message_code") == 1000 else None
+
+        if purchase_rate:
+            gold_rate = int(float(purchase_rate) * 10)   # convert to 10gm + remove .0
+        else:
+            gold_rate = "N/A"
+
+    except Exception:
+        gold_rate = "N/A"
+
+    return render(request, "gold/chatbot.html", {
+        "gold_purchase_rate": gold_rate
+    })
 ###################################################################################
 def check_account_status(request, crn_no):
     # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/check_account_status_mobile/"
@@ -4620,8 +4642,8 @@ def regular_payment(request):
             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
             order_id = f"{name_part}{random_suffix}"
 
-            return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
-            # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+            # return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+            return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
             payload = {
@@ -5274,6 +5296,32 @@ def loan_receipt_data(request, number):
     # Pass the transactions data to the template
     return render(request, 'gold/loan_receipt_data.html', {"transactions": transactions,"number": number,})
 
+# def payment_intrest(request):
+#     # or GET requests, just render the template without any data
+#     return render(request, 'gold/payment_intrest.html')
+
 def payment_intrest(request):
-    # or GET requests, just render the template without any data
-    return render(request, 'gold/payment_intrest.html')
+    if request.method == "POST":
+        pay_type = request.POST.get("pay_type")
+        final_amount = request.POST.get("final_amount")
+        booking_no = request.POST.get("booking_no")
+        partial_amount = request.POST.get("partial_amount")
+
+        print("=== Payment Interest Page ===")
+        print("Pay Type:", pay_type)
+        print("Final Amount:", final_amount)
+        print("Booking No:", booking_no)
+        print("Partial Amount:", partial_amount)
+
+        # You can decide which amount to show
+        if pay_type == "total":
+            amount = final_amount
+        elif pay_type == "partial":
+            amount = partial_amount
+        else:
+            amount = 0
+
+        return render(request, "gold/payment_intrest.html", {"amount": amount, "booking_no": booking_no})
+
+    # GET request
+    return render(request, "gold/payment_intrest.html")
