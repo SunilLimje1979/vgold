@@ -4642,8 +4642,8 @@ def regular_payment(request):
             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
             order_id = f"{name_part}{random_suffix}"
 
-            # return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
-            return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+            return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+            # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
             payload = {
