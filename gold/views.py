@@ -4608,47 +4608,220 @@ from django.db import transaction
 
 #     return redirect("installment_op")
 
+# @csrf_exempt
+# def regular_payment(request):
+#     if request.method == "POST":
+#         try:
+#             amount = float(request.POST.get("final_amount"))
+#             pay_type = request.POST.get("pay_type", "").strip().lower()
+
+#             if pay_type == "total":
+#                 pt_type = 0
+#             elif pay_type == "partial":
+#                 pt_type = 1
+#             else:
+#                 pt_type = 2  # fallback or booking
+
+#             # API Config
+#             api_key = 'D672D5DCFB64471A651287AC44262D'
+#             merchant_id = 'SG2885'
+#             client_id = 'hdfcmaster'
+#             base_url = 'https://smartgatewayuat.hdfcbank.com'
+
+#             # Session Data
+#             user_data = request.session.get('user_data', {})
+#             customer_name = user_data.get('UserFirstname', 'user')
+#             last_name = user_data.get('UserLastname', '')
+#             mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
+#             email = user_data.get('UserEmail', 'user@example.com')
+#             user_id = user_data.get('User_Id', 994)
+
+#             # Order ID
+#             safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
+#             name_part = safe_name[:10]
+#             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
+#             order_id = f"{name_part}{random_suffix}"
+
+#             return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
+#             # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
+#             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
+
+#             payload = {
+#                 "order_id": order_id,
+#                 "amount": amount,
+#                 "customer_id": "testing-customer-one",
+#                 "customer_email": email,
+#                 "customer_phone": mobile_no,
+#                 "payment_page_client_id": client_id,
+#                 "action": "paymentPage",
+#                 "currency": "INR",
+#                 "return_url": return_url,
+#                 "description": f"{pay_type.title()} Installment Payment",
+#                 "first_name": customer_name,
+#                 "last_name": last_name
+#             }
+
+#             headers = {
+#                 "Authorization": f"Basic {encoded_key}",
+#                 "Content-Type": "application/json",
+#                 "x-merchantid": merchant_id,
+#                 "x-customerid": payload['customer_id']
+#             }
+
+#             with transaction.atomic():
+#                 response = requests.post(f"{base_url}/session", json=payload, headers=headers)
+#                 response_data = response.json()
+
+#                 if response.status_code == 200 and 'payment_links' in response_data:
+#                     # Save transaction
+#                     transaction_payload = {
+#                         "PTUserId": user_id,
+#                         "PTReceive_id": "VGOLD123456789",
+#                         "PTOrder_id": order_id,
+#                         "PTStatus": 0,
+#                         "PTAmount": amount,
+#                         "CreatedBy": user_id,
+#                         "PTType": pt_type,
+#                     }
+
+#                     transaction_response = requests.post(
+#                         "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
+#                         # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
+#                         json=transaction_payload
+#                     )
+#                     transaction_data = transaction_response.json()
+#                     print("Transaction API Response:", transaction_data)
+
+#                     if transaction_data.get("message_code") == 1000:
+#                         PT_id = transaction_data.get("message_data", {}).get("PTId")
+#                         # ✅ Handle Partial Payment API
+#                         if pay_type == "partial":
+#                             status_data = {
+#                                 "amount": amount,
+#                                 "txn_id": order_id
+#                             }
+                            
+#                             partial_payload = {
+#                                 "PPUserId": user_id,
+#                                 "PPDate": now().strftime('%Y-%m-%dT%H:%M'),
+#                                 "PPStatus": 1,
+#                                 "PPAmount": status_data.get('amount', 0),
+#                                 "CreatedBy": user_id,
+#                                 "PPTransectionId": status_data.get('txn_id', ''),
+#                                 "PPTransection":PT_id
+#                             }
+
+#                             partial_response = requests.post(
+#                                 # "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
+#                                 "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
+#                                 data=json.dumps(partial_payload),
+#                                 headers={"Content-Type": "application/json"}
+#                             )
+
+#                             # 👇 Print full response for debugging
+#                             print("Partial Payment API Response:", partial_response.status_code, partial_response.text)
+
+#                             # Check response status
+#                             if partial_response.status_code != 200 or partial_response.json().get("message_code") != 1000:
+#                                 messages.error(request, "Partial payment could not be saved.")
+#                                 return redirect("installment_op")
+
+#                         # 🎯 Redirect to HDFC payment page
+#                         return redirect(response_data['payment_links']['web'])
+
+#                     else:
+#                         messages.error(request, f"Transaction failed: {transaction_data.get('message_text', 'Unknown error')}")
+#                 else:
+#                     error_message = response_data.get('message', 'Failed to create payment session')
+#                     messages.error(request, f"Error: {error_message}")
+
+#         except Exception as e:
+#             messages.error(request, f"Exception occurred: {str(e)}")
+
+#     return redirect("installment_op")
 @csrf_exempt
 def regular_payment(request):
     if request.method == "POST":
         try:
-            amount = float(request.POST.get("final_amount"))
+            # 1. Get Data from POST
+            posted_amount = float(request.POST.get("final_amount", 0))
             pay_type = request.POST.get("pay_type", "").strip().lower()
+            
+            # Session Data
+            user_data = request.session.get('user_data', {})
+            user_id = user_data.get('User_Id')
 
+            # ============================================================
+            # START: Server-Side Amount Validation
+            # ============================================================
+            if pay_type == "total":
+                # Re-fetch the installment info from the API to get the authoritative total
+                validation_url = 'https://vgold.app/vgold_admin/m_api/get_installemnt_info/'
+                validation_payload = {'user_id': user_id}
+                
+                try:
+                    val_response = requests.post(validation_url, json=validation_payload)
+                    val_data = val_response.json()
+                    
+                    calculated_total = 0.0
+                    if val_response.status_code == 200 and val_data.get('message_code') == 1000:
+                        for item in val_data.get('message_data', []):
+                            calculated_total += float(item.get('current_month_emi_amount', 0.00))
+                    
+                    # Compare the calculated total with the posted amount
+                    # We round to 2 decimal places to handle floating point discrepancies
+                    if round(posted_amount, 2) != round(calculated_total, 2):
+                        print(f"Validation Failed: Posted {posted_amount} != Server {calculated_total}")
+                        messages.error(request, "Invalid amount detected. The payment amount has changed or is invalid.")
+                        return redirect("installment_op")
+
+                except Exception as e:
+                    print(f"Validation API Error: {str(e)}")
+                    messages.error(request, "Unable to validate payment details. Please try again.")
+                    return redirect("installment_op")
+
+            elif pay_type == "partial":
+                # For partial, just ensure the amount is positive
+                if posted_amount <= 0:
+                    messages.error(request, "Partial amount must be greater than 0.")
+                    return redirect("installment_op")
+            # ============================================================
+            # END: Server-Side Amount Validation
+            # ============================================================
+
+            # Determine PTType
             if pay_type == "total":
                 pt_type = 0
             elif pay_type == "partial":
                 pt_type = 1
             else:
-                pt_type = 2  # fallback or booking
+                pt_type = 2
 
-            # API Config
+            # API Config for HDFC
             api_key = 'D672D5DCFB64471A651287AC44262D'
             merchant_id = 'SG2885'
             client_id = 'hdfcmaster'
             base_url = 'https://smartgatewayuat.hdfcbank.com'
 
-            # Session Data
-            user_data = request.session.get('user_data', {})
+            # Customer Details
             customer_name = user_data.get('UserFirstname', 'user')
             last_name = user_data.get('UserLastname', '')
             mobile_no = str(user_data.get('UserMobileNo', '0000000000'))
             email = user_data.get('UserEmail', 'user@example.com')
-            user_id = user_data.get('User_Id', 994)
-
-            # Order ID
+            
+            # Generate Order ID
             safe_name = re.sub(r'[^a-zA-Z0-9]', '', customer_name).lower()
             name_part = safe_name[:10]
             random_suffix = uuid.uuid4().hex[:20 - len(name_part)]
             order_id = f"{name_part}{random_suffix}"
 
             return_url = f"https://vgold.app/vgold/payment_status/{order_id}/"
-            # return_url = f"http://127.0.0.1:8001/vgold/payment_status/{order_id}/"
             encoded_key = base64.b64encode(f"{api_key}:".encode()).decode()
 
+            # Prepare Payload using the VALIDATED amount (posted_amount)
             payload = {
                 "order_id": order_id,
-                "amount": amount,
+                "amount": posted_amount, # This is now safe to use
                 "customer_id": "testing-customer-one",
                 "customer_email": email,
                 "customer_phone": mobile_no,
@@ -4669,64 +4842,50 @@ def regular_payment(request):
             }
 
             with transaction.atomic():
+                # Call HDFC Session API
                 response = requests.post(f"{base_url}/session", json=payload, headers=headers)
                 response_data = response.json()
 
                 if response.status_code == 200 and 'payment_links' in response_data:
-                    # Save transaction
+                    # Save Initial Transaction
                     transaction_payload = {
                         "PTUserId": user_id,
                         "PTReceive_id": "VGOLD123456789",
                         "PTOrder_id": order_id,
                         "PTStatus": 0,
-                        "PTAmount": amount,
+                        "PTAmount": posted_amount,
                         "CreatedBy": user_id,
                         "PTType": pt_type,
                     }
 
                     transaction_response = requests.post(
                         "https://vgold.app/vgold_admin/m_api/add_payment_transaction/",
-                        # "http://127.0.0.1:8000/vgold_admin/m_api/add_payment_transaction/",
                         json=transaction_payload
                     )
                     transaction_data = transaction_response.json()
-                    print("Transaction API Response:", transaction_data)
 
                     if transaction_data.get("message_code") == 1000:
                         PT_id = transaction_data.get("message_data", {}).get("PTId")
-                        # ✅ Handle Partial Payment API
+                        
+                        # Handle Partial Payment Record Logic
                         if pay_type == "partial":
-                            status_data = {
-                                "amount": amount,
-                                "txn_id": order_id
-                            }
-                            
                             partial_payload = {
                                 "PPUserId": user_id,
                                 "PPDate": now().strftime('%Y-%m-%dT%H:%M'),
                                 "PPStatus": 1,
-                                "PPAmount": status_data.get('amount', 0),
+                                "PPAmount": posted_amount,
                                 "CreatedBy": user_id,
-                                "PPTransectionId": status_data.get('txn_id', ''),
-                                "PPTransection":PT_id
+                                "PPTransectionId": order_id, 
+                                "PPTransection": PT_id
                             }
 
-                            partial_response = requests.post(
-                                # "http://127.0.0.1:8000/vgold_admin/m_api/add_partial_payment/",
+                            requests.post(
                                 "https://vgold.app/vgold_admin/m_api/add_partial_payment/",
                                 data=json.dumps(partial_payload),
                                 headers={"Content-Type": "application/json"}
                             )
 
-                            # 👇 Print full response for debugging
-                            print("Partial Payment API Response:", partial_response.status_code, partial_response.text)
-
-                            # Check response status
-                            if partial_response.status_code != 200 or partial_response.json().get("message_code") != 1000:
-                                messages.error(request, "Partial payment could not be saved.")
-                                return redirect("installment_op")
-
-                        # 🎯 Redirect to HDFC payment page
+                        # Redirect to HDFC Payment Page
                         return redirect(response_data['payment_links']['web'])
 
                     else:
