@@ -128,7 +128,7 @@
     <div class="container-fluid">
       <div class="">
         <button class="navbar-toggler" type="button" id="menuBtn">
-          <a href="{% url 'dashb' %}">
+          <a href="{% url 'dashboard' %}">
             <i class="fa fa-arrow-left" aria-hidden="true" style="color: white; font-size: 24px;"></i>
           </a>
         </button>
@@ -160,9 +160,9 @@
     <div id="planCard" class="custom-card">
       <p id="planMessage">
           <strong>Date:</strong> {{ data.rate_date }} <br>
-          <strong>For {{ data.quantity }} gm</strong> <br><br>
+          <strong>For {{ data.quantity }} gm (24K/995 Purity Gold) </strong> <br><br>
           <strong>Total Amount:</strong> ₹ {{ data.total_amount }}<br>
-          <strong>Booking Amount:</strong> ₹ {{ data.booking_amount }}<br>
+          {% comment %} <strong>Booking Amount:</strong> ₹ {{ data.booking_amount }}<br> {% endcomment %}
           <strong>Processing Fees:</strong> ₹ {{ data.booking_charge }}<br>
           <strong>You Have to Pay:</strong> ₹ {{ data.have_to_pay }}<br>
           <strong>Remaining Amount:</strong> ₹ {{ data.remaing_amount  }}</span><br><br>

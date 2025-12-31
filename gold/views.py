@@ -833,36 +833,65 @@ def Add_gold(request):
 
 
 ###################################### Gold Plan #############################################
+# def Gold_plan(request):
+#     if request.method == "POST":
+#         quantity = request.POST.get('quantity')
+
+#         # Set the headers for the API request
+#         headers = {
+#             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+#         }
+
+#         # Make the API request
+#         api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_gold_plans/"
+#         response = requests.post(api_url, data={'quantity': quantity}, headers=headers)
+        
+#         # Check if the API request was successful
+#         if response.status_code == 200:
+#             api_response = response.json()
+#             if api_response.get("status") == "200":
+#                 data = api_response.get("Data", {})
+#                 # Pass the API response data to the template
+#                 return render(request, 'gold/gold_plan.html', {'data': data})
+#             else:
+#                 # Handle the case where the API response status is not 200
+#                 return render(request, 'gold/gold_plan.html', {'error': api_response.get("Message")})
+#         else:
+#             # Handle the case where the API request failed
+#             return render(request, 'gold/gold_plan.html', {'error': 'Failed to retrieve gold plan data'})
+    
+#     # For GET requests, just render the template without any data
+#     return render(request, 'gold/gold_plan.html')
+
 def Gold_plan(request):
     if request.method == "POST":
         quantity = request.POST.get('quantity')
 
-        # Set the headers for the API request
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
 
-        # Make the API request
-        api_url = "https://vgold.app/vgold_admin/m_api/get_gold_plans/"
-        response = requests.post(api_url, data={'quantity': quantity}, headers=headers)
+        # Updated API URL
+        api_url = "https://vgold.app/vgold_admin/m_api/get_gold_plans1/"
         
-        # Check if the API request was successful
-        if response.status_code == 200:
-            api_response = response.json()
-            if api_response.get("status") == "200":
-                data = api_response.get("Data", {})
-                # Pass the API response data to the template
-                return render(request, 'gold/gold_plan.html', {'data': data})
+        try:
+            # Note: Using json= instead of data= for API consistency if needed, 
+            # but keeping data= as per your working flow.
+            response = requests.post(api_url, data={'quantity': quantity}, headers=headers)
+            
+            if response.status_code == 200:
+                api_response = response.json()
+                if api_response.get("status") == "200":
+                    data = api_response.get("Data", {})
+                    return render(request, 'gold/gold_plan.html', {'data': data})
+                else:
+                    return render(request, 'gold/gold_plan.html', {'error': api_response.get("Message")})
             else:
-                # Handle the case where the API response status is not 200
-                return render(request, 'gold/gold_plan.html', {'error': api_response.get("Message")})
-        else:
-            # Handle the case where the API request failed
-            return render(request, 'gold/gold_plan.html', {'error': 'Failed to retrieve gold plan data'})
+                return render(request, 'gold/gold_plan.html', {'error': 'Failed to retrieve gold plan data'})
+        except Exception as e:
+            return render(request, 'gold/gold_plan.html', {'error': str(e)})
     
-    # For GET requests, just render the template without any data
     return render(request, 'gold/gold_plan.html')
-
 ###################################### Our Vendors #############################################
 
 def Our_vendors(request):
@@ -4739,6 +4768,7 @@ from django.db import transaction
 #             messages.error(request, f"Exception occurred: {str(e)}")
 
 #     return redirect("installment_op")
+
 @csrf_exempt
 def regular_payment(request):
     if request.method == "POST":

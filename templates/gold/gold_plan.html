@@ -51,7 +51,7 @@
       border-radius: 0;
       box-shadow: none;
       padding-left: 10px;
-      height: 30px;
+      height: 40px;
     }
 
     .form-control:hover,
@@ -94,32 +94,52 @@
       font-size: 14px;
       margin-top: 15px;
       position: relative;
-      text-align: center; /* Center text */
       color: #29277A; /* Text color */
     }
 
     .share-icon {
       position: absolute;
-      bottom: 5%; /* adjust as needed */
-      right: 7%; /* adjust as needed */
+      top: 15px; /* adjust as needed */
+      right: 15px; /* adjust as needed */
       border-radius: 50%; /* Rounded border */
       background-color: #fff; /* Background color */
       border: 1px solid #ccc; /* Border color */
       padding: 8px; /* Adjust padding as needed */ 
+      z-index: 10;
     }
     
     /* Style for the icon */
     .share-icon i {
-      font-size: 20px;
+      font-size: 18px;
       color: #333; /* Adjust color as needed */
       cursor: pointer;
     }
-    
-    /* Style on hover if needed */
-    .share-icon i:hover {
-      color: #007bff; /* Change color on hover */
+
+    /* Table Styling */
+    .plan-table {
+        width: 100%;
+        margin-top: 15px;
+        border-collapse: collapse;
+        font-size: 12px;
     }
-  
+    .plan-table th {
+        background-color: rgb(41, 39, 122);
+        color: white;
+        padding: 8px;
+        text-align: center;
+    }
+    .plan-table td {
+        padding: 8px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+    }
+    .plan-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .payable-highlight {
+        font-weight: bold;
+        color: #198754; /* Green */
+    }
   </style>
 </head>
 <body>
@@ -145,8 +165,8 @@
           {% csrf_token %}
           <!-- Loan amount input -->
           <div class="mb-1">
-            <label for="goldWeight" class="form-label">How much are you applying for?</label>
-            <input type="text" class="form-control" name="quantity" id="goldWeight" placeholder="">
+            <label for="goldWeight" class="form-label">How much are you applying for? (Grams)</label>
+            <input type="number" step="0.01" class="form-control" name="quantity" id="goldWeight" placeholder="e.g. 10" required>
           </div>
 
           <!-- Apply button -->
@@ -156,161 +176,75 @@
     </div>
 
     {% if data %}
-    <!-- Card to display input value -->
+    <!-- Card to display results -->
     <div id="planCard" class="custom-card">
-      <p id="planMessage">
-          <strong>Date:</strong> {{ data.rate_date }} <br>
-          <strong>For {{ data.quantity }} gm (24K/995 Purity Gold) </strong> <br><br>
-          <strong>Total Amount:</strong> ₹ {{ data.total_amount }}<br>
-          <strong>Booking Amount:</strong> ₹ {{ data.booking_amount }}<br>
-          <strong>Processing Fees:</strong> ₹ {{ data.booking_charge }}<br>
-          <strong>You Have to Pay:</strong> ₹ {{ data.have_to_pay }}<br>
-          <strong>Remaining Amount:</strong> ₹ {{ data.remaing_amount  }}</span><br><br>
-  
-          <!-- Share icon -->
-          <div class="share-icon">
-              <i class="fas fa-share-alt" onclick="RateshareFunction()" ></i> <!-- Assuming you're using Font Awesome for icons -->
-          </div>
-  
-          <!-- EMI Calculation -->
-          <strong>EMI For</strong> <br>
-          <strong>12 months:</strong> ₹ <span id="result12"></span><br>
-          <strong>24 months:</strong> ₹ <span id="result24"></span><br>
-          <strong>36 months:</strong> ₹ <span id="result36"></span><br>
-          <strong>48 months:</strong> ₹ <span id="result48"></span><br>
-          <strong>60 months:</strong> ₹ <span id="result60"></span><br>
-      </p>
-  </div>
-  
+      <!-- Share icon -->
+      <div class="share-icon">
+          <i class="fas fa-share-alt" onclick="RateshareFunction()"></i>
+      </div>
+
+      <div style="text-align:center;">
+          <p class="mb-1"><strong>Date:</strong> {{ data.rate_date }}</p>
+          <p class="mb-1"><strong>Quantity:</strong> {{ data.quantity }} gm (24K/995 Purity)</p>
+          <p class="mb-1"><strong>Gold Rate:</strong> ₹ {{ data.gold_rate }} /gm</p>
+          <p class="mb-3"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
+      </div>
+
+      <!-- Plan Table -->
+      <div class="table-responsive">
+          <table class="plan-table">
+              <thead>
+                  <tr>
+                      <th>Tenure</th>
+                      <th>EMI (₹)</th>
+                      {% comment %} <th>Processing (₹)</th> {% endcomment %}
+                      <th>Payable (₹)</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  {% for plan in data.plans %}
+                  <tr>
+                      <td>{{ plan.tenure }} Months</td>
+                      <td>{{ plan.monthly_emi }}</td>
+                      {% comment %} <td>{{ plan.processing_fee }}</td> {% endcomment %}
+                      <td class="payable-highlight">{{ plan.first_payable_amount }}</td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+      <p class="mt-2 text-muted" style="font-size: 10px;">* Payable Amount includes 1st EMI + Processing Fees.</p>
+    </div>
     {% endif %}
     
     {% if error %}
-    <p style="color: red;">Error: {{ error }}</p>
+    <div class="alert alert-danger mt-3" role="alert">
+        {{ error }}
+    </div>
     {% endif %}
   </div>
 
   <script>
     function RateshareFunction() {
+        const pdfUrl = "{{ data.pdf_url }}"; 
         if (navigator.share) {
             navigator.share({
-                title: 'Check out V-Gold!',
-                text: 'This is Rate of Today Gold. Check it out!',
-                url: {{ data.pdf_url }}
+                title: 'Check out V-Gold Plan!',
+                text: 'Today\'s Gold Plan for {{ data.quantity }} grams. Total: ₹{{ data.total_booking_amount }}',
+                url: pdfUrl 
             }).then(() => {
                 console.log('Thanks for sharing!');
             }).catch(err => {
                 console.error('Error sharing:', err);
             });
         } else {
-            alert('Web Share API is not supported in your browser.');
+            // Fallback for browsers that don't support Web Share API
+            window.open(pdfUrl, '_blank');
         }
     }
-</script> 
+  </script>
 
-<script>
-  function RateshareFunction() {
-      const pdfUrl = "{{ data.pdf_url }}";  // Get the dynamic URL from Django template
-
-      if (navigator.share) {
-          navigator.share({
-              title: 'Check out V-Gold!',
-              text: 'This is Gold Plan. Check it out!',
-              url: pdfUrl  // Use the dynamic URL here
-          }).then(() => {
-              console.log('Thanks for sharing!');
-          }).catch(err => {
-              console.error('Error sharing:', err);
-          });
-      } else {
-          alert('Web Share API is not supported in your browser.');
-      }
-  }
-</script>
-
-
-  {% comment %} <script>
-    function RateshareFunction() {
-      const pdfUrl = "{{ data.pdf_url }}";
-
-      if (pdfUrl) {
-        // Alert and start download
-        alert("Your download will start now.");
-
-        const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.download = "gold_plan.jpg"; // Specify the filename here
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert("PDF URL is not available.");
-      }
-    }
-  </script>  {% endcomment %}
-
-
-  <script>
-    // Assuming data.remaing_amount holds the value
-    var remainingAmount = {{ data.remaing_amount }}; // Sample value for demonstration
-    
-    // Calculate divided amounts and round up
-    var dividedAmount12 = Math.ceil(remainingAmount / 12);
-    var dividedAmount24 = Math.ceil(remainingAmount / 24);
-    var dividedAmount36 = Math.ceil(remainingAmount / 36);
-    var dividedAmount48 = Math.ceil(remainingAmount / 48);
-    var dividedAmount60 = Math.ceil(remainingAmount / 60);
-    
-    // Update HTML with calculated values
-    document.getElementById("result12").textContent = dividedAmount12.toFixed(0);
-    document.getElementById("result24").textContent = dividedAmount24.toFixed(0);
-    document.getElementById("result36").textContent = dividedAmount36.toFixed(0);
-    document.getElementById("result48").textContent = dividedAmount48.toFixed(0);
-    document.getElementById("result60").textContent = dividedAmount60.toFixed(0);
-
-</script>
-
-
-
-   {% comment %} <script>
-    async function RateshareFunction() {
-        const pdfUrl = "{{ data.pdf_url }}";
-
-        try {
-            const response = await fetch( pdfUrl);
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-
-            const blob = await response.blob();
-            const file = new File([blob], 'gold_plan.pdf', { type: blob.type });
-
-            if (navigator.share) {
-                navigator.share({
-                    title: 'This is Today\'s Gold Rate. Check it out!',
-                    files: [file]
-                }).then(() => {
-                    console.log('Thanks for sharing!');
-                }).catch(err => {
-                    console.error('Error while sharing', err);
-                });
-            } else {
-                const url = URL.createObjectURL(file);
-                const dummy = document.createElement('input');
-                document.body.appendChild(dummy);
-                dummy.value = url;
-                dummy.select();
-                document.execCommand('copy');
-                document.body.removeChild(dummy);
-                alert('PDF URL copied to clipboard');
-                URL.revokeObjectURL(url);
-            }
-        } catch (err) {
-            console.error('Error fetching the PDF:', err.message);
-        }
-    }
-</script> {% endcomment %}
-
-  <!-- Bootstrap JS (optional) -->
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
