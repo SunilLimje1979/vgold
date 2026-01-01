@@ -187,7 +187,8 @@
           <p class="mb-1"><strong>Date:</strong> {{ data.rate_date }}</p>
           <p class="mb-1"><strong>Quantity:</strong> {{ data.quantity }} gm (24K/995 Purity)</p>
           <p class="mb-1"><strong>Gold Rate:</strong> ₹ {{ data.gold_rate }} /gm</p>
-          <p class="mb-3"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
+          <p class="mb-1"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
+          <p class="mb-3"><strong>Processing Fees:</strong> ₹ {{ data.plans.0.processing_fee }}</p>
       </div>
 
       <!-- Plan Table -->
