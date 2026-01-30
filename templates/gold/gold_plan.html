@@ -115,6 +115,30 @@
       cursor: pointer;
     }
 
+    /* Account Details Section */
+    .account-section {
+      background-color: #ffffff;
+      border: 1px dashed #29277a;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+    .qr-image {
+      width: 290px; /* Adjust size as needed */
+      height: auto;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    .payment-note {
+      background-color: #eef2ff;
+      border-left: 4px solid #29277a;
+      padding: 10px;
+      font-size: 13px;
+      margin-top: 15px;
+      color: #333;
+    }
+
     /* Table Styling */
     .plan-table {
         width: 100%;
@@ -176,46 +200,59 @@
     </div>
 
     {% if data %}
-    <!-- Card to display results -->
-    <div id="planCard" class="custom-card">
-      <!-- Share icon -->
-      {% comment %}  
-        <div class="share-icon"> <i class="fas fa-share-alt" onclick="RateshareFunction()"></i> </div>  
-      {% endcomment %}
+        <div id="planCard" class="custom-card">
+          <div style="text-align:center;">
+              <p class="mb-1"><strong>Date:</strong> {{ data.rate_date }}</p>
+              <p class="mb-1"><strong>Quantity:</strong> {{ data.quantity }} gm (24K/995 Purity)</p>
+              <p class="mb-1"><strong>Gold Rate:</strong> ₹ {{ data.gold_rate }} /gm</p>
+              <p class="mb-1"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
+              <p class="mb-3"><strong>Processing Fees:</strong> ₹ {{ data.plans.0.processing_fee }}</p>
+          </div>
 
-      <div style="text-align:center;">
-          <p class="mb-1"><strong>Date:</strong> {{ data.rate_date }}</p>
-          <p class="mb-1"><strong>Quantity:</strong> {{ data.quantity }} gm (24K/995 Purity)</p>
-          <p class="mb-1"><strong>Gold Rate:</strong> ₹ {{ data.gold_rate }} /gm</p>
-          <p class="mb-1"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
-          <p class="mb-3"><strong>Processing Fees:</strong> ₹ {{ data.plans.0.processing_fee }}</p>
-      </div>
+          <div class="table-responsive">
+              <table class="plan-table">
+                  <thead>
+                      <tr>
+                          <th>Tenure</th>
+                          <th>EMI (₹)</th>
+                          <th>Payable (₹)</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for plan in data.plans %}
+                      <tr>
+                          <td>{{ plan.tenure }} Months</td>
+                          <td>{{ plan.monthly_emi }}</td>
+                          <td class="payable-highlight">{{ plan.first_payable_amount }}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+          </div>
+          <p class="mt-2" style="font-size:14px; color:#29277A; font-weight:bold;">* Payable Amount includes 1st EMI + Processing Fees.</p>
 
-      <!-- Plan Table -->
-      <div class="table-responsive">
-          <table class="plan-table">
-              <thead>
-                  <tr>
-                      <th>Tenure</th>
-                      <th>EMI (₹)</th>
-                      {% comment %} <th>Processing (₹)</th> {% endcomment %}
-                      <th>Payable (₹)</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for plan in data.plans %}
-                  <tr>
-                      <td>{{ plan.tenure }} Months</td>
-                      <td>{{ plan.monthly_emi }}</td>
-                      {% comment %} <td>{{ plan.processing_fee }}</td> {% endcomment %}
-                      <td class="payable-highlight">{{ plan.first_payable_amount }}</td>
-                  </tr>
-                  {% endfor %}
-              </tbody>
-          </table>
-      </div>
-      <p class="mt-2" style="font-size:14px; color:#29277A; font-weight:bold;">* Payable Amount includes 1st EMI + Processing Fees.</p>
-    </div>
+          <!-- NEW ACCOUNT DETAILS SECTION -->
+          <div class="account-section mt-4">
+              <h6 class="mb-2" style="color:#000000; font-weight:700;">
+                  Account Details for Payment:
+              </h6>
+              <div style="font-size: 14px;">
+                  <p class="mb-1"><strong>Vighnaharta Gold Ltd</strong></p>
+                  <p class="mb-1">HDFC Bank Manjiri BR.</p>
+                  <p class="mb-1">Account number: <strong>18117610000015</strong></p>
+                  <p class="mb-1">IFSC code: <strong>HDFC0001811</strong></p>
+                  <p class="mb-2">UPI ID: <strong>vgold@hdfcbank</strong></p>
+              </div>
+
+              <div class="text-center">
+                  <img src="{% static 'assets/img/qr.jpeg' %}" alt="Payment QR" class="qr-image">
+              </div>
+          </div>
+
+          <div class="payment-note">
+              <strong>Note:</strong> Please share payment screenshot with your Pan card and Aadhar Card copy on <strong>7448200440</strong>
+          </div>
+        </div>
     {% endif %}
     
     {% if error %}
