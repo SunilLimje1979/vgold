@@ -872,7 +872,10 @@ def Gold_plan(request):
         }
 
         # Updated API URL
-        api_url = "https://vgold.app/vgold_admin/m_api/get_gold_plans1/"
+        # api_url = "https://vgold.app/vgold_admin/m_api/get_gold_plans1/"
+        # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_gold_plans1/"
+        # api_url = "http://127.0.0.1:8000/vgold_admin/m_api/get_gold_plans2/"
+        api_url = "https://vgold.app/vgold_admin/m_api/get_gold_plans2/"
         
         try:
             # Note: Using json= instead of data= for API consistency if needed, 
