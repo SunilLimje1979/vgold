@@ -206,7 +206,7 @@
               <p class="mb-1"><strong>Quantity:</strong> {{ data.quantity }} gm (24K/995 Purity)</p>
               <p class="mb-1"><strong>Gold Rate:</strong> ₹ {{ data.gold_rate }} /gm</p>
               <p class="mb-1"><strong>Total Amount:</strong> ₹ {{ data.total_booking_amount }}</p>
-              {% comment %} <p class="mb-3"><strong>Processing Fees:</strong> ₹ {{ data.plans.0.processing_fee }}</p> {% endcomment %}
+              <p class="mb-3"><strong>Processing Fees:</strong> ₹ {{ data.plans.0.processing_fee }}</p>
           </div>
 
           <div class="table-responsive">
@@ -214,7 +214,7 @@
                   <thead>
                       <tr>
                           <th>Tenure</th>
-                          <th>Processing Fees (₹)</th>
+                          {% comment %} <th>Processing Fees (₹)</th> {% endcomment %}
                           <th>EMI (₹)</th>
                           <th>Payable For Todays (₹)</th>
                       </tr>
@@ -224,7 +224,7 @@
                       <tr>
                           <td>{{ plan.tenure }} Months</td>
                            <!-- New Column Data -->
-                          <td>{{ plan.processing_fee }}</td>
+                          {% comment %} <td>{{ plan.processing_fee }}</td> {% endcomment %}
                           <td>{{ plan.monthly_emi }}</td>
                           <td class="payable-highlight">{{ plan.first_payable_amount }}</td>
                       </tr>
@@ -232,6 +232,7 @@
                   </tbody>
               </table>
           </div>
+          {% comment %} <p class="mt-2" style="font-size:14px; color:#29277A; font-weight:bold;">* Please Note First EMI should be paid at the time of booking and For tenure of 72 months and above, a minimum booking of 100 grams of gold is required.</p> {% endcomment %}
           <p class="mt-2" style="font-size:14px; color:#29277A; font-weight:bold;">* Payable Amount includes 1st EMI + Processing Fees.</p>
 
           <!-- NEW ACCOUNT DETAILS SECTION -->
